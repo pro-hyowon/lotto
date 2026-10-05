@@ -1,0 +1,3198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LOTTO LAB">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#030307">
+<title>LOTTO LAB</title>
+
+<!-- PWA Manifest (아이콘 포함 완전판) -->
+<link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"LOTTO LAB","short_name":"LOTTO","description":"로또 6/45 통계 분석 앱","start_url":"./","scope":"./","display":"standalone","orientation":"portrait","background_color":"%23030307","theme_color":"%23030307","icons":[{"src":"data:image/svg%2Bxml;utf8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 512 512%22%3E%3Cdefs%3E%3ClinearGradient id%3D%22g%22 x1%3D%220%22 y1%3D%220%22 x2%3D%221%22 y2%3D%221%22%3E%3Cstop offset%3D%220%22 stop-color%3D%22%237c5cff%22%2F%3E%3Cstop offset%3D%22.5%22 stop-color%3D%22%2322d3ee%22%2F%3E%3Cstop offset%3D%221%22 stop-color%3D%22%23f472b6%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect width%3D%22512%22 height%3D%22512%22 rx%3D%22112%22 fill%3D%22url(%23g)%22%2F%3E%3Ctext x%3D%22256%22 y%3D%22328%22 font-size%3D%22160%22 text-anchor%3D%22middle%22 fill%3D%22%23fff%22 font-weight%3D%22800%22 font-family%3D%22sans-serif%22%3E6%2F45%3C%2Ftext%3E%3C%2Fsvg%3E","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"},{"src":"data:image/svg%2Bxml;utf8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 viewBox%3D%220 0 192 192%22%3E%3Cdefs%3E%3ClinearGradient id%3D%22g%22 x1%3D%220%22 y1%3D%220%22 x2%3D%221%22 y2%3D%221%22%3E%3Cstop offset%3D%220%22 stop-color%3D%22%237c5cff%22%2F%3E%3Cstop offset%3D%22.5%22 stop-color%3D%22%2322d3ee%22%2F%3E%3Cstop offset%3D%221%22 stop-color%3D%22%23f472b6%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect width%3D%22192%22 height%3D%22192%22 rx%3D%2242%22 fill%3D%22url(%23g)%22%2F%3E%3Ctext x%3D%2296%22 y%3D%22123%22 font-size%3D%2258%22 text-anchor%3D%22middle%22 fill%3D%22%23fff%22 font-weight%3D%22800%22 font-family%3D%22sans-serif%22%3E6%2F45%3C%2Ftext%3E%3C%2Fsvg%3E","sizes":"192x192","type":"image/svg+xml","purpose":"any maskable"}]}'>
+
+<!-- 아이콘 (iOS + Android + Favicon) -->
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%237c5cff"/><stop offset=".5" stop-color="%2322d3ee"/><stop offset="1" stop-color="%23f472b6"/></linearGradient></defs><rect width="192" height="192" rx="42" fill="url(%23g)"/><text x="96" y="123" font-size="58" text-anchor="middle" fill="%23fff" font-weight="800" font-family="sans-serif">6/45</text></svg>'>
+<link rel="apple-touch-icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%237c5cff"/><stop offset=".5" stop-color="%2322d3ee"/><stop offset="1" stop-color="%23f472b6"/></linearGradient></defs><rect width="192" height="192" rx="42" fill="url(%23g)"/><text x="96" y="123" font-size="58" text-anchor="middle" fill="%23fff" font-weight="800" font-family="sans-serif">6/45</text></svg>'>
+<meta name="application-name" content="LOTTO LAB">
+<meta name="msapplication-TileColor" content="#030307">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&display=swap">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+:root{
+  --bg:#030307;
+  --bg-elev:#0f0b1d;
+  --purple:#7c5cff;
+  --purple-light:#a78bfa;
+  --purple-soft:#d6ccff;
+  --cyan:#22d3ee;
+  --cyan-light:#8be9f7;
+  --pink:#f472b6;
+  --pink-light:#ff9ed2;
+  --amber:#fbbf24;
+  --amber-light:#ffb27a;
+  --text:#F4F4FA;
+  --text-mute:rgba(235,235,245,.62);
+  --text-dim:rgba(235,235,245,.45);
+  --surface:rgba(255,255,255,.05);
+  --surface-2:rgba(255,255,255,.08);
+  --border:rgba(255,255,255,.1);
+  --border-2:rgba(255,255,255,.15);
+  --safe-top:env(safe-area-inset-top, 0px);
+  --safe-bottom:env(safe-area-inset-bottom, 0px);
+}
+
+@keyframes ballIn{0%{transform:scale(0) rotate(-200deg);opacity:0}70%{opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,60px) scale(1.15)}}
+@keyframes drift2{0%,100%{transform:translate(0,0) scale(1.1)}50%{transform:translate(-50px,-40px) scale(.95)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
+
+html,body{background:var(--bg);min-height:100vh}
+body{
+  margin:0;
+  font-family:'Pretendard',system-ui,-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior:none;
+  position:relative;
+  overflow-x:hidden;
+  padding-top:var(--safe-top);
+  padding-bottom:calc(90px + var(--safe-bottom));
+}
+a{color:var(--purple-light)}
+
+/* === 떠다니는 광원 효과 === */
+.aurora{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;overflow:hidden}
+.aurora .orb{position:absolute;border-radius:50%;filter:blur(30px)}
+.aurora .orb-1{top:-120px;left:-100px;width:340px;height:340px;background:radial-gradient(circle,rgba(124,92,255,.55),rgba(124,92,255,0) 70%);animation:drift1 14s ease-in-out infinite}
+.aurora .orb-2{top:260px;right:-140px;width:320px;height:320px;background:radial-gradient(circle,rgba(34,211,238,.38),rgba(34,211,238,0) 70%);animation:drift2 18s ease-in-out infinite}
+.aurora .orb-3{bottom:60px;left:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(244,114,182,.32),rgba(244,114,182,0) 70%);animation:drift1 20s ease-in-out infinite reverse}
+
+.app{max-width:420px;margin:0 auto;padding:16px 16px 20px;position:relative;z-index:1;display:flex;flex-direction:column;gap:14px}
+
+/* === 헤더 === */
+.header{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 0}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-logo{
+  width:38px;height:38px;border-radius:12px;
+  background:linear-gradient(135deg,#7c5cff,#22d3ee 55%,#f472b6);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 22px rgba(124,92,255,.5);
+  font-family:'Unbounded',sans-serif;font-weight:800;font-size:11px;
+  color:#fff;letter-spacing:-.5px;
+}
+.brand-title{font-family:'Unbounded',sans-serif;font-weight:700;font-size:17px;color:var(--text);letter-spacing:-.4px;line-height:1}
+.brand-sub{font-size:11.5px;color:var(--text-mute);margin-top:3px}
+.brand-ico-btn{
+  width:40px;height:40px;border-radius:14px;
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  backdrop-filter:blur(14px);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;position:relative;
+}
+.brand-ico-btn .dot{position:absolute;top:9px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--pink);box-shadow:0 0 8px var(--pink)}
+
+/* === 최신 당첨 Hero === */
+.hero{
+  position:relative;border-radius:26px;padding:1px;
+  background:linear-gradient(135deg,rgba(167,139,250,.9),rgba(34,211,238,.5) 45%,rgba(244,114,182,.8));
+  box-shadow:0 18px 50px rgba(124,92,255,.28);
+}
+.hero-inner{
+  border-radius:25px;padding:16px 16px 14px;
+  background:linear-gradient(160deg,rgba(24,20,48,.88),rgba(10,10,22,.92));
+  backdrop-filter:blur(20px);
+  display:flex;flex-direction:column;gap:14px;
+}
+.hero-top{display:flex;justify-content:space-between;align-items:center}
+.hero-tag{
+  font-size:11px;font-weight:700;color:#0b0b14;
+  background:linear-gradient(90deg,var(--cyan),var(--purple-light));
+  padding:4px 9px;border-radius:999px;letter-spacing:.2px;
+}
+.hero-round{font-size:15px;font-weight:700;color:var(--text)}
+.hero-sub{font-size:12px;color:var(--text-mute)}
+.hero-balls{display:flex;align-items:center;gap:5px;justify-content:center}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hero-stat{
+  border-radius:14px;padding:10px 12px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);
+}
+.hero-stat.cool{background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.22)}
+.hero-stat-label{font-size:11px;color:var(--text-mute)}
+.hero-stat-val{font-size:15px;font-weight:700;color:var(--text);margin-top:3px;letter-spacing:-.3px}
+.hero-live{font-size:11px;color:var(--cyan-light);display:flex;align-items:center;gap:5px}
+.hero-live .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse 1.6s infinite}
+
+/* === 공 (볼) - 글래스 효과 === */
+.ball{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:50%;
+  font-family:'Unbounded',sans-serif;font-weight:700;font-size:14px;
+  flex-shrink:0;color:#fff;
+  position:relative;
+  text-shadow:0 1px 2px rgba(0,0,0,.3);
+  box-shadow:0 4px 12px rgba(0,0,0,.3),0 0 0 1px rgba(255,255,255,.15) inset;
+  animation:ballIn .5s cubic-bezier(.3,1.4,.5,1) both;
+}
+.ball::before{
+  content:'';position:absolute;top:3px;left:5px;right:5px;height:35%;
+  background:linear-gradient(180deg,rgba(255,255,255,.4),transparent);
+  border-radius:50% 50% 100% 100%/50% 50% 50% 50%;
+  pointer-events:none;
+}
+.ball.sm{width:28px;height:28px;font-size:11px}
+.ball.lg{width:42px;height:42px;font-size:16px}
+.bonus-sep{color:var(--text-dim);font-size:16px;font-weight:600;margin:0 4px}
+
+/* === 섹션 전환 === */
+.section{display:none;animation:fadeUp .45s ease both;flex-direction:column;gap:12px}
+.section.active{display:flex}
+
+/* === 섹션 헤더 === */
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;padding:8px 4px 0}
+.sec-title{font-size:19px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.sec-sub{font-size:12.5px;color:var(--text-mute);margin-top:3px}
+
+/* === 필터 칩 === */
+.chip-row{display:flex;gap:6px;flex-wrap:wrap;padding:0 2px}
+.chip{
+  font-size:11.5px;color:var(--purple-soft);
+  padding:5px 10px;border-radius:999px;
+  background:rgba(167,139,250,.12);
+  border:1px solid rgba(167,139,250,.25);
+}
+
+/* === 글래스 카드 === */
+.glass-card{
+  border-radius:22px;padding:16px 14px;
+  background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.03));
+  border:1px solid var(--border);
+  backdrop-filter:blur(18px);
+}
+
+/* === 추천 조합 카드 === */
+.rec-card{
+  border-radius:22px;padding:14px 14px 12px;
+  background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.03));
+  border:1px solid var(--border);
+  backdrop-filter:blur(18px);
+  display:flex;flex-direction:column;gap:12px;
+}
+.rec-head{display:flex;align-items:center;justify-content:space-between}
+.rec-label{display:flex;align-items:center;gap:8px}
+.rec-badge{
+  width:24px;height:24px;border-radius:8px;
+  background:var(--surface-2);
+  border:1px solid var(--border-2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Unbounded',sans-serif;font-size:11px;font-weight:700;color:var(--text);
+}
+.rec-name{font-size:13px;font-weight:600;color:rgba(235,235,245,.8)}
+.rec-balls{display:flex;justify-content:space-between;padding:0 2px}
+.rec-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) minmax(0,1.3fr);gap:5px}
+.rec-stat{
+  border-radius:11px;padding:7px 0;
+  background:rgba(255,255,255,.05);text-align:center;
+}
+.rec-stat-label{font-size:10.5px;color:var(--text-mute)}
+.rec-stat-val{font-family:'Unbounded',sans-serif;font-size:13px;font-weight:500;color:var(--text);margin-top:2px}
+.rec-stat.hot .rec-stat-val{color:var(--amber-light)}
+.rec-stat.ac .rec-stat-val{color:var(--cyan-light)}
+.rec-stat.zone{padding:7px 8px;display:flex;flex-direction:column;gap:6px;justify-content:center}
+.zone-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;gap:1px}
+.zone-seg-0{background:#FBC400}
+.zone-seg-1{background:#3FA9F5}
+.zone-seg-2{background:#FF5A5A}
+.zone-seg-3{background:#9AA0AA}
+.zone-seg-4{background:#8BCB2C}
+
+/* === 버튼 === */
+.btn-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  height:36px;padding:0 14px;border-radius:999px;border:0;
+  background:linear-gradient(90deg,var(--purple),var(--cyan));
+  color:#fff;font-size:13px;font-weight:700;cursor:pointer;
+  box-shadow:0 6px 20px rgba(124,92,255,.45);
+  font-family:inherit;
+}
+.btn-pill:active{transform:scale(.95)}
+.btn-pill.magic{
+  background:linear-gradient(90deg,var(--pink),var(--purple-light));
+  box-shadow:0 6px 20px rgba(244,114,182,.45);
+}
+.btn-outline{
+  height:46px;border-radius:16px;
+  border:1px solid var(--border-2);
+  background:var(--surface);color:var(--text);
+  font-size:13.5px;font-weight:600;cursor:pointer;
+  font-family:inherit;width:100%;
+}
+.btn-outline:active{background:var(--surface-2)}
+.btn-primary{
+  width:100%;height:48px;border-radius:14px;border:0;
+  background:linear-gradient(90deg,var(--purple),var(--cyan));
+  color:#fff;font-size:14px;font-weight:700;cursor:pointer;
+  box-shadow:0 8px 24px rgba(124,92,255,.35);
+  font-family:inherit;letter-spacing:.3px;
+}
+.btn-primary:active{transform:scale(.98)}
+
+/* === 매직 카드 (conic-gradient 회전 테두리) === */
+.magic-card{
+  position:relative;border-radius:26px;padding:1.5px;overflow:hidden;
+  box-shadow:0 20px 60px rgba(244,114,182,.25);
+}
+.magic-card::before{
+  content:'';position:absolute;left:-50%;top:-50%;width:200%;height:200%;
+  background:conic-gradient(from 0deg,var(--cyan),var(--purple-light),var(--pink),var(--amber),var(--cyan));
+  animation:spin 5s linear infinite;
+}
+.magic-inner{
+  position:relative;border-radius:25px;padding:18px 16px 16px;
+  background:linear-gradient(170deg,rgba(28,16,44,.96),rgba(10,9,20,.97));
+  display:flex;flex-direction:column;gap:16px;
+}
+.magic-top{display:flex;justify-content:space-between;align-items:center}
+.magic-label{font-family:'Unbounded',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:1px;color:var(--pink-light)}
+.magic-time{font-size:11.5px;color:var(--text-mute)}
+.magic-score-row{display:flex;align-items:center;gap:16px}
+.magic-ring{
+  width:118px;height:118px;flex:none;border-radius:50%;
+  background:conic-gradient(from 180deg,var(--cyan),var(--purple-light),var(--pink),var(--cyan));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 40px rgba(244,114,182,.35);
+}
+.magic-ring-inner{
+  width:100px;height:100px;border-radius:50%;background:var(--bg-elev);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.magic-score-label{font-size:10.5px;color:var(--text-mute)}
+.magic-score-val{
+  font-family:'Unbounded',sans-serif;font-size:27px;font-weight:800;letter-spacing:-1px;
+  background:linear-gradient(135deg,var(--cyan-light),#c4b5fd 50%,var(--pink-light));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.magic-factors{flex:1;display:flex;flex-direction:column;gap:7px;min-width:0}
+.factor-row{display:flex;align-items:center;gap:7px}
+.factor-name{width:30px;font-size:11px;color:rgba(235,235,245,.7)}
+.factor-bar{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.factor-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--cyan),var(--purple-light),var(--pink))}
+.factor-val{width:28px;text-align:right;font-size:11px;color:var(--text);font-variant-numeric:tabular-nums}
+.magic-balls{display:flex;justify-content:space-between;padding:4px 2px}
+.magic-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.magic-stat{
+  border-radius:12px;padding:8px 0;
+  background:rgba(255,255,255,.06);text-align:center;
+}
+.magic-stat-label{font-size:10.5px;color:var(--text-mute)}
+.magic-stat-val{font-family:'Unbounded',sans-serif;font-size:13px;color:var(--text);margin-top:2px}
+.magic-stat.ac .magic-stat-val{color:var(--cyan-light)}
+.magic-stat.hot .magic-stat-val{color:var(--amber-light)}
+
+.runner-card{
+  border-radius:20px;padding:12px 14px;
+  background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
+  border:1px solid var(--border);
+  backdrop-filter:blur(18px);
+  display:flex;align-items:center;gap:12px;
+}
+.runner-rank{flex:none;width:52px;text-align:center}
+.runner-rank-label{font-size:10.5px;color:var(--text-mute)}
+.runner-rank-score{font-family:'Unbounded',sans-serif;font-size:16px;font-weight:700;color:var(--pink-light);margin-top:2px}
+.runner-balls{flex:1;display:flex;justify-content:space-between}
+
+/* === 통계 바차트 === */
+.freq-chart{display:flex;align-items:flex-end;gap:2px;height:110px;margin-top:14px}
+.freq-bar{flex:1;border-radius:2px 2px 1px 1px;transition:height .5s cubic-bezier(.2,.9,.3,1)}
+.freq-axis{display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--text-dim);font-variant-numeric:tabular-nums}
+
+/* === 핫/콜드 === */
+.hot-cold-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hc-card{border-radius:20px;padding:14px 12px}
+.hc-hot{background:linear-gradient(160deg,rgba(255,138,76,.14),rgba(255,255,255,.03));border:1px solid rgba(255,160,100,.22)}
+.hc-cold{background:linear-gradient(160deg,rgba(34,211,238,.13),rgba(255,255,255,.03));border:1px solid rgba(34,211,238,.22)}
+.hc-title{font-size:13px;font-weight:700}
+.hc-hot .hc-title{color:var(--amber-light)}
+.hc-cold .hc-title{color:var(--cyan-light)}
+.hc-sub{font-size:11px;color:var(--text-mute);margin-top:2px}
+.hc-items{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 4px;margin-top:12px}
+.hc-item{display:flex;flex-direction:column;align-items:center;gap:4px}
+.hc-item-cnt{font-size:10.5px;color:rgba(235,235,245,.7);font-variant-numeric:tabular-nums}
+
+/* === 홀수 분포 === */
+.odd-row{display:flex;align-items:center;gap:8px}
+.odd-label{width:34px;font-size:11.5px;color:rgba(235,235,245,.7);font-variant-numeric:tabular-nums}
+.odd-bar{flex:1;height:14px;border-radius:5px;background:rgba(255,255,255,.05);overflow:hidden}
+.odd-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,rgba(124,92,255,.85),rgba(34,211,238,.85));transition:width .5s}
+.odd-pct{width:36px;text-align:right;font-size:11.5px;color:var(--text);font-variant-numeric:tabular-nums}
+
+/* === 구간 비율 === */
+.zone-share{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px;margin-top:14px}
+.zone-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:10px}
+.zone-cell{text-align:center}
+.zone-cell-label{font-size:10.5px;color:var(--text-mute)}
+.zone-cell-pct{font-size:12.5px;font-weight:700;color:var(--text);margin-top:2px}
+
+/* === 번호별 그리드 === */
+.num-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px 0;padding:14px 10px;border-radius:22px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
+.num-cell{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.num-cell-cnt{font-size:10px;color:rgba(235,235,245,.6);font-variant-numeric:tabular-nums}
+.num-cell.selected .ball{box-shadow:0 0 0 2px #fff,0 0 20px rgba(255,255,255,.5)}
+
+/* === 번호 상세 === */
+.num-detail{display:flex;flex-direction:column;gap:14px}
+.num-detail-top{display:flex;align-items:center;gap:14px}
+.num-detail-stats{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px 10px}
+.nd-stat-label{font-size:10.5px;color:var(--text-mute)}
+.nd-stat-val{font-size:15px;font-weight:700;color:var(--text);margin-top:1px}
+.nd-stat-val.cyan{color:var(--cyan-light)}
+.recent-strip{display:grid;grid-template-columns:repeat(30,1fr);gap:2px;margin-top:7px}
+.strip-cell{height:18px;border-radius:3px}
+
+/* === 이력 === */
+.hist-card{
+  border-radius:18px;padding:12px 14px;
+  background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
+  border:1px solid rgba(255,255,255,.09);
+  backdrop-filter:blur(16px);
+  display:flex;flex-direction:column;gap:10px;
+}
+.hist-top{display:flex;justify-content:space-between;align-items:baseline}
+.hist-round{font-size:14px;font-weight:700;color:var(--text)}
+.hist-meta{font-size:11.5px;color:var(--text-dim)}
+.hist-balls-row{display:flex;align-items:center;gap:5px}
+.hist-balls-row .ball{width:30px;height:30px;font-size:12px}
+
+/* === 입력 폼 === */
+.input-card{
+  border-radius:22px;padding:18px 16px;
+  background:linear-gradient(160deg,rgba(124,92,255,.12),rgba(34,211,238,.06));
+  border:1px solid rgba(124,92,255,.25);
+}
+.input-title{font-family:'Unbounded',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;color:var(--purple-soft);text-transform:uppercase;margin-bottom:4px}
+.input-sub{font-size:12px;color:var(--text-mute);margin-bottom:14px;line-height:1.6}
+.input-sub a{color:var(--purple-light);font-weight:700;text-decoration:none}
+.input-group{margin-bottom:12px}
+.input-label{font-size:10.5px;color:var(--text-mute);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px}
+.input-field{
+  width:100%;padding:12px 14px;
+  border:1px solid var(--border-2);border-radius:12px;
+  font-size:15px;font-weight:700;color:var(--text);
+  background:rgba(255,255,255,.05);
+  font-family:inherit;outline:none;
+}
+.input-field:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,92,255,.15)}
+.input-6-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.input-small{text-align:center;padding:12px 4px}
+.manual-msg{margin-top:12px;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:700}
+.manual-msg.ok{background:rgba(34,211,238,.15);color:var(--cyan-light);border:1px solid rgba(34,211,238,.3)}
+.manual-msg.err{background:rgba(244,114,182,.15);color:var(--pink-light);border:1px solid rgba(244,114,182,.3)}
+
+/* === 당첨확인 전용 === */
+.check-hero{
+  border-radius:22px;padding:18px 16px;
+  background:linear-gradient(135deg,rgba(34,211,238,.15),rgba(124,92,255,.1));
+  border:1px solid rgba(34,211,238,.3);
+  position:relative;overflow:hidden;
+}
+.check-hero::before{
+  content:'';position:absolute;top:-40%;right:-10%;width:200px;height:200px;
+  background:radial-gradient(circle,rgba(34,211,238,.2),transparent 70%);
+  pointer-events:none;
+}
+.photo-upload{
+  display:block;width:100%;padding:20px 16px;
+  border:2px dashed rgba(255,255,255,.2);border-radius:14px;
+  background:rgba(255,255,255,.04);
+  text-align:center;cursor:pointer;transition:all .2s;
+  color:var(--text-mute);font-size:13px;font-weight:600;
+}
+.photo-upload:hover{border-color:var(--cyan);background:rgba(34,211,238,.08);color:var(--cyan-light)}
+.photo-preview{
+  position:relative;border-radius:14px;overflow:hidden;
+  background:rgba(0,0,0,.3);border:1px solid var(--border-2);
+  margin-top:10px;max-height:280px;display:flex;align-items:center;justify-content:center;
+}
+.photo-preview img{max-width:100%;max-height:280px;display:block}
+.photo-remove{
+  position:absolute;top:8px;right:8px;
+  width:30px;height:30px;border-radius:50%;border:0;
+  background:rgba(0,0,0,.6);color:#fff;font-size:14px;cursor:pointer;
+  backdrop-filter:blur(10px);
+}
+.ticket-slot{
+  border-radius:16px;padding:14px;margin-bottom:10px;
+  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+  border:1px solid var(--border);
+}
+.ticket-slot.winner{
+  background:linear-gradient(160deg,rgba(251,191,36,.15),rgba(236,72,153,.08));
+  border-color:rgba(251,191,36,.4);
+  box-shadow:0 10px 30px rgba(251,191,36,.15);
+}
+.ticket-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ticket-label{display:flex;align-items:center;gap:7px}
+.ticket-letter{
+  width:26px;height:26px;border-radius:8px;
+  background:var(--surface-2);border:1px solid var(--border-2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:var(--text);
+}
+.ticket-slot.winner .ticket-letter{
+  background:linear-gradient(135deg,var(--amber),var(--pink));
+  border-color:transparent;color:#fff;
+}
+.ticket-result{
+  font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;
+}
+.ticket-result.rank-1{background:linear-gradient(90deg,var(--amber),var(--pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.ticket-result.rank-2{color:var(--amber-light)}
+.ticket-result.rank-3{color:var(--pink-light)}
+.ticket-result.rank-4{color:var(--cyan-light)}
+.ticket-result.rank-5{color:var(--purple-light)}
+.ticket-result.rank-0{color:var(--text-dim)}
+.ticket-numbers{display:flex;flex-wrap:wrap;gap:5px;padding:4px 0}
+.ticket-num-input{
+  width:38px;height:38px;border-radius:50%;
+  border:1.5px solid var(--border-2);
+  background:rgba(255,255,255,.05);
+  color:var(--text);text-align:center;
+  font-family:'Unbounded',sans-serif;font-size:13px;font-weight:700;
+  outline:none;transition:all .15s;
+  -moz-appearance:textfield;
+}
+.ticket-num-input::-webkit-outer-spin-button,.ticket-num-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.ticket-num-input:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.15)}
+.ticket-num-input.match{
+  background:var(--grad-primary,linear-gradient(135deg,#7c5cff,#f472b6));
+  color:#fff;border-color:transparent;
+  box-shadow:0 0 15px rgba(124,92,255,.4);
+}
+.ticket-num-input.bonus-match{
+  background:linear-gradient(135deg,#F39C12,#FBC400);
+  color:#fff;border-color:transparent;
+  box-shadow:0 0 15px rgba(251,196,0,.4);
+}
+.match-detail{
+  font-size:11px;color:var(--text-mute);margin-top:8px;
+  display:flex;gap:12px;flex-wrap:wrap;
+}
+.match-detail b{color:var(--text)}
+
+.winning-balls-mini{
+  display:flex;align-items:center;gap:4px;padding:10px 12px;
+  border-radius:12px;background:rgba(255,255,255,.05);
+  border:1px solid var(--border);margin-top:10px;
+}
+.winning-balls-mini .ball{width:26px;height:26px;font-size:11px}
+.winning-balls-mini .bonus-sep{font-size:14px}
+.winning-balls-mini .label{font-size:10px;color:var(--text-mute);font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-right:4px}
+
+.round-select{
+  width:100%;padding:12px 14px;
+  border:1px solid var(--border-2);border-radius:12px;
+  background:rgba(255,255,255,.05);color:var(--text);
+  font-size:14px;font-weight:700;font-family:inherit;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23F4F4FA' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;
+  padding-right:36px;outline:none;
+}
+.round-select option{background:#141937;color:#fff}
+.add-slot-btn{
+  width:100%;padding:12px;border-radius:12px;
+  border:1.5px dashed var(--border-2);background:transparent;
+  color:var(--text-mute);font-size:13px;font-weight:600;cursor:pointer;
+  font-family:inherit;transition:all .15s;
+}
+.add-slot-btn:hover{border-color:var(--cyan);color:var(--cyan-light)}
+
+
+/* === 통계: 매직프릭 분석 === */
+.seg-toggle{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
+.seg-toggle button{border:0;background:none;color:var(--text-mute);font-size:13px;font-weight:700;padding:10px 6px;border-radius:12px;cursor:pointer;font-family:inherit}
+.seg-toggle button.on{background:linear-gradient(135deg,rgba(124,92,255,.55),rgba(244,114,182,.4));color:#fff;box-shadow:0 4px 14px rgba(124,92,255,.3)}
+.ms-title{font-size:14px;font-weight:700;color:var(--text)}
+.ms-title span{font-size:11.5px;font-weight:500;color:var(--text-mute)}
+.ms-desc{font-size:11px;color:var(--text-mute);margin-top:3px;line-height:1.5}
+.ms-sub{font-size:11px;font-weight:700;color:var(--purple-soft);margin:12px 0 6px}
+.ms-rank{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.ms-rank-row{display:flex;align-items:center;gap:8px}
+.ms-no{width:18px;text-align:right;font-size:11px;color:var(--text-dim);font-variant-numeric:tabular-nums}
+.ms-val{width:34px;text-align:right;font-size:11.5px;color:var(--text);font-variant-numeric:tabular-nums}
+.ms-list{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+.ms-row{display:flex;align-items:center;gap:8px}
+.ms-balls{display:flex;gap:3px}
+.ms-balls.wrap{flex-wrap:wrap}
+.ms-balls .ball{width:27px;height:27px;font-size:10.5px;animation:none}
+.ms-cnt{font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:var(--amber-light);min-width:34px;text-align:right}
+.ms-last{margin-left:auto;font-size:10.5px;color:var(--text-dim);white-space:nowrap}
+.ms-last.wide{white-space:normal;text-align:right;max-width:110px;line-height:1.35}
+.ms-row.quad{align-items:flex-start}
+.ms-now{margin-top:14px;padding:12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
+.ms-verdict{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.ms-verdict>div{padding:12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
+.ms-big{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:800;background:linear-gradient(90deg,var(--cyan-light),var(--pink-light));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.ms-big.dim{background:none;-webkit-text-fill-color:var(--text-mute);color:var(--text-mute)}
+.ms-hit{margin-left:auto;font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;color:var(--text-dim)}
+.ms-hit.h2{color:var(--cyan-light)}.ms-hit.h3{color:var(--amber-light)}.ms-hit.h4{color:var(--pink-light)}
+
+
+.ms-section{font-size:15px;font-weight:800;color:var(--text);padding:10px 4px 0;letter-spacing:-.2px}
+.ms-section span{display:block;font-size:11px;font-weight:500;color:var(--text-mute);margin-top:2px}
+.ms-desc b{color:var(--text)}
+.ms-desc b.t1,.cls-chips i.c1,.pos-ec i.c1{color:var(--cyan-light)}
+.ms-desc b.t2,.cls-chips i.c2,.pos-ec i.c2{color:var(--purple-light)}
+.ms-desc b.t3,.cls-chips i.c3,.pos-ec i.c3{color:var(--pink-light)}
+.serial-row{display:flex;align-items:center;gap:8px}
+.serial-no{font-family:'Unbounded',sans-serif;font-size:12.5px;color:var(--text-mute);letter-spacing:1px;min-width:78px}
+.serial-no b{color:var(--amber-light)}
+.cls-chips{display:flex;gap:3px;margin-left:auto}
+.cls-chips i{font-style:normal;font-size:10.5px;font-weight:700;width:20px;height:20px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border:1px solid var(--border)}
+.exp-mark{position:absolute;top:-2px;bottom:-2px;width:2px;background:#fff;opacity:.7;border-radius:1px}
+.exp-legend{font-weight:500;color:var(--text-dim)}
+.pat-name{min-width:42px;font-size:12px;font-weight:700;color:var(--text-mute);letter-spacing:1px}
+.pat-name.wide{min-width:84px;letter-spacing:0}
+.pat-name.cur{color:var(--amber-light)}
+.mini-chart{display:flex;align-items:flex-end;gap:3px;height:70px}
+.mini-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px}
+.mini-col span{font-size:9.5px;color:var(--text-dim)}
+.mini-bar{width:100%;border-radius:3px 3px 1px 1px;background:linear-gradient(180deg,rgba(167,139,250,.9),rgba(34,211,238,.6))}
+.mini-col.cur .mini-bar{background:linear-gradient(180deg,var(--amber),var(--pink))}
+.mini-col.cur span{color:var(--amber-light);font-weight:700}
+.uni-cur{padding:4px 6px;margin:0 -6px;border-radius:10px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3)}
+.pos-row{display:grid;grid-template-columns:44px 1fr 52px;grid-template-rows:auto auto;gap:4px 8px;align-items:center}
+.pos-label{font-size:11.5px;font-weight:700;color:var(--text)}
+.pos-range{position:relative;height:8px;border-radius:4px;background:rgba(255,255,255,.06)}
+.pos-band{position:absolute;top:0;bottom:0;border-radius:4px;background:linear-gradient(90deg,rgba(124,92,255,.7),rgba(34,211,238,.7))}
+.pos-cur{position:absolute;top:-3px;width:4px;height:14px;margin-left:-2px;border-radius:2px;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.pos-txt{font-size:10px;color:var(--text-mute);text-align:right;line-height:1.3}
+.pos-txt b{color:var(--amber-light);font-weight:700}
+.pos-ec{grid-column:2/4;display:flex;gap:4px}
+.pos-ec i{font-style:normal;font-size:10px;font-weight:600;padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid var(--border);opacity:.75}
+.pos-ec i.cur{opacity:1;border-color:currentColor}
+
+
+.ser-line{display:flex;flex-wrap:wrap;gap:5px 10px;font-size:11px;color:var(--text-mute);padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
+.ser-line b{color:var(--text);font-weight:700}
+.ser-line.sm{display:block;padding:0;border:0;background:none;font-size:10.5px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+.bt-grid>div{padding:10px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
+.bt-grid .ms-big{font-size:17px;margin:2px 0}
+
+/* === 이력: 검색/정렬/전체목록 === */
+.order-toggle{display:flex;padding:3px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--border)}
+.order-toggle button{border:0;background:none;color:var(--text-mute);font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:9px;cursor:pointer;font-family:inherit}
+.order-toggle button.on{background:linear-gradient(135deg,rgba(124,92,255,.5),rgba(34,211,238,.35));color:#fff}
+.hist-search{display:flex;gap:8px}
+.hist-search input{flex:1;min-width:0;padding:12px 14px;border:1px solid var(--border-2);border-radius:12px;background:rgba(255,255,255,.05);color:var(--text);font-size:14px;font-weight:600;font-family:inherit;outline:none;-moz-appearance:textfield}
+.hist-search input::-webkit-outer-spin-button,.hist-search input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.hist-search input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,92,255,.15)}
+.hist-search button{padding:0 18px;border:0;border-radius:12px;background:linear-gradient(90deg,var(--purple),var(--cyan));color:#fff;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.hist-jumps{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 4px;scrollbar-width:none}
+.hist-jumps button{flex:none;border:1px solid rgba(167,139,250,.25);background:rgba(167,139,250,.1);color:var(--purple-soft);font-size:11.5px;font-weight:600;padding:6px 11px;border-radius:999px;cursor:pointer;font-family:inherit}
+.hist-found{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:20px;background:linear-gradient(160deg,rgba(124,92,255,.14),rgba(34,211,238,.06));border:1px solid rgba(124,92,255,.3)}
+.hist-found.miss{font-size:12.5px;color:var(--amber-light);font-weight:600;background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.25);line-height:1.5}
+.hist-found-head{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;font-weight:800;color:var(--purple-soft);letter-spacing:.5px}
+.hist-found-head button{border:0;background:none;color:var(--text-mute);font-size:12px;cursor:pointer;font-family:inherit}
+.hist-found-nav{display:flex;justify-content:space-between}
+.hist-found-nav button{border:1px solid var(--border-2);background:rgba(255,255,255,.05);color:var(--text);font-size:12px;font-weight:600;padding:7px 12px;border-radius:10px;cursor:pointer;font-family:inherit}
+.hist-card.hl{border-color:rgba(124,92,255,.5);box-shadow:0 8px 24px rgba(124,92,255,.2)}
+.hist-date{font-size:11px;color:var(--text-dim)}
+.hist-list{display:flex;flex-direction:column;gap:12px}
+.hist-list .ball{animation:none}
+.hist-end{text-align:center;font-size:11.5px;color:var(--text-dim);padding:10px 0}
+
+/* === 사진 인식 / 결과 === */
+.photo-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.photo-upload.small{padding:11px 8px;font-size:12px}
+.scan-btn{margin-top:10px}
+.scan-btn:disabled{opacity:.6}
+.scan-status{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:12.5px;font-weight:600;line-height:1.5}
+.scan-status.scanning{background:rgba(124,92,255,.12);color:var(--purple-soft);border:1px solid rgba(124,92,255,.3)}
+.scan-status.done{background:rgba(34,211,238,.12);color:var(--cyan-light);border:1px solid rgba(34,211,238,.3)}
+.scan-status.error{background:rgba(244,114,182,.12);color:var(--pink-light);border:1px solid rgba(244,114,182,.3)}
+.scan-status .spinner{width:14px;height:14px;border-width:2px}
+.pending-box{margin-top:10px;padding:12px;border-radius:12px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.25);font-size:12px;color:var(--amber-light);line-height:1.6}
+.ticket-num-input.dup{border-color:var(--pink);color:var(--pink-light)}
+.result-panel{border-radius:20px;padding:18px 16px;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid var(--border-2);animation:fadeUp .35s ease both}
+.result-panel.win{background:linear-gradient(160deg,rgba(251,191,36,.18),rgba(236,72,153,.1));border-color:rgba(251,191,36,.45);box-shadow:0 14px 40px rgba(251,191,36,.18)}
+.result-title{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.3px}
+.result-panel.win .result-title{background:linear-gradient(90deg,var(--amber),var(--pink-light));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.result-sub{font-size:12px;color:var(--text-mute);margin-top:4px}
+.result-sub b{color:var(--text)}
+.result-prize{font-family:'Unbounded',sans-serif;font-size:15px;font-weight:700;color:var(--amber-light);margin-top:8px}
+.result-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.result-row{display:flex;align-items:center;gap:8px}
+.result-balls{flex:1;display:flex;gap:3px}
+.result-balls .ball{width:26px;height:26px;font-size:10.5px}
+.rb-miss .ball{opacity:.28;filter:grayscale(.6)}
+.rb-bonus .ball{outline:2px solid var(--amber);outline-offset:1px}
+.src-badge{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:999px;background:rgba(34,211,238,.15);color:var(--cyan-light);border:1px solid rgba(34,211,238,.3)}
+.src-badge.manual{background:rgba(255,255,255,.06);color:var(--text-mute);border-color:var(--border-2)}
+.result-round{font-family:'Unbounded',sans-serif;font-size:15px;font-weight:700;color:var(--text)}
+.result-round span{font-family:'Pretendard',sans-serif;font-size:12px;font-weight:500;color:var(--text-mute)}
+.result-src{font-size:11.5px;color:var(--cyan-light);margin-top:4px;font-weight:600}
+.result-src.warn{color:var(--amber-light);line-height:1.5}
+.result-verdict{font-size:30px;font-weight:900;letter-spacing:-.5px;margin-top:12px;color:var(--text)}
+.result-panel.win .result-verdict{background:linear-gradient(90deg,var(--amber),var(--pink-light));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.result-panel.lose .result-verdict{color:rgba(235,235,245,.75)}
+.result-win{display:flex;flex-direction:column;gap:6px;margin-top:14px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
+.result-win .label{font-size:10.5px;color:var(--text-mute);font-weight:700;letter-spacing:.5px}
+.result-win .result-balls{align-items:center}
+.result-rank{display:flex;flex-direction:column;align-items:flex-end;min-width:38px}
+.result-rank .ticket-result{font-size:12px;white-space:nowrap}
+.result-rank .cnt{font-size:10px;color:var(--text-dim);margin-top:1px}
+
+
+
+/* === 플로팅 하단 탭바 === */
+.tab-nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;
+  padding:10px 12px calc(14px + var(--safe-bottom));
+  background:linear-gradient(180deg,rgba(3,3,7,0),rgba(3,3,7,.9) 45%);
+  pointer-events:none;
+}
+.tab-nav-inner{
+  max-width:396px;margin:0 auto;
+  height:66px;border-radius:24px;
+  background:rgba(22,20,38,.72);
+  border:1px solid var(--border-2);
+  backdrop-filter:blur(24px) saturate(160%);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);
+  box-shadow:0 10px 40px rgba(0,0,0,.5);
+  display:grid;grid-template-columns:repeat(6,1fr);align-items:center;
+  padding:0 3px;
+  pointer-events:auto;
+}
+.tab-btn{
+  height:60px;background:none;border:0;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  color:rgba(235,235,245,.55);
+  font-family:inherit;
+  transition:color .25s;
+}
+.tab-btn-ico{
+  width:40px;height:26px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  background:transparent;
+  transition:all .25s;
+}
+.tab-btn-label{font-size:10px;font-weight:500}
+.tab-btn.active{color:var(--text)}
+.tab-btn.active .tab-btn-ico{
+  background:linear-gradient(135deg,rgba(124,92,255,.35),rgba(244,114,182,.3));
+  box-shadow:0 4px 14px rgba(124,92,255,.3);
+}
+.tab-btn.active .tab-btn-label{font-weight:700}
+
+/* === 로딩 === */
+.loading{text-align:center;padding:40px 20px;color:var(--text-mute);font-size:13px;font-weight:500}
+.spinner{display:inline-block;width:20px;height:20px;border:2.5px solid rgba(255,255,255,.1);border-top-color:var(--purple);border-radius:50%;animation:spin .8s linear infinite;margin-right:8px;vertical-align:middle}
+
+/* === 안내 === */
+.info-text{font-size:11.5px;line-height:1.55;color:rgba(235,235,245,.55);padding:2px 6px}
+
+/* === 설치 배너 === */
+.install-banner{
+  display:none;padding:12px 16px;border-radius:14px;
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+  color:#fff;font-size:12px;font-weight:500;line-height:1.5;
+  box-shadow:0 8px 24px rgba(124,92,255,.3);
+  cursor:pointer;
+}
+.install-banner.show{display:block}
+.install-banner b{color:#FFE8A3}
+
+/* 복원 알림 토스트 */
+.restore-notice{
+  position:fixed;top:calc(16px + var(--safe-top));left:50%;transform:translateX(-50%) translateY(-120%);
+  padding:10px 16px;border-radius:12px;
+  background:rgba(34,211,238,.95);color:#0b0b14;
+  font-size:12px;font-weight:700;letter-spacing:.2px;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+  z-index:200;opacity:0;transition:all .4s cubic-bezier(.3,1.3,.5,1);
+  max-width:92%;text-align:center;
+  backdrop-filter:blur(10px);
+}
+.restore-notice.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* === 스크롤바 숨김 === */
+::-webkit-scrollbar{display:none}
+
+@supports (padding:max(0px)){
+  body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+}
+</style>
+</head>
+<body>
+<div class="aurora">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="app">
+  <div class="header">
+    <div class="brand">
+      <div class="brand-logo">6/45</div>
+      <div>
+        <div class="brand-title">LOTTO LAB</div>
+        <div class="brand-sub">로또 6/45 번호 분석</div>
+      </div>
+    </div>
+    <div class="brand-ico-btn" onclick="document.getElementById('install-banner').classList.toggle('show')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F4F4FA" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+      <span class="dot"></span>
+    </div>
+  </div>
+
+  <div id="install-banner" class="install-banner">
+    📱 <b>홈 화면에 추가</b>해서 앱처럼 사용<br>
+    <span style="font-size:11px;opacity:.9">Chrome ⋮ 메뉴 → "홈 화면에 추가" / iOS Safari 공유 ⬆️ → "홈 화면에 추가" · 탭하여 닫기</span>
+  </div>
+  <div id="restore-notice" class="restore-notice"></div>
+
+  <div id="hero" class="hero">
+    <div class="hero-inner">
+      <div class="loading"><span class="spinner"></span>로딩 중...</div>
+    </div>
+  </div>
+
+  <div id="sec-recommend" class="section active"></div>
+  <div id="sec-magic" class="section"></div>
+  <div id="sec-check" class="section"></div>
+  <div id="sec-stats" class="section"></div>
+  <div id="sec-numbers" class="section"></div>
+  <div id="sec-history" class="section"></div>
+</div>
+
+<div class="tab-nav">
+  <div class="tab-nav-inner">
+    <button class="tab-btn active" data-tab="recommend" onclick="showTab('recommend')">
+      <div class="tab-btn-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></div>
+      <span class="tab-btn-label">추천</span>
+    </button>
+    <button class="tab-btn" data-tab="magic" onclick="showTab('magic')">
+      <div class="tab-btn-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L15 9"/><path d="M13 7l4 4"/><path d="M18 2v4M16 4h4M21 9v2M20 10h2M8 2v2M7 3h2"/></svg></div>
+      <span class="tab-btn-label">매직</span>
+    </button>
+    <button class="tab-btn" data-tab="check" onclick="showTab('check')">
+      <div class="tab-btn-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+      <span class="tab-btn-label">확인</span>
+    </button>
+    <button class="tab-btn" data-tab="stats" onclick="showTab('stats')">
+      <div class="tab-btn-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="4" width="3" height="14"/></svg></div>
+      <span class="tab-btn-label">통계</span>
+    </button>
+    <button class="tab-btn" data-tab="numbers" onclick="showTab('numbers')">
+      <div class="tab-btn-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+      <span class="tab-btn-label">번호별</span>
+    </button>
+    <button class="tab-btn" data-tab="history" onclick="showTab('history')">
+      <div class="tab-btn-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 2"/></svg></div>
+      <span class="tab-btn-label">이력</span>
+    </button>
+  </div>
+</div>
+
+<script>
+// === 공 색상 매핑 (한국 로또 공식 색상) ===
+function bc(n){
+  if(n<=10)return{bg:'linear-gradient(135deg,#FBC400,#F39C12)',glow:'rgba(251,196,0,.4)'};
+  if(n<=20)return{bg:'linear-gradient(135deg,#3FA9F5,#2E86DE)',glow:'rgba(63,169,245,.4)'};
+  if(n<=30)return{bg:'linear-gradient(135deg,#FF5A5A,#E74C3C)',glow:'rgba(255,90,90,.4)'};
+  if(n<=40)return{bg:'linear-gradient(135deg,#9AA0AA,#7F8C8D)',glow:'rgba(154,160,170,.4)'};
+  return{bg:'linear-gradient(135deg,#8BCB2C,#27AE60)',glow:'rgba(139,203,44,.4)'};
+}
+function ballHTML(n,size=''){
+  const c=bc(n);
+  const cls=size?`ball ${size}`:'ball';
+  return `<span class="${cls}" style="background:${c.bg};box-shadow:0 4px 12px ${c.glow},0 0 0 1px rgba(255,255,255,.15) inset">${n}</span>`;
+}
+</script>
+
+<script>
+// === 데이터 & 통계 로직 ===
+// === 매직프릭 통계는 buildStats에서 전체 데이터 기반으로 실시간 계산 ===
+
+const RAW_DATA=[[1,10,23,29,33,37,40,16],[2,9,13,21,25,32,42,2],[3,11,16,19,21,27,31,30],[4,14,27,30,31,40,42,2],[5,16,24,29,40,41,42,3],[6,14,15,26,27,40,42,34],[7,2,9,16,25,26,40,42],[8,8,19,25,34,37,39,9],[9,2,4,16,17,36,39,14],[10,9,25,30,33,41,44,6],[11,1,7,36,37,41,42,14],[12,2,11,21,25,39,45,44],[13,22,23,25,37,38,42,26],[14,2,6,12,31,33,40,15],[15,3,4,16,30,31,37,13],[16,6,7,24,37,38,40,33],[17,3,4,9,17,32,37,1],[18,3,12,13,19,32,35,29],[19,6,30,38,39,40,43,26],[20,10,14,18,20,23,30,41],[21,6,12,17,18,31,32,21],[22,4,5,6,8,17,39,25],[23,5,13,17,18,33,42,44],[24,7,8,27,29,36,43,6],[25,2,4,21,26,43,44,16],[26,4,5,7,18,20,25,31],[27,1,20,26,28,37,43,27],[28,9,18,23,25,35,37,1],[29,1,5,13,34,39,40,11],[30,8,17,20,35,36,44,4],[31,7,9,18,23,28,35,32],[32,6,14,19,25,34,44,11],[33,4,7,32,33,40,41,9],[34,9,26,35,37,40,42,2],[35,2,3,11,26,37,43,39],[36,1,10,23,26,28,40,31],[37,7,27,30,33,35,37,42],[38,16,17,22,30,37,43,36],[39,6,7,13,15,21,43,8],[40,7,13,18,19,25,26,6],[41,13,20,23,35,38,43,34],[42,17,18,19,21,23,32,1],[43,6,31,35,38,39,44,1],[44,3,11,21,30,38,45,39],[45,1,10,20,27,33,35,17],[46,8,13,15,23,31,38,39],[47,14,17,26,31,36,45,27],[48,6,10,18,26,37,38,3],[49,4,7,16,19,33,40,30],[50,2,10,12,15,22,44,1],[51,2,3,11,16,26,44,35],[52,2,4,15,16,20,29,1],[53,7,8,14,32,33,39,42],[54,1,8,21,27,36,39,37],[55,17,21,31,37,40,44,7],[56,10,14,30,31,33,37,19],[57,7,10,16,25,29,44,6],[58,10,24,25,33,40,44,1],[59,6,29,36,39,41,45,13],[60,2,8,25,36,39,42,11],[61,14,15,19,30,38,43,8],[62,3,8,15,27,29,35,21],[63,3,20,23,36,38,40,5],[64,14,15,18,21,26,36,39],[65,4,25,33,36,40,43,39],[66,2,3,7,17,22,24,45],[67,3,7,10,15,36,38,33],[68,10,12,15,16,26,39,38],[69,5,8,14,15,19,39,35],[70,5,19,22,25,28,43,26],[71,5,9,12,16,29,41,21],[72,2,4,11,17,26,27,1],[73,3,12,18,32,40,43,38],[74,6,15,17,18,35,40,23],[75,2,5,24,32,34,44,28],[76,1,3,15,22,25,37,43],[77,2,18,29,32,43,44,37],[78,10,13,25,29,33,35,38],[79,3,12,24,27,30,32,14],[80,17,18,24,25,26,30,1],[81,5,7,11,13,20,33,6],[82,1,2,3,14,27,42,39],[83,6,10,15,17,19,34,14],[84,16,23,27,34,42,45,11],[85,6,8,13,23,31,36,21],[86,2,12,37,39,41,45,33],[87,4,12,16,23,34,43,26],[88,1,17,20,24,30,41,27],[89,4,26,28,29,33,40,37],[90,17,20,29,35,38,44,10],[91,1,21,24,26,29,42,27],[92,3,14,24,33,35,36,17],[93,6,22,24,36,38,44,19],[94,5,32,34,40,41,45,6],[95,8,17,27,31,34,43,14],[96,1,3,8,21,22,31,20],[97,6,7,14,15,20,36,3],[98,6,9,16,23,24,32,43],[99,1,3,10,27,29,37,11],[100,1,7,11,23,37,42,6],[101,1,3,17,32,35,45,8],[102,17,22,24,26,35,40,42],[103,5,14,15,27,30,45,10],[104,17,32,33,34,42,44,35],[105,8,10,20,34,41,45,28],[106,4,10,12,22,24,33,29],[107,1,4,5,6,9,31,17],[108,7,18,22,23,29,44,12],[109,1,5,34,36,42,44,33],[110,7,20,22,23,29,43,1],[111,7,18,31,33,36,40,27],[112,26,29,30,33,41,42,43],[113,4,9,28,33,36,45,26],[114,11,14,19,26,28,41,2],[115,1,2,6,9,25,28,31],[116,2,4,25,31,34,37,17],[117,5,10,22,34,36,44,35],[118,3,4,10,17,19,22,38],[119,3,11,13,14,17,21,38],[120,4,6,10,11,32,37,30],[121,12,28,30,34,38,43,9],[122,1,11,16,17,36,40,8],[123,7,17,18,28,30,45,27],[124,4,16,23,25,29,42,1],[125,2,8,32,33,35,36,18],[126,7,20,22,27,40,43,1],[127,3,5,10,29,32,43,35],[128,12,30,34,36,37,45,39],[129,19,23,25,28,38,42,17],[130,7,19,24,27,42,45,31],[131,8,10,11,14,15,21,37],[132,3,17,23,34,41,45,43],[133,4,7,15,18,23,26,13],[134,3,12,20,23,31,35,43],[135,6,14,22,28,35,39,16],[136,2,16,30,36,41,42,11],[137,7,9,20,25,36,39,15],[138,10,11,27,28,37,39,19],[139,9,11,15,20,28,43,13],[140,3,13,17,18,19,28,8],[141,8,12,29,31,42,43,2],[142,12,16,30,34,40,44,19],[143,26,27,28,42,43,45,8],[144,4,15,17,26,36,37,43],[145,2,3,13,20,27,44,9],[146,2,19,27,35,41,42,25],[147,4,6,13,21,40,42,36],[148,21,25,33,34,35,36,17],[149,2,11,21,34,41,42,27],[150,2,18,25,28,37,39,16],[151,1,2,10,13,18,19,15],[152,1,5,13,26,29,34,43],[153,3,8,11,12,13,36,33],[154,6,19,21,35,40,45,20],[155,16,19,20,32,33,41,4],[156,5,18,28,30,42,45,2],[157,19,26,30,33,35,39,37],[158,4,9,13,18,21,34,7],[159,1,18,30,41,42,43,32],[160,3,7,8,34,39,41,1],[161,22,34,36,40,42,45,44],[162,1,5,21,25,38,41,24],[163,7,11,26,28,29,44,16],[164,6,9,10,11,39,41,27],[165,5,13,18,19,22,42,31],[166,9,12,27,36,39,45,14],[167,24,27,28,30,36,39,4],[168,3,10,31,40,42,43,30],[169,16,27,35,37,43,45,19],[170,2,11,13,15,31,42,10],[171,4,16,25,29,34,35,1],[172,4,19,21,24,26,41,35],[173,3,9,24,30,33,34,18],[174,13,14,18,22,35,39,16],[175,19,26,28,31,33,36,17],[176,4,17,30,32,33,34,15],[177,1,10,13,16,37,43,6],[178,1,5,11,12,18,23,9],[179,5,9,17,25,39,43,32],[180,2,15,20,21,29,34,22],[181,14,21,23,32,40,45,44],[182,13,15,27,29,34,40,35],[183,2,18,24,34,40,42,5],[184,1,2,6,16,20,33,41],[185,1,2,4,8,19,38,14],[186,4,10,14,19,21,45,9],[187,1,2,8,18,29,38,42],[188,19,24,27,30,31,34,36],[189,8,14,32,35,37,45,28],[190,8,14,18,30,31,44,15],[191,5,6,24,25,32,37,8],[192,4,8,11,18,37,45,33],[193,6,14,18,26,36,39,13],[194,15,20,23,26,39,44,28],[195,7,10,19,22,35,40,31],[196,35,36,37,41,44,45,30],[197,7,12,16,34,42,45,4],[198,12,19,20,25,41,45,2],[199,14,21,22,25,30,36,43],[200,5,6,13,14,17,20,7],[201,3,11,24,38,39,44,26],[202,12,14,27,33,39,44,17],[203,1,3,11,24,30,32,7],[204,3,12,14,35,40,45,5],[205,1,3,21,29,35,37,30],[206,1,2,3,15,20,25,43],[207,3,11,14,31,32,37,38],[208,14,25,31,34,40,44,24],[209,2,7,18,20,24,33,37],[210,10,19,22,23,25,37,39],[211,12,13,17,20,33,41,8],[212,11,12,18,21,31,38,8],[213,2,3,4,5,20,24,42],[214,5,7,20,25,28,37,32],[215,2,3,7,15,43,44,4],[216,7,16,17,33,36,40,1],[217,16,20,27,33,35,39,38],[218,1,8,14,18,29,44,20],[219,4,11,20,26,35,37,16],[220,5,11,19,21,34,43,31],[221,2,20,33,35,37,40,10],[222,5,7,28,29,39,43,44],[223,1,3,18,20,26,27,38],[224,4,19,26,27,30,42,7],[225,5,11,13,19,31,36,7],[226,2,6,8,14,21,22,34],[227,4,5,15,16,22,42,2],[228,17,25,35,36,39,44,23],[229,4,5,9,11,23,38,35],[230,5,11,14,29,32,33,12],[231,5,10,19,31,44,45,27],[232,8,9,10,12,24,44,35],[233,4,6,13,17,28,40,39],[234,13,21,22,24,26,37,4],[235,21,22,26,27,31,37,8],[236,1,4,8,13,37,39,7],[237,1,11,17,21,24,44,33],[238,2,4,15,28,31,34,35],[239,11,15,24,39,41,44,7],[240,6,10,16,40,41,43,21],[241,2,16,24,27,28,35,21],[242,4,19,20,21,32,34,43],[243,2,12,17,19,28,42,34],[244,13,16,25,36,37,38,19],[245,9,11,27,31,32,38,22],[246,13,18,21,23,26,39,15],[247,12,15,28,36,39,40,13],[248,3,8,17,23,38,45,13],[249,3,8,27,31,41,44,11],[250,19,23,30,37,43,45,38],[251,6,7,19,25,28,38,45],[252,14,23,26,31,39,45,28],[253,8,19,25,31,34,36,33],[254,1,5,19,20,24,30,27],[255,1,5,6,24,27,42,32],[256,4,11,14,21,23,43,32],[257,6,13,27,31,32,37,4],[258,14,27,30,31,38,40,17],[259,4,5,14,35,42,45,34],[260,7,12,15,24,37,40,43],[261,6,11,16,18,31,43,2],[262,9,12,24,25,29,31,36],[263,1,27,28,32,37,40,18],[264,9,16,27,36,41,44,5],[265,5,9,34,37,38,39,12],[266,3,4,9,11,22,42,37],[267,7,8,24,34,36,41,1],[268,3,10,19,24,32,45,12],[269,5,18,20,36,42,43,32],[270,5,9,12,20,21,26,27],[271,3,8,9,27,29,40,36],[272,7,9,12,27,39,43,28],[273,1,8,24,31,34,44,6],[274,13,14,15,26,35,39,25],[275,14,19,20,35,38,40,26],[276,4,15,21,33,39,41,25],[277,10,12,13,15,25,29,20],[278,3,11,37,39,41,43,13],[279,7,16,31,36,37,38,11],[280,10,11,23,24,36,37,35],[281,1,3,4,6,14,41,12],[282,2,5,10,18,31,32,30],[283,6,8,18,31,38,45,42],[284,2,7,15,24,30,45,28],[285,13,33,37,40,41,45,2],[286,1,15,19,40,42,44,17],[287,6,12,24,27,35,37,41],[288,1,12,17,28,35,41,10],[289,3,14,33,37,38,42,10],[290,8,13,18,32,39,45,7],[291,3,7,8,18,20,42,45],[292,17,18,31,32,33,34,10],[293,1,9,17,21,29,33,24],[294,6,10,17,30,37,38,40],[295,1,4,12,16,18,38,8],[296,3,8,15,27,30,45,44],[297,6,11,19,20,28,32,34],[298,5,9,27,29,37,40,19],[299,1,3,20,25,36,45,24],[300,7,9,10,12,26,38,39],[301,7,11,13,33,37,43,26],[302,13,19,20,32,38,42,4],[303,2,14,17,30,38,45,43],[304,4,10,16,26,33,41,38],[305,7,8,18,21,23,39,9],[306,4,18,23,30,34,41,19],[307,5,15,21,23,25,45,12],[308,14,15,17,19,37,45,40],[309,1,2,5,11,18,36,22],[310,1,5,19,28,34,41,16],[311,4,12,24,27,28,32,10],[312,2,3,5,6,12,20,25],[313,9,17,34,35,43,45,2],[314,15,17,19,34,38,41,2],[315,1,13,33,35,43,45,23],[316,10,11,21,27,31,39,43],[317,3,10,11,22,36,39,8],[318,2,17,19,20,34,45,21],[319,5,8,22,28,33,42,37],[320,16,19,23,25,41,45,3],[321,12,18,20,21,25,34,42],[322,9,18,29,32,38,43,20],[323,10,14,15,32,36,42,3],[324,2,4,21,25,33,36,17],[325,7,17,20,32,44,45,33],[326,16,23,25,33,36,39,40],[327,6,12,13,17,32,44,24],[328,1,6,9,16,17,28,24],[329,9,17,19,30,35,42,4],[330,3,4,16,17,19,20,23],[331,4,9,14,26,31,44,39],[332,16,17,34,36,42,45,3],[333,5,14,27,30,39,43,35],[334,13,15,21,29,39,43,33],[335,5,9,16,23,26,45,21],[336,3,5,20,34,35,44,16],[337,1,5,14,18,32,37,4],[338,2,13,34,38,42,45,16],[339,6,8,14,21,30,37,45],[340,18,24,26,29,34,38,32],[341,1,8,19,34,39,43,41],[342,1,13,14,33,34,43,25],[343,1,10,17,29,31,43,15],[344,1,2,15,28,34,45,38],[345,15,20,23,29,39,42,2],[346,5,13,14,22,44,45,33],[347,3,8,13,27,32,42,10],[348,3,14,17,20,24,31,34],[349,5,13,14,20,24,25,36],[350,1,8,18,24,29,33,35],[351,5,25,27,29,34,36,33],[352,5,16,17,20,26,41,24],[353,11,16,19,22,29,36,26],[354,14,19,36,43,44,45,1],[355,5,8,29,30,35,44,38],[356,2,8,14,25,29,45,24],[357,10,14,18,21,36,37,5],[358,1,9,10,12,21,40,37],[359,1,10,19,20,24,40,23],[360,4,16,23,25,35,40,27],[361,5,10,16,24,27,35,33],[362,2,3,22,27,30,40,29],[363,11,12,14,21,32,38,6],[364,2,5,7,14,16,40,4],[365,5,15,21,25,26,30,31],[366,5,12,19,26,27,44,38],[367,3,22,25,29,32,44,19],[368,11,21,24,30,39,45,26],[369,17,20,35,36,41,43,21],[370,16,18,24,42,44,45,17],[371,7,9,15,26,27,42,18],[372,8,11,14,16,18,21,13],[373,15,26,37,42,43,45,9],[374,11,13,15,17,25,34,26],[375,4,8,19,25,27,45,7],[376,1,11,13,24,28,40,7],[377,6,22,29,37,43,45,23],[378,5,22,29,31,34,39,43],[379,6,10,22,31,35,40,19],[380,1,2,8,17,26,37,27],[381,1,5,10,12,16,20,11],[382,10,15,22,24,27,42,19],[383,4,15,28,33,37,40,25],[384,11,22,24,32,36,38,7],[385,7,12,19,21,29,32,9],[386,4,7,10,19,31,40,26],[387,1,26,31,34,40,43,20],[388,1,8,9,17,29,32,45],[389,7,16,18,20,23,26,3],[390,16,17,28,37,39,40,15],[391,10,11,18,22,28,39,30],[392,1,3,7,8,24,42,43],[393,9,16,28,40,41,43,21],[394,1,13,20,22,25,28,15],[395,11,15,20,26,31,35,7],[396,18,20,31,34,40,45,30],[397,12,13,17,22,25,33,8],[398,10,15,20,23,42,44,7],[399,1,2,9,17,19,42,20],[400,9,21,27,34,41,43,2],[401,6,12,18,31,38,43,9],[402,5,9,15,19,22,36,32],[403,10,14,22,24,28,37,26],[404,5,20,21,24,33,40,36],[405,1,2,10,25,26,44,4],[406,7,12,21,24,27,36,45],[407,6,7,13,16,24,25,1],[408,9,20,21,22,30,37,16],[409,6,9,21,31,32,40,38],[410,1,3,18,32,40,41,16],[411,11,14,22,35,37,39,5],[412,4,7,39,41,42,45,40],[413,2,9,15,23,34,40,3],[414,2,14,15,22,23,44,43],[415,7,17,20,26,30,40,24],[416,5,6,8,11,22,26,44],[417,4,5,14,20,22,43,44],[418,11,13,15,26,28,34,31],[419,2,11,13,14,28,30,7],[420,4,9,10,29,31,34,27],[421,6,11,26,27,28,44,30],[422,8,15,19,21,34,44,12],[423,1,17,27,28,29,40,5],[424,10,11,26,31,34,44,30],[425,8,10,14,27,33,38,3],[426,4,17,18,27,39,43,19],[427,6,7,15,24,28,30,21],[428,12,16,19,22,37,40,8],[429,3,23,28,34,39,42,16],[430,1,3,16,18,30,34,44],[431,18,22,25,31,38,45,6],[432,2,3,5,11,27,39,33],[433,19,23,29,33,35,43,27],[434,3,13,20,24,33,37,35],[435,8,16,26,30,38,45,42],[436,9,14,20,22,33,34,28],[437,11,16,29,38,41,44,21],[438,6,12,20,26,29,38,45],[439,17,20,30,31,37,40,25],[440,10,22,28,34,36,44,2],[441,1,23,28,30,34,35,9],[442,25,27,29,36,38,40,41],[443,4,6,10,19,20,44,14],[444,11,13,23,35,43,45,17],[445,13,20,21,30,39,45,32],[446,1,11,12,14,26,35,6],[447,2,7,8,9,17,33,34],[448,3,7,13,27,40,41,36],[449,3,10,20,26,35,43,36],[450,6,14,19,21,23,31,13],[451,12,15,20,24,30,38,29],[452,8,10,18,30,32,34,27],[453,12,24,33,38,40,42,30],[454,13,25,27,34,38,41,10],[455,4,19,20,26,30,35,24],[456,1,7,12,18,23,27,44],[457,8,10,18,23,27,40,33],[458,4,9,10,32,36,40,18],[459,4,6,10,14,25,40,12],[460,8,11,28,30,43,45,41],[461,11,18,26,31,37,40,43],[462,3,20,24,32,37,45,4],[463,23,29,31,33,34,44,40],[464,6,12,15,34,42,44,4],[465,1,8,11,13,22,38,31],[466,4,10,13,23,32,44,20],[467,2,12,14,17,24,40,39],[468,8,13,15,28,37,43,17],[469,4,21,22,34,37,38,33],[470,10,16,20,39,41,42,27],[471,6,13,29,37,39,41,43],[472,16,25,26,31,36,43,44],[473,8,13,20,22,23,36,34],[474,4,13,18,31,33,45,43],[475,1,9,14,16,21,29,3],[476,9,12,13,15,37,38,27],[477,14,25,29,32,33,45,37],[478,18,29,30,37,39,43,8],[479,8,23,25,27,35,44,24],[480,3,5,10,17,30,31,16],[481,3,4,23,29,40,41,20],[482,1,10,16,24,25,35,43],[483,12,15,19,22,28,34,5],[484,1,3,27,28,32,45,11],[485,17,22,26,27,36,39,20],[486,1,2,23,25,38,40,43],[487,4,8,25,27,37,41,21],[488,2,8,17,30,31,38,25],[489,2,4,8,15,20,27,11],[490,2,7,26,29,40,43,42],[491,8,17,35,36,39,42,4],[492,22,27,31,35,37,40,42],[493,20,22,26,33,36,37,25],[494,5,7,8,15,30,43,22],[495,4,13,22,27,34,44,6],[496,4,13,20,29,36,41,39],[497,19,20,23,24,43,44,13],[498,13,14,24,32,39,41,3],[499,5,20,23,27,35,40,43],[500,3,4,12,20,24,34,41],[501,1,4,10,17,31,42,2],[502,6,22,28,32,34,40,26],[503,1,5,27,30,34,36,40],[504,6,14,22,26,43,44,31],[505,7,20,22,25,38,40,44],[506,6,9,11,22,24,30,31],[507,12,13,32,33,40,41,4],[508,5,27,31,34,35,43,37],[509,12,25,29,35,42,43,24],[510,12,29,32,33,39,40,42],[511,3,7,14,23,26,42,24],[512,4,5,9,13,26,27,1],[513,5,8,21,23,27,33,12],[514,1,15,20,26,35,42,9],[515,2,11,12,15,23,37,8],[516,2,8,23,41,43,44,30],[517,1,9,12,28,36,41,10],[518,14,23,30,32,34,38,6],[519,6,8,13,16,30,43,3],[520,4,22,27,28,38,40,1],[521,3,7,18,29,32,36,19],[522,4,5,13,14,37,41,11],[523,1,4,37,38,40,45,7],[524,10,11,29,38,41,45,21],[525,11,23,26,29,39,44,22],[526,7,14,17,20,35,39,31],[527,1,12,22,32,33,42,38],[528,5,17,25,31,39,40,10],[529,18,20,24,27,31,42,39],[530,16,23,27,29,33,41,22],[531,1,5,9,21,27,35,45],[532,16,17,23,24,29,44,3],[533,9,14,15,17,31,33,23],[534,10,24,26,29,37,38,32],[535,11,12,14,15,18,39,34],[536,7,8,18,32,37,43,12],[537,12,23,26,30,36,43,11],[538,6,10,18,31,32,34,11],[539,3,19,22,31,42,43,26],[540,3,12,13,15,34,36,14],[541,8,13,26,28,32,34,43],[542,5,6,19,26,41,45,34],[543,13,18,26,31,34,44,12],[544,5,17,21,25,36,44,10],[545,4,24,25,27,34,35,2],[546,8,17,20,27,37,43,6],[547,6,7,15,22,34,39,28],[548,1,12,13,21,32,45,14],[549,29,31,35,38,40,44,17],[550,1,7,14,20,34,37,41],[551,3,6,20,24,27,44,25],[552,1,10,20,32,35,40,43],[553,2,7,17,28,29,39,37],[554,13,14,17,32,41,42,6],[555,11,17,21,24,26,36,12],[556,12,20,23,28,30,44,43],[557,4,20,26,28,35,40,31],[558,12,15,19,26,40,43,29],[559,11,12,25,32,44,45,23],[560,1,4,20,23,29,45,28],[561,5,7,18,37,42,45,20],[562,4,11,13,17,20,31,33],[563,5,10,16,17,31,32,21],[564,14,19,25,26,27,34,2],[565,4,10,18,27,40,45,38],[566,4,5,6,25,26,43,41],[567,1,10,15,16,32,41,28],[568,1,3,17,20,31,44,40],[569,3,6,13,23,24,35,1],[570,1,12,26,27,29,33,42],[571,11,18,21,26,38,43,29],[572,3,13,18,33,37,45,1],[573,2,4,20,34,35,43,14],[574,14,15,16,19,25,43,2],[575,2,8,20,30,33,34,6],[576,10,11,15,25,35,41,13],[577,16,17,22,31,34,37,33],[578,5,12,14,32,34,42,16],[579,5,7,20,22,37,42,39],[580,5,7,9,11,32,35,33],[581,3,5,14,20,42,44,33],[582,2,12,14,33,40,41,25],[583,8,17,27,33,40,44,24],[584,7,18,30,39,40,41,36],[585,6,7,10,16,38,41,4],[586,2,7,12,15,21,34,5],[587,14,21,29,31,32,37,17],[588,2,8,15,22,25,41,30],[589,6,8,28,33,38,39,22],[590,20,30,36,38,41,45,23],[591,8,13,14,30,38,39,5],[592,2,5,6,13,28,44,43],[593,9,10,13,24,33,38,28],[594,2,8,13,25,28,37,3],[595,8,24,28,35,38,40,5],[596,3,4,12,14,25,43,17],[597,8,10,23,24,35,43,37],[598,4,12,24,33,38,45,22],[599,5,12,17,29,34,35,27],[600,5,11,14,27,29,36,44],[601,2,16,19,31,34,35,37],[602,13,14,22,27,30,38,2],[603,2,19,25,26,27,43,28],[604,2,6,18,21,33,34,30],[605,1,2,7,9,10,38,42],[606,1,5,6,14,20,39,22],[607,8,14,23,36,38,39,13],[608,4,8,18,19,39,44,41],[609,4,8,27,34,39,40,13],[610,14,18,20,23,28,36,33],[611,2,22,27,33,36,37,14],[612,6,9,18,19,25,33,40],[613,7,8,11,16,41,44,35],[614,8,21,25,39,40,44,18],[615,10,17,18,19,23,27,35],[616,5,13,18,23,40,45,3],[617,4,5,11,12,24,27,28],[618,8,16,25,30,42,43,15],[619,6,8,13,30,35,40,21],[620,2,16,17,32,39,45,40],[621,1,2,6,16,19,42,9],[622,9,15,16,21,28,34,24],[623,7,13,30,39,41,45,25],[624,1,7,19,26,27,35,16],[625,3,6,7,20,21,39,13],[626,13,14,26,33,40,43,15],[627,2,9,22,25,31,45,12],[628,1,7,12,15,23,42,11],[629,19,28,31,38,43,44,1],[630,8,17,21,24,27,31,15],[631,1,2,4,23,31,34,8],[632,15,18,21,32,35,44,6],[633,9,12,19,20,39,41,13],[634,4,10,11,12,20,27,38],[635,11,13,25,26,29,33,32],[636,6,7,15,16,20,31,26],[637,3,16,22,37,38,44,23],[638,7,18,22,24,31,34,6],[639,6,15,22,23,25,32,40],[640,14,15,18,21,26,35,23],[641,11,18,21,36,37,43,12],[642,8,17,18,24,39,45,32],[643,15,24,31,32,33,40,13],[644,5,13,17,23,28,36,8],[645,1,4,16,26,40,41,31],[646,2,9,24,41,43,45,30],[647,5,16,21,23,24,30,29],[648,13,19,28,37,38,43,4],[649,3,21,22,33,41,42,20],[650,3,4,7,11,31,41,35],[651,11,12,16,26,29,44,18],[652,3,13,15,40,41,44,20],[653,5,6,26,27,38,39,1],[654,16,21,26,31,36,43,6],[655,7,37,38,39,40,44,18],[656,3,7,14,16,31,40,39],[657,10,14,19,39,40,43,23],[658,8,19,25,28,32,36,37],[659,7,18,19,27,29,42,45],[660,4,9,23,33,39,44,14],[661,2,3,12,20,27,38,40],[662,5,6,9,11,15,37,26],[663,3,5,8,19,38,42,20],[664,10,20,33,36,41,44,5],[665,5,6,11,17,38,44,13],[666,2,4,6,11,17,28,16],[667,15,17,25,37,42,43,13],[668,12,14,15,24,27,32,3],[669,7,8,20,29,33,38,9],[670,11,18,26,27,40,41,25],[671,7,9,10,13,31,35,24],[672,8,21,28,31,36,45,43],[673,7,10,17,29,33,44,5],[674,9,10,14,25,27,31,11],[675,1,8,11,15,18,45,7],[676,1,8,17,34,39,45,27],[677,12,15,24,36,41,44,42],[678,4,5,6,12,25,37,45],[679,3,5,7,14,26,34,35],[680,4,10,19,29,32,42,30],[681,21,24,27,29,43,44,7],[682,17,23,27,35,38,43,2],[683,6,13,20,27,28,40,15],[684,1,11,15,17,25,39,40],[685,6,7,12,28,38,40,18],[686,7,12,15,24,25,43,13],[687,1,8,10,13,28,42,45],[688,5,15,22,23,34,35,2],[689,7,17,19,30,36,38,34],[690,24,25,33,34,38,39,43],[691,15,27,33,35,43,45,16],[692,3,11,14,15,32,36,44],[693,1,6,11,28,34,42,30],[694,7,15,20,25,33,43,12],[695,4,18,26,33,34,38,14],[696,1,7,16,18,34,38,21],[697,2,5,8,11,33,39,31],[698,3,11,13,21,33,37,18],[699,4,5,8,16,21,29,3],[700,11,23,28,29,30,44,13],[701,3,10,14,16,36,38,35],[702,3,13,16,24,26,29,9],[703,10,28,31,33,41,44,21],[704,1,4,8,23,33,42,45],[705,1,6,17,22,28,45,23],[706,3,4,6,10,28,30,37],[707,2,12,19,24,39,44,35],[708,2,10,16,19,34,45,1],[709,10,18,30,36,39,44,32],[710,3,4,9,24,25,33,10],[711,11,15,24,35,37,45,42],[712,17,20,30,31,33,45,19],[713,2,5,15,18,19,23,44],[714,1,7,22,33,37,40,20],[715,2,7,27,33,41,44,10],[716,2,6,13,16,29,30,21],[717,2,11,19,25,28,32,44],[718,4,11,20,23,32,39,40],[719,4,8,13,19,20,43,26],[720,1,12,29,34,36,37,41],[721,1,28,35,41,43,44,31],[722,12,14,21,30,39,43,45],[723,20,30,33,35,36,44,22],[724,2,8,33,35,37,41,14],[725,6,7,19,21,41,43,38],[726,1,11,21,23,34,44,24],[727,7,8,10,19,21,31,20],[728,3,6,10,30,34,37,36],[729,11,17,21,26,36,45,16],[730,4,10,14,15,18,22,39],[731,2,7,13,25,42,45,39],[732,2,4,5,17,27,32,43],[733,11,24,32,33,35,40,13],[734,6,16,37,38,41,45,18],[735,5,10,13,27,37,41,4],[736,2,11,17,18,21,27,6],[737,13,15,18,24,27,41,11],[738,23,27,28,38,42,43,36],[739,7,22,29,33,34,35,30],[740,4,8,9,16,17,19,31],[741,5,21,27,34,44,45,16],[742,8,10,13,36,37,40,6],[743,15,19,21,34,41,44,10],[744,10,15,18,21,34,41,43],[745,1,2,3,9,12,23,10],[746,3,12,33,36,42,45,25],[747,7,9,12,14,23,28,17],[748,3,10,13,22,31,32,29],[749,12,14,24,26,34,45,41],[750,1,2,15,19,24,36,12],[751,3,4,16,20,28,44,17],[752,4,16,20,33,40,43,7],[753,2,17,19,24,37,41,3],[754,2,8,17,24,29,31,32],[755,13,14,26,28,30,36,37],[756,10,14,16,18,27,28,4],[757,6,7,11,17,33,44,1],[758,5,9,12,30,39,43,24],[759,9,33,36,40,42,43,32],[760,10,22,27,31,42,43,12],[761,4,7,11,24,42,45,30],[762,1,3,12,21,26,41,16],[763,3,8,16,32,34,43,10],[764,7,22,24,31,34,36,15],[765,1,3,8,12,42,43,33],[766,9,30,34,35,39,41,21],[767,5,15,20,31,34,42,22],[768,7,27,29,30,38,44,4],[769,5,7,11,16,41,45,4],[770,1,9,12,23,39,43,34],[771,6,10,17,18,21,29,30],[772,5,6,11,14,21,41,32],[773,8,12,19,21,31,35,44],[774,12,15,18,28,34,42,9],[775,11,12,29,33,38,42,17],[776,8,9,18,21,28,40,20],[777,6,12,17,21,34,37,18],[778,6,21,35,36,37,41,11],[779,6,12,19,24,34,41,4],[780,15,17,19,21,27,45,16],[781,11,16,18,19,24,39,43],[782,6,18,31,34,38,45,20],[783,14,15,16,17,38,45,36],[784,3,10,23,24,31,39,22],[785,4,6,15,25,26,33,40],[786,12,15,16,20,24,30,38],[787,5,6,13,16,27,28,9],[788,2,10,11,19,35,39,29],[789,2,6,7,12,19,45,38],[790,3,8,19,27,30,41,12],[791,2,10,12,31,33,42,32],[792,2,7,19,25,29,36,16],[793,10,15,21,35,38,43,31],[794,6,7,18,19,30,38,13],[795,3,10,13,26,34,38,36],[796,1,21,26,36,40,41,5],[797,5,22,31,32,39,45,36],[798,2,10,14,22,32,36,41],[799,12,17,23,34,42,45,33],[800,1,4,10,12,28,45,26],[801,17,25,28,37,43,44,2],[802,10,11,12,18,24,42,27],[803,5,9,14,26,30,43,2],[804,1,10,13,26,32,36,9],[805,3,12,13,18,31,32,42],[806,14,20,23,31,37,38,27],[807,6,10,18,25,34,35,33],[808,15,21,31,32,41,43,24],[809,6,11,15,17,23,40,39],[810,5,10,13,21,39,43,11],[811,8,11,19,21,36,45,25],[812,1,3,12,14,16,43,10],[813,11,30,34,35,42,44,27],[814,2,21,28,38,42,45,30],[815,17,21,25,26,27,36,4],[816,12,18,19,29,31,39,7],[817,3,9,12,13,25,43,34],[818,14,15,25,28,29,30,3],[819,16,25,33,38,40,45,15],[820,10,21,22,30,35,42,6],[821,1,12,13,24,29,44,16],[822,9,18,20,24,27,36,12],[823,12,18,24,26,39,40,15],[824,7,9,24,29,34,38,26],[825,8,15,21,31,33,38,42],[826,13,16,24,25,33,36,42],[827,5,11,12,29,33,44,14],[828,4,7,13,29,31,39,18],[829,4,5,31,35,43,45,29],[830,5,6,16,18,37,38,17],[831,3,10,16,19,31,39,9],[832,13,14,19,26,40,43,30],[833,12,18,30,39,41,42,19],[834,6,8,18,35,42,43,3],[835,9,10,13,28,38,45,35],[836,1,9,11,14,26,28,19],[837,2,25,28,30,33,45,6],[838,9,14,17,33,36,38,20],[839,3,9,11,12,13,19,35],[840,2,4,11,28,29,43,27],[841,5,11,14,30,33,38,24],[842,14,26,32,36,39,42,38],[843,19,21,30,33,34,42,4],[844,7,8,13,15,33,45,18],[845,1,16,29,33,40,45,6],[846,5,18,30,41,43,45,13],[847,12,16,26,28,30,42,22],[848,1,2,16,22,38,39,34],[849,5,13,17,29,34,39,3],[850,16,20,24,28,36,39,5],[851,14,18,22,26,31,44,40],[852,11,17,28,30,33,35,9],[853,2,8,23,26,27,44,13],[854,20,25,31,32,36,43,3],[855,8,15,17,19,43,44,7],[856,10,24,40,41,43,44,17],[857,6,10,16,28,34,38,43],[858,9,13,32,38,39,43,23],[859,8,22,35,38,39,41,24],[860,4,8,18,25,27,32,42],[861,11,17,19,21,22,25,24],[862,10,34,38,40,42,43,32],[863,16,21,28,35,39,43,12],[864,3,7,10,13,25,36,32],[865,3,15,22,32,33,45,2],[866,9,15,29,34,37,39,12],[867,14,17,19,22,24,40,41],[868,12,17,28,41,43,44,25],[869,2,6,20,27,37,39,4],[870,21,25,30,32,40,42,31],[871,2,6,12,26,30,34,38],[872,2,4,30,32,33,43,29],[873,3,5,12,13,33,39,38],[874,1,15,19,23,28,42,32],[875,19,22,30,34,39,44,36],[876,5,16,21,26,34,42,24],[877,5,17,18,22,23,43,12],[878,2,6,11,16,25,31,3],[879,1,4,10,14,15,35,20],[880,7,17,19,23,24,45,38],[881,4,18,20,26,27,32,9],[882,18,34,39,43,44,45,23],[883,9,18,32,33,37,44,22],[884,4,14,23,28,37,45,17],[885,1,3,24,27,39,45,31],[886,19,23,28,37,42,45,2],[887,8,14,17,27,36,45,10],[888,3,7,12,31,34,38,32],[889,3,13,29,38,39,42,26],[890,1,4,14,18,29,37,6],[891,9,13,28,31,39,41,19],[892,4,9,17,18,26,42,36],[893,1,15,17,23,25,41,10],[894,19,32,37,40,41,43,45],[895,16,26,31,38,39,41,23],[896,5,12,25,26,38,45,23],[897,6,7,12,22,26,36,29],[898,18,21,28,35,37,42,17],[899,8,19,20,21,33,39,37],[900,7,13,16,18,35,38,14],[901,5,18,20,23,30,34,21],[902,7,19,23,24,36,39,30],[903,2,15,16,21,22,28,45],[904,2,6,8,26,43,45,11],[905,3,4,16,27,38,40,20],[906,2,5,14,28,31,32,20],[907,21,27,29,38,40,44,37],[908,3,16,21,22,23,44,30],[909,7,24,29,30,34,35,33],[910,1,11,17,27,35,39,31],[911,4,5,12,14,32,42,35],[912,5,8,18,21,22,38,10],[913,6,14,16,21,27,37,40],[914,16,19,24,33,42,44,27],[915,2,6,11,13,22,37,14],[916,6,21,22,32,35,36,17],[917,1,3,23,24,27,43,34],[918,7,11,12,31,33,38,5],[919,9,14,17,18,42,44,35],[920,2,3,26,33,34,43,29],[921,5,7,12,22,28,41,1],[922,2,6,13,17,27,43,36],[923,3,17,18,23,36,41,26],[924,3,11,34,42,43,44,13],[925,13,24,32,34,39,42,4],[926,10,16,18,20,25,31,6],[927,4,15,22,38,41,43,26],[928,3,4,10,20,28,44,30],[929,7,9,12,15,19,23,4],[930,8,21,25,38,39,44,28],[931,14,15,23,25,35,43,32],[932,1,6,15,36,37,38,5],[933,23,27,29,31,36,45,37],[934,1,3,30,33,36,39,12],[935,4,10,20,32,38,44,18],[936,7,11,13,17,18,29,43],[937,2,10,13,22,29,40,26],[938,4,8,10,16,31,36,9],[939,4,11,28,39,42,45,6],[940,3,15,20,22,24,41,11],[941,12,14,25,27,39,40,35],[942,10,12,18,35,42,43,39],[943,1,8,13,36,44,45,39],[944,2,13,16,19,32,33,42],[945,9,10,15,30,33,37,26],[946,9,18,19,30,34,40,20],[947,3,8,17,20,27,35,26],[948,13,18,30,31,38,41,5],[949,14,21,35,36,40,44,30],[950,3,4,15,22,28,40,10],[951,2,12,30,31,39,43,38],[952,4,12,22,24,33,41,38],[953,7,9,22,27,37,42,34],[954,1,9,26,28,30,41,32],[955,4,9,23,26,29,33,8],[956,10,11,20,21,25,41,40],[957,4,15,24,35,36,40,1],[958,2,9,10,16,35,37,1],[959,1,14,15,24,40,41,35],[960,2,18,24,30,32,45,14],[961,11,20,29,31,33,42,43],[962,1,18,28,31,34,43,40],[963,6,12,19,23,34,42,35],[964,6,21,36,38,39,43,30],[965,2,13,25,28,29,36,34],[966,1,21,25,29,34,37,36],[967,1,6,13,37,38,40,9],[968,2,5,12,14,24,39,33],[969,3,9,10,29,40,45,7],[970,9,11,16,21,28,36,5],[971,2,6,17,18,21,26,7],[972,3,6,17,23,37,39,26],[973,22,26,31,37,41,42,24],[974,1,2,11,16,39,44,32],[975,7,8,9,17,22,24,5],[976,4,12,14,25,35,37,2],[977,2,9,10,14,22,44,16],[978,1,7,15,32,34,42,8],[979,7,11,16,21,27,33,24],[980,3,13,16,23,24,35,14],[981,27,36,37,41,43,45,32],[982,5,7,13,20,21,44,33],[983,13,23,26,31,35,43,15],[984,3,10,23,35,36,37,18],[985,17,21,23,30,34,44,19],[986,7,10,16,28,41,42,40],[987,2,4,15,23,29,38,7],[988,2,13,20,30,31,41,27],[989,17,18,21,27,29,33,26],[990,2,4,25,26,36,37,28],[991,13,18,25,31,33,44,38],[992,12,20,26,33,44,45,24],[993,6,14,16,18,24,42,44],[994,1,3,8,24,27,35,28],[995,1,4,13,29,38,39,7],[996,6,11,15,24,32,39,28],[997,4,7,14,16,24,44,20],[998,13,17,18,20,42,45,41],[999,1,3,9,14,18,28,34],[1000,2,8,19,22,32,42,39],[1001,6,10,12,14,20,42,15],[1002,17,25,33,35,38,45,15],[1003,1,4,29,39,43,45,31],[1004,7,15,30,37,39,44,18],[1005,8,13,18,24,27,29,17],[1006,8,11,15,16,17,37,36],[1007,8,11,16,19,21,25,40],[1008,9,11,30,31,41,44,33],[1009,15,23,29,34,40,44,20],[1010,9,12,15,25,34,36,3],[1011,1,9,12,26,35,38,42],[1012,5,11,18,20,35,45,3],[1013,21,22,26,34,36,41,32],[1014,3,11,14,18,26,27,21],[1015,14,23,31,33,37,40,44],[1016,15,26,28,34,41,42,44],[1017,12,18,22,23,30,34,32],[1018,3,19,21,25,37,45,35],[1019,1,4,13,17,34,39,6],[1020,12,27,29,38,41,45,6],[1021,12,15,17,24,29,45,16],[1022,5,6,11,29,42,45,28],[1023,10,14,16,18,29,35,25],[1024,9,18,20,22,38,44,10],[1025,8,9,20,25,29,33,7],[1026,5,12,13,31,32,41,34],[1027,14,16,27,35,39,45,5],[1028,5,7,12,13,18,35,23],[1029,12,30,32,37,39,41,24],[1030,2,5,11,17,24,29,9],[1031,6,7,22,32,35,36,19],[1032,1,6,12,19,36,42,28],[1033,3,11,15,20,35,44,10],[1034,26,31,32,33,38,40,11],[1035,9,14,34,35,41,42,2],[1036,2,5,22,32,34,45,39],[1037,2,14,15,22,27,33,31],[1038,7,16,24,27,37,44,2],[1039,2,3,6,19,36,39,26],[1040,8,16,26,29,31,36,11],[1041,6,7,9,11,17,18,45],[1042,5,14,15,23,34,43,4],[1043,3,5,12,22,26,31,19],[1044,12,17,20,26,28,36,4],[1045,6,14,15,19,21,41,37],[1046,7,16,25,29,35,36,28],[1047,2,20,33,40,42,44,32],[1048,6,12,17,21,32,39,30],[1049,3,5,13,20,21,37,17],[1050,6,12,31,35,38,43,17],[1051,21,26,30,32,33,35,44],[1052,5,17,26,27,35,38,1],[1053,22,26,29,30,34,45,15],[1054,14,19,27,28,30,45,33],[1055,4,7,12,14,22,33,31],[1056,13,20,24,32,36,45,29],[1057,8,13,19,27,40,45,12],[1058,11,23,25,30,32,40,42],[1059,7,10,22,25,34,40,27],[1060,3,10,24,33,38,45,36],[1061,4,24,27,35,37,45,15],[1062,20,31,32,40,41,45,12],[1063,3,6,22,23,24,38,30],[1064,3,6,9,18,22,35,14],[1065,3,18,19,23,32,45,24],[1066,6,11,16,19,21,32,45],[1067,7,10,19,23,28,33,18],[1068,4,7,19,26,33,35,3],[1069,1,10,18,22,28,31,44],[1070,3,6,14,22,30,41,36],[1071,1,2,11,21,30,35,39],[1072,16,18,20,23,32,43,27],[1073,6,18,28,30,32,38,15],[1074,1,6,20,27,28,41,15],[1075,1,23,24,35,44,45,10],[1076,3,7,9,33,36,37,10],[1077,4,8,17,30,40,43,34],[1078,6,10,11,14,36,38,43],[1079,4,8,18,24,37,45,6],[1080,13,16,23,31,36,44,38],[1081,1,9,16,23,24,38,17],[1082,21,26,27,32,34,42,31],[1083,3,7,14,15,22,38,17],[1084,8,12,13,29,33,42,5],[1085,4,7,17,18,38,44,36],[1086,11,16,25,27,35,36,37],[1087,13,14,18,21,34,44,16],[1088,11,21,22,30,39,44,31],[1089,4,18,31,37,42,43,40],[1090,12,19,21,29,40,45,1],[1091,6,20,23,24,28,30,44],[1092,7,18,19,26,33,45,37],[1093,10,17,22,30,35,43,44],[1094,6,7,15,22,26,40,41],[1095,8,14,28,29,34,40,12],[1096,1,12,16,19,23,43,34],[1097,14,33,34,35,37,40,4],[1098,12,16,21,24,41,43,15],[1099,3,20,28,38,40,43,4],[1100,17,26,29,30,31,43,12],[1101,6,7,13,28,36,42,41],[1102,13,14,22,26,37,38,20],[1103,10,12,29,31,40,44,2],[1104,1,7,21,30,35,38,2],[1105,6,16,34,37,39,40,11],[1106,1,3,4,29,42,45,36],[1107,6,14,30,31,40,41,29],[1108,7,19,26,37,39,44,27],[1109,10,12,13,19,33,40,2],[1110,3,7,11,20,22,41,24],[1111,3,13,30,33,43,45,4],[1112,16,20,26,36,42,44,24],[1113,11,13,20,21,32,44,8],[1114,10,16,19,32,33,38,3],[1115,7,12,23,32,34,36,8],[1116,15,16,17,25,30,31,32],[1117,3,4,9,30,33,36,7],[1118,11,13,14,15,16,45,3],[1119,1,9,12,13,20,45,3],[1120,2,19,26,31,38,41,34],[1121,6,24,31,32,38,44,8],[1122,3,6,21,30,34,35,22],[1123,13,19,21,24,34,35,26],[1124,3,8,17,30,33,34,28],[1125,6,14,25,33,40,44,30],[1126,4,5,9,11,37,40,7],[1127,10,15,24,30,31,37,32],[1128,1,5,8,16,28,33,45],[1129,5,10,11,17,28,34,22],[1130,15,19,21,25,27,28,40],[1131,1,2,6,14,27,38,33],[1132,6,7,19,28,34,41,5],[1133,13,14,20,28,29,34,23],[1134,3,7,9,13,19,24,23],[1135,1,6,13,19,21,33,4],[1136,21,33,35,38,42,44,1],[1137,4,9,12,15,33,45,26],[1138,14,16,19,20,29,34,35],[1139,5,12,15,30,37,40,18],[1140,7,10,22,29,31,38,15],[1141,7,11,12,21,26,35,20],[1142,2,8,28,30,37,41,22],[1143,10,16,17,27,28,36,6],[1144,3,4,12,15,26,34,6],[1145,2,11,31,33,37,44,32],[1146,6,11,17,19,40,43,28],[1147,7,11,24,26,27,37,32],[1148,3,6,13,15,16,22,32],[1149,8,15,19,21,32,36,38],[1150,8,9,18,35,39,45,25],[1151,2,3,9,15,27,29,8],[1152,30,31,32,35,36,37,5],[1153,1,9,10,13,35,44,5],[1154,4,8,22,26,32,38,27],[1155,10,16,19,27,37,38,13],[1156,30,31,34,39,41,45,7],[1157,5,7,12,20,25,26,28],[1158,21,25,27,32,37,38,20],[1159,3,9,27,28,38,39,7],[1160,7,13,18,36,39,45,19],[1161,2,12,20,24,34,42,37],[1162,20,21,22,25,28,29,6],[1163,2,13,15,16,33,43,4],[1164,17,18,23,25,38,39,22],[1165,6,7,27,29,38,45,17],[1166,14,23,25,27,29,42,16],[1167,8,23,31,35,39,40,24],[1168,9,21,24,30,33,37,29],[1169,5,12,24,26,39,42,20],[1170,3,13,28,34,38,42,25],[1171,3,6,7,11,12,17,19],[1172,7,9,24,40,42,44,45],[1173,1,5,18,20,30,35,3],[1174,8,11,14,17,36,39,22],[1175,3,4,6,8,32,42,31],[1176,7,9,11,21,30,35,29],[1177,3,7,15,16,19,43,21],[1178,5,6,11,27,43,44,17],[1179,3,16,18,24,40,44,21],[1180,6,12,18,37,40,41,3],[1181,8,10,14,20,33,41,28],[1182,1,13,21,25,28,31,22],[1183,4,15,17,23,27,36,31],[1184,14,16,23,25,31,37,42],[1185,6,17,22,28,29,32,38],[1186,2,8,13,16,23,28,35],[1187,5,13,26,29,37,40,42],[1188,3,4,12,19,22,27,9],[1189,9,19,29,35,37,38,31],[1190,7,9,19,23,26,45,33],[1191,1,4,11,12,20,41,2],[1192,10,16,23,36,39,40,11],[1193,6,9,16,19,24,28,17],[1194,3,13,15,24,33,37,2],[1195,3,15,27,33,34,36,37],[1196,8,12,15,29,40,45,14],[1197,1,5,7,26,28,43,30],[1198,26,30,33,38,39,41,21],[1199,16,24,25,30,31,32,7],[1200,1,2,4,16,20,32,45],[1201,7,9,24,27,35,36,37],[1202,5,12,21,33,37,40,7],[1203,3,6,18,29,35,39,24],[1204,8,16,28,30,31,44,27],[1205,1,4,16,23,31,41,2],[1206,1,3,17,26,27,42,23],[1207,10,22,24,27,38,45,11],[1208,6,27,30,36,38,42,25],[1209,2,17,20,35,37,39,24],[1210,1,7,9,17,27,38,31],[1211,23,26,27,35,38,40,10],[1212,5,8,25,31,41,44,45],[1213,5,11,25,27,36,38,2],[1214,10,15,19,27,30,33,14],[1215,13,15,19,21,44,45,39],[1216,3,10,14,15,23,24,25],[1217,8,10,15,20,29,31,41],[1218,3,28,31,32,42,45,25],[1219,1,2,15,28,39,45,31],[1220,2,22,25,28,34,43,16],[1221,6,13,18,28,30,36,9],[1222,4,11,17,22,32,41,34],[1223,16,18,20,32,33,39,26],[1224,9,18,21,27,44,45,28],[1225,8,9,19,25,41,42,3],[1226,4,6,13,17,26,28,41],[1227,1,14,16,34,41,44,13],[1228,24,29,30,31,35,44,1],[1229,12,13,29,34,37,42,16],[1230,3,8,9,22,28,42,45],[1231,4,13,14,18,31,38,15],[1232,12,15,19,22,24,36,3],[1233,2,7,20,25,37,40,29],[1234,1,15,19,31,35,43,27],[1235,6,7,11,15,39,43,20],[1236,12,18,19,21,34,38,10],[1237,10,20,23,34,37,40,36],[1238,2,13,18,32,38,42,22],[1239,11,13,22,32,33,36,8],[1240,11,13,19,20,31,44,27],[1241,7,13,19,23,24,43,9],[1242,2,4,10,16,31,41,9],[1243,9,18,24,38,43,44,35],[1244,1,13,18,26,28,34,25]];
+
+let allData = RAW_DATA.map(r=>({round:r[0],nums:r.slice(1,7),bonus:r[7]}));
+let appStats = null;
+let recs = [];
+
+function buildStats(data){
+  const N=data.length;
+  const freq=new Array(46).fill(0);
+  const recentFreq=new Array(46).fill(0);
+  const RECENT=50;
+  const coAppear=Array.from({length:46},()=>new Array(46).fill(0));
+  const sums=[],oddCounts=[],lowCounts=[],acVals=[];
+  
+  data.forEach((d,idx)=>{
+    d.nums.forEach(n=>freq[n]++);
+    if(idx>=N-RECENT) d.nums.forEach(n=>recentFreq[n]++);
+    for(let i=0;i<6;i++) for(let j=i+1;j<6;j++){
+      const a=Math.min(d.nums[i],d.nums[j]),b=Math.max(d.nums[i],d.nums[j]);
+      coAppear[a][b]++;
+    }
+    const s=d.nums.reduce((a,b)=>a+b,0);
+    sums.push(s);
+    oddCounts.push(d.nums.filter(n=>n%2===1).length);
+    lowCounts.push(d.nums.filter(n=>n<=22).length);
+    const sorted=[...d.nums].sort((a,b)=>a-b);
+    const diffs=new Set();
+    for(let i=0;i<6;i++) for(let j=i+1;j<6;j++) diffs.add(sorted[j]-sorted[i]);
+    acVals.push(diffs.size-5);
+  });
+  
+  const sumMean=sums.reduce((a,b)=>a+b,0)/N;
+  const sumStd=Math.sqrt(sums.reduce((a,b)=>a+(b-sumMean)**2,0)/N);
+  
+  const oddEvenDist=new Array(7).fill(0);
+  oddCounts.forEach(c=>oddEvenDist[c]++);
+  for(let i=0;i<7;i++) oddEvenDist[i]/=N;
+  
+  const lowHighDist=new Array(7).fill(0);
+  lowCounts.forEach(c=>lowHighDist[c]++);
+  for(let i=0;i<7;i++) lowHighDist[i]/=N;
+  
+  const acDist=new Array(16).fill(0);
+  acVals.forEach(v=>{if(v>=0&&v<16)acDist[v]++;});
+  for(let i=0;i<16;i++) acDist[i]/=N;
+
+  // 각 번호의 마지막 출현 후 경과 회차 (gap)
+  const gapMap=new Array(46).fill(50);
+  for(let n=1;n<=45;n++){
+    for(let i=data.length-1;i>=0;i--){
+      if(data[i].nums.includes(n)){
+        gapMap[n]=data.length-1-i;
+        break;
+      }
+    }
+  }
+
+  // === 매직 통계 실시간 계산 (전체 데이터 기반) ===
+  // 모든 쌍, 트리플, 쿼드 빈도 계산
+  const pairCount={};
+  const tripleCount={};
+  const quadCount={};
+  data.forEach(d=>{
+    const s=[...d.nums].sort((a,b)=>a-b);
+    // 모든 쌍
+    for(let i=0;i<6;i++) for(let j=i+1;j<6;j++){
+      const k=s[i]+','+s[j];
+      pairCount[k]=(pairCount[k]||0)+1;
+    }
+    // 모든 트리플
+    for(let i=0;i<6;i++) for(let j=i+1;j<6;j++) for(let k=j+1;k<6;k++){
+      const key=s[i]+','+s[j]+','+s[k];
+      tripleCount[key]=(tripleCount[key]||0)+1;
+    }
+    // 모든 쿼드
+    for(let i=0;i<6;i++) for(let j=i+1;j<6;j++) for(let k=j+1;k<6;k++) for(let l=k+1;l<6;l++){
+      const key=s[i]+','+s[j]+','+s[k]+','+s[l];
+      quadCount[key]=(quadCount[key]||0)+1;
+    }
+  });
+
+  // 상위 TOP 추출
+  const magicPairs=Object.entries(pairCount)
+    .map(([k,c])=>{const a=k.split(',').map(Number);return [a[0],a[1],c];})
+    .sort((a,b)=>b[2]-a[2]).slice(0,50);
+  const magicTriples=Object.entries(tripleCount)
+    .map(([k,c])=>{const a=k.split(',').map(Number);return [a[0],a[1],a[2],c];})
+    .filter(x=>x[3]>=4).sort((a,b)=>b[3]-a[3]).slice(0,50);
+  const magicQuads=Object.entries(quadCount)
+    .map(([k,c])=>{const a=k.split(',').map(Number);return [a[0],a[1],a[2],a[3],c];})
+    .filter(x=>x[4]>=3).sort((a,b)=>b[4]-a[4]).slice(0,20);
+
+  // 번호별 매직 가중점수
+  const magicScore=new Array(46).fill(0);
+  magicPairs.forEach(p=>{magicScore[p[0]]+=p[2];magicScore[p[1]]+=p[2];});
+  magicTriples.forEach(t=>{magicScore[t[0]]+=t[3]*2;magicScore[t[1]]+=t[3]*2;magicScore[t[2]]+=t[3]*2;});
+  magicQuads.forEach(q=>{magicScore[q[0]]+=q[4]*4;magicScore[q[1]]+=q[4]*4;magicScore[q[2]]+=q[4]*4;magicScore[q[3]]+=q[4]*4;});
+  const topMagicNums=[...Array(45)].map((_,i)=>({n:i+1,s:magicScore[i+1]}))
+    .sort((a,b)=>b.s-a.s).slice(0,15).map(x=>x.n);
+
+  return{freq,recentFreq,coAppear,sums,sumMean,sumStd,oddEvenDist,lowHighDist,acDist,N,gapMap,
+    lastDraw:data[data.length-1]?data[data.length-1].nums:[],
+    recentDraws:data.slice(-15).map(d=>d.nums),
+    magicPairs,magicTriples,magicQuads,magicScore,topMagicNums};
+}
+
+// === 패턴 분석 헬퍼 ===
+function ac_value(nums){
+  const s=[...nums].sort((a,b)=>a-b);
+  const diffs=new Set();
+  for(let i=0;i<6;i++) for(let j=i+1;j<6;j++) diffs.add(s[j]-s[i]);
+  return diffs.size-5;
+}
+function cons_pairs(nums){
+  const s=[...nums].sort((a,b)=>a-b);
+  let c=0;
+  for(let i=1;i<6;i++) if(s[i]-s[i-1]===1) c++;
+  return c;
+}
+function zone_count(nums){
+  return new Set(nums.map(n=>n<=9?1:n<=18?2:n<=27?3:n<=36?4:5)).size;
+}
+
+// === 1225, 1226 학습 기반 5가지 추천 전략 ===
+function scoreSet(nums,st,strategy){
+  const s=[...nums].sort((a,b)=>a-b);
+  let score=0;
+  const maxF=Math.max(...st.freq.slice(1));
+  const minF=Math.min(...st.freq.slice(1));
+  const maxR=Math.max(...st.recentFreq.slice(1));
+  const minR=Math.min(...st.recentFreq.slice(1));
+
+  // 공통: 개별 확률 (12%)
+  let indiv=0;
+  for(const n of s){
+    const fsc=(st.freq[n]-minF)/(maxF-minF||1);
+    const rsc=(st.recentFreq[n]-minR)/(maxR-minR||1);
+    indiv+=0.4*fsc+0.6*rsc;
+  }
+  score+=12*(indiv/6);
+
+  // 공통: 동반출현 — 비중 축소 (10%)
+  let pairTotal=0,maxPair=0;
+  for(let a=1;a<=45;a++) for(let b=a+1;b<=45;b++) maxPair=Math.max(maxPair,st.coAppear[a][b]);
+  for(let i=0;i<6;i++) for(let j=i+1;j<6;j++){
+    const a=Math.min(s[i],s[j]),b=Math.max(s[i],s[j]);
+    pairTotal+=st.coAppear[a][b];
+  }
+  score+=10*Math.min(pairTotal/(maxPair*15*0.20),1);
+
+  // 공통: 합계 — 1226 학습: 80~200 모두 허용 (94나 200도 OK)
+  const sum=s.reduce((a,b)=>a+b,0);
+  score+=10*(sum>=80&&sum<=200?1:0.3);
+
+  // 공통: AC값 — 1226 학습: 5~10 모두 허용
+  const ac=ac_value(s);
+  score+=8*(ac>=5?1:ac>=3?0.5:0.2);
+
+  // 공통: 구간 — 3구간 이상 (1225 사례 반영)
+  const zc=zone_count(s);
+  score+=8*(zc>=3?1:0.4);
+
+  // 공통: 직전회차와 겹침 (1225/1226 모두 0~1개) — 7%
+  if(st.lastDraw&&st.lastDraw.length>0){
+    const overlap=s.filter(n=>st.lastDraw.includes(n)).length;
+    score+=7*(overlap<=1?1:overlap===2?0.6:0.2);
+  } else score+=7;
+
+  // === 전략별 추가 점수 (45%) ===
+  if(strategy==='uniform'){
+    score+=20*(sum>=100&&sum<=180?1:0.5);
+    score+=15*(ac>=6&&ac<=10?1:0.5);
+    score+=10*(zc>=3?1:0.5);
+  } else if(strategy==='low'){
+    // 저번호형: 저번호 4+개
+    const low=s.filter(n=>n<=22).length;
+    score+=25*(low>=4?1:low/4);
+    score+=20*(sum>=80&&sum<=140?1:0.5);
+  } else if(strategy==='superhot'){
+    // 슈퍼핫형: 최근 3회 등장한 번호 많을수록
+    const r3F=st.recentDraws.slice(-3).flat();
+    const hotHit=s.filter(n=>r3F.filter(x=>x===n).length>=1).length;
+    score+=25*(hotHit/6);
+    score+=20*(ac>=6?1:0.5);
+  } else if(strategy==='cold'){
+    const gapSum=s.reduce((a,n)=>a+(st.gapMap[n]||50),0)/6;
+    score+=25*(gapSum>=10?1:gapSum/10);
+    score+=20*(zc>=3?1:0.4);
+  } else if(strategy==='wild'){
+    score+=45*0.7;
+  } else {
+    score+=45*0.7;
+  }
+
+  return Math.round(score*10)/10;
+}
+
+function generateRecs(st,n=5){
+  const maxF=Math.max(...st.freq.slice(1));
+  const minF=Math.min(...st.freq.slice(1));
+  const maxR=Math.max(...st.recentFreq.slice(1));
+  const minR=Math.min(...st.recentFreq.slice(1));
+
+  const sel=new Array(46).fill(0);
+  for(let i=1;i<=45;i++){
+    const fsc=(st.freq[i]-minF)/(maxF-minF||1);
+    const rsc=(st.recentFreq[i]-minR)/(maxR-minR||1);
+    sel[i]=0.35*fsc+0.65*rsc+0.2;
+  }
+  const ranked=[...Array(45)].map((_,i)=>({num:i+1,sc:sel[i+1]})).sort((a,b)=>b.sc-a.sc);
+  const allNums=[...Array(45)].map((_,i)=>i+1);
+
+  const lastDrawSet=new Set(st.lastDraw||[]);
+  const coldPool=allNums.filter(n=>(st.gapMap[n]||50)>10);
+  const veryColdPool=allNums.filter(n=>(st.gapMap[n]||50)>20);
+
+  // === 최근 3회 강한 트렌드 (v6 신규) ===
+  const recent3=st.recentDraws.slice(-3);
+  const recent3Freq=new Array(46).fill(0);
+  recent3.forEach(d=>d.forEach(n=>recent3Freq[n]++));
+  const superHotPool=allNums.filter(n=>recent3Freq[n]>=2); // 최근 3회 중 2번 이상
+
+  // 직전 10회 출현
+  const recent10Set=new Set();
+  for(let i=Math.max(0,st.recentDraws.length-10);i<st.recentDraws.length;i++){
+    st.recentDraws[i].forEach(n=>recent10Set.add(n));
+  }
+
+  function shuffle(arr){
+    const a=[...arr];
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+
+  function pickRandom(pool,count,avoid=new Set()){
+    const candidates=pool.filter(n=>!avoid.has(n));
+    return shuffle(candidates).slice(0,count);
+  }
+
+  // 약한 페널티: 직전회차 번호도 뽑히지만 확률만 낮춤
+  function pickWithSoftAvoid(pool,count,softAvoid=new Set(),penalty=0.3){
+    const weights=pool.map(n=>softAvoid.has(n)?penalty:1.0);
+    const rem=[...pool],wt=[...weights],out=[];
+    for(let p=0;p<count;p++){
+      if(rem.length===0) break;
+      const total=wt.reduce((a,b)=>a+b,0);
+      let r=Math.random()*total,idx=0;
+      while(idx<rem.length-1){r-=wt[idx];if(r<=0)break;idx++;}
+      out.push(rem[idx]);rem.splice(idx,1);wt.splice(idx,1);
+    }
+    return out;
+  }
+
+  // === v6 5개 전략 ===
+  const strategies=[
+    {
+      name:'균등형',icon:'⚖️',desc:'직전회차 약한 회피 균등 추첨',key:'uniform',
+      gen:()=>{
+        // 직전회차 페널티 0.3 (완전 배제 X)
+        return pickWithSoftAvoid(allNums,6,lastDrawSet,0.3);
+      }
+    },
+    {
+      name:'저번호형',icon:'⬇️',desc:'저번호 편중 (최근 트렌드 반영)',key:'low',
+      gen:()=>{
+        // 1~22 중 4개 + 23~45 중 2개
+        const low=pickRandom(allNums.filter(n=>n<=22),4);
+        const high=pickRandom(allNums.filter(n=>n>22),2);
+        return [...low,...high];
+      }
+    },
+    {
+      name:'슈퍼핫형',icon:'🔥',desc:'최근 3회 반복 등장 번호 집중',key:'superhot',
+      gen:()=>{
+        // 슈퍼핫풀에서 2개 + 나머지 트렌드/랜덤 (직전회차 페널티)
+        const shPicks=pickRandom(superHotPool.filter(n=>!lastDrawSet.has(n)),Math.min(2,superHotPool.length));
+        const usedSet=new Set(shPicks);
+        // 직전10회에서 (직전회차 제외) 2개
+        const r10=[...recent10Set].filter(n=>!usedSet.has(n)&&!lastDrawSet.has(n));
+        const trendPicks=pickRandom(r10,2);
+        trendPicks.forEach(n=>usedSet.add(n));
+        // 나머지 2개는 전체에서 (약한 페널티)
+        const rest=pickWithSoftAvoid(allNums.filter(n=>!usedSet.has(n)),2,lastDrawSet,0.3);
+        return [...shPicks,...trendPicks,...rest];
+      }
+    },
+    {
+      name:'콜드회귀형',icon:'❄️',desc:'오래 안 나온 번호 위주',key:'cold',
+      gen:()=>{
+        const coldSrc=veryColdPool.length>=4?veryColdPool:coldPool;
+        const cold=pickWithSoftAvoid(coldSrc,4,lastDrawSet,0.2);
+        const rest=pickWithSoftAvoid(allNums.filter(n=>!cold.includes(n)),2,lastDrawSet,0.2);
+        return [...cold,...rest];
+      }
+    },
+    {
+      name:'대담형',icon:'🎲',desc:'완전 무작위 (행운에 맡김)',key:'wild',
+      gen:()=>{
+        return pickRandom(allNums,6);
+      }
+    }
+  ];
+
+  const result=[];
+
+  strategies.forEach(strat=>{
+    let nums=null;
+    let tries=0;
+    while(tries<50){
+      tries++;
+      let candidate=strat.gen();
+      candidate=[...new Set(candidate)].filter(n=>n>=1&&n<=45);
+      while(candidate.length<6){
+        const r=Math.floor(Math.random()*45)+1;
+        if(!candidate.includes(r)) candidate.push(r);
+      }
+      candidate=candidate.slice(0,6).sort((a,b)=>a-b);
+
+      // 이전 추천과 4개 이상 겹침 거부 (다양성 강화)
+      let dup=false;
+      for(const r of result){
+        const overlap=candidate.filter(x=>r.nums.includes(x)).length;
+        if(overlap>=4){dup=true;break;}
+      }
+      if(dup) continue;
+
+      nums=candidate;
+      break;
+    }
+    if(!nums){
+      const shuffled=shuffle(allNums);
+      nums=shuffled.slice(0,6).sort((a,b)=>a-b);
+    }
+
+    const score=scoreSet(nums,st,strat.key);
+    result.push({nums,score,strategy:strat.name,icon:strat.icon,desc:strat.desc});
+  });
+
+  result.forEach(r=>{
+    let ps=0;
+    for(let i=0;i<6;i++) for(let j=i+1;j<6;j++){
+      const a=Math.min(r.nums[i],r.nums[j]),b=Math.max(r.nums[i],r.nums[j]);
+      ps+=st.coAppear[a][b];
+    }
+    r.pairScore=ps;
+    r.hotCount=r.nums.filter(n=>st.recentFreq[n]>=3).length;
+    r.acValue=ac_value(r.nums);
+    r.consPairs=cons_pairs(r.nums);
+    r.zoneCount=zone_count(r.nums);
+    r.topRanks=r.nums.map(n=>ranked.findIndex(x=>x.num===n)+1);
+    r.lastOverlap=r.nums.filter(n=>lastDrawSet.has(n)).length;
+  });
+  return result;
+}
+
+// === 매직프릭 전용 5가지 전략 — 최고 확률 추천 (실시간 데이터) ===
+function generateMagicRecs(st,opts){
+  opts=opts||{};
+  const DATA=opts.data||allData;
+  const useSerial=opts.serial!==false&&typeof buildSerialProfile==='function';
+  const PROF=useSerial?(opts.profile||currentSerialProfile()):null;
+  const allNums=[...Array(45)].map((_,i)=>i+1);
+  const lastDrawSet=new Set(st.lastDraw||[]);
+  const PAIRS=st.magicPairs||[];
+  const TRIPLES=st.magicTriples||[];
+  const QUADS=st.magicQuads||[];
+  const SCORE=st.magicScore||new Array(46).fill(0);
+  const TOP_NUMS=st.topMagicNums||[];
+
+  function shuffle(arr){
+    const a=[...arr];
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+
+  function magicScore(nums){
+    let score=0;
+    for(const p of PAIRS){
+      if(nums.includes(p[0])&&nums.includes(p[1])) score+=p[2];
+    }
+    for(const t of TRIPLES){
+      if(nums.includes(t[0])&&nums.includes(t[1])&&nums.includes(t[2])) score+=t[3]*3;
+    }
+    for(const q of QUADS){
+      if(nums.includes(q[0])&&nums.includes(q[1])&&nums.includes(q[2])&&nums.includes(q[3])) score+=q[4]*8;
+    }
+    for(const n of nums) score+=(SCORE[n]||0)*0.05;
+    const overlap=nums.filter(n=>lastDrawSet.has(n)).length;
+    score-=overlap*5;
+    return score;
+  }
+
+  const strategies=[
+    {
+      name:'매직 쿼드형',icon:'💎',desc:'TOP 4개 조합(쿼드) 기반 — 최고 확률',key:'quad',
+      gen:()=>{
+        if(QUADS.length===0) return null;
+        const availQuads=QUADS.filter(q=>{
+          const overlap=[q[0],q[1],q[2],q[3]].filter(n=>lastDrawSet.has(n)).length;
+          return overlap<=1;
+        });
+        if(availQuads.length===0) return null;
+        const q=availQuads[Math.floor(Math.random()*Math.min(availQuads.length,10))];
+        const picked=[q[0],q[1],q[2],q[3]];
+        const used=new Set(picked);
+        const candidates=TOP_NUMS.filter(n=>!used.has(n)&&!lastDrawSet.has(n));
+        const extras=shuffle(candidates).slice(0,2);
+        return [...picked,...extras];
+      }
+    },
+    {
+      name:'매직 트리플형',icon:'🔱',desc:'TOP 트리플 2개 결합 (6개 번호)',key:'triple2',
+      gen:()=>{
+        if(TRIPLES.length<2) return null;
+        const availTriples=TRIPLES.filter(t=>{
+          const overlap=[t[0],t[1],t[2]].filter(n=>lastDrawSet.has(n)).length;
+          return overlap===0;
+        });
+        if(availTriples.length<2) return null;
+        for(let attempt=0;attempt<30;attempt++){
+          const t1=availTriples[Math.floor(Math.random()*Math.min(availTriples.length,20))];
+          const t1Set=new Set([t1[0],t1[1],t1[2]]);
+          const t2Candidates=availTriples.filter(t=>!t1Set.has(t[0])&&!t1Set.has(t[1])&&!t1Set.has(t[2]));
+          if(t2Candidates.length===0) continue;
+          const t2=t2Candidates[Math.floor(Math.random()*Math.min(t2Candidates.length,15))];
+          return [t1[0],t1[1],t1[2],t2[0],t2[1],t2[2]];
+        }
+        return null;
+      }
+    },
+    {
+      name:'매직 페어형',icon:'🔗',desc:'TOP 페어 3개 결합 (6개 번호)',key:'pair3',
+      gen:()=>{
+        if(PAIRS.length===0) return null;
+        const availPairs=PAIRS.filter(p=>{
+          return !lastDrawSet.has(p[0])&&!lastDrawSet.has(p[1]);
+        });
+        for(let attempt=0;attempt<40;attempt++){
+          const picked=new Set();
+          const shuffledPairs=shuffle(availPairs);
+          for(const p of shuffledPairs){
+            if(!picked.has(p[0])&&!picked.has(p[1])){
+              picked.add(p[0]);picked.add(p[1]);
+              if(picked.size>=6) break;
+            }
+          }
+          if(picked.size>=6) return [...picked].slice(0,6);
+        }
+        return null;
+      }
+    },
+    {
+      name:'매직 TOP 집중형',icon:'⭐',desc:'매직 점수 최상위 15개에서 추첨',key:'top',
+      gen:()=>{
+        if(TOP_NUMS.length===0) return null;
+        const pool=TOP_NUMS.filter(n=>!lastDrawSet.has(n));
+        const weights=pool.map(n=>SCORE[n]||1);
+        const rem=[...pool],wt=[...weights],out=[];
+        for(let p=0;p<6&&rem.length>0;p++){
+          const total=wt.reduce((a,b)=>a+b,0);
+          if(total<=0) break;
+          let r=Math.random()*total,idx=0;
+          while(idx<rem.length-1){r-=wt[idx];if(r<=0)break;idx++;}
+          out.push(rem[idx]);rem.splice(idx,1);wt.splice(idx,1);
+        }
+        return out;
+      }
+    },
+    {
+      name:'매직 하이브리드',icon:'🌟',desc:'트리플 1개 + 매칭 페어 + TOP 번호',key:'hybrid',
+      gen:()=>{
+        if(TRIPLES.length===0) return null;
+        const availTriples=TRIPLES.filter(t=>{
+          return !lastDrawSet.has(t[0])&&!lastDrawSet.has(t[1])&&!lastDrawSet.has(t[2]);
+        });
+        if(availTriples.length===0) return null;
+        const t=availTriples[Math.floor(Math.random()*Math.min(availTriples.length,20))];
+        const picked=[t[0],t[1],t[2]];
+        const used=new Set(picked);
+        const matching=PAIRS.filter(p=>{
+          return (used.has(p[0])&&!used.has(p[1])&&!lastDrawSet.has(p[1])) ||
+                 (used.has(p[1])&&!used.has(p[0])&&!lastDrawSet.has(p[0]));
+        });
+        if(matching.length>0){
+          const p=matching[Math.floor(Math.random()*Math.min(matching.length,10))];
+          const newN=used.has(p[0])?p[1]:p[0];
+          picked.push(newN);used.add(newN);
+        }
+        const extras=TOP_NUMS.filter(n=>!used.has(n)&&!lastDrawSet.has(n));
+        const extraPicks=shuffle(extras).slice(0,6-picked.length);
+        return [...picked,...extraPicks];
+      }
+    }
+  ];
+
+  function totalScore(nums){return magicScore(nums)+(PROF?serialInfo(nums,PROF).score:0);}
+  if(useSerial){
+    const pool=parallelPool(DATA,10);
+    if(pool.length) strategies.push({name:'평행우주형',icon:'🌌',desc:'최근 10회 평행우주 조합 중 최고점',key:'parallel',all:pool});
+  }
+
+  const result=[];
+  strategies.forEach(strat=>{
+    let nums=null;
+    let bestScore=-Infinity;
+    // 각 전략별로 50번 생성 후 최고 매직점수 선택
+    const tries=strat.all?strat.all.length:50;
+    for(let attempt=0;attempt<tries;attempt++){
+      let cand=strat.all?[...strat.all[attempt]]:strat.gen();
+      if(!cand||cand.length<6) continue;
+      cand=[...new Set(cand)].filter(n=>n>=1&&n<=45);
+      while(cand.length<6){
+        const r=Math.floor(Math.random()*45)+1;
+        if(!cand.includes(r)) cand.push(r);
+      }
+      cand=cand.slice(0,6).sort((a,b)=>a-b);
+      // 이전 추천과 5개 이상 겹치면 패스
+      let dup=false;
+      for(const prev of result){
+        if(cand.filter(x=>prev.nums.includes(x)).length>=5){dup=true;break;}
+      }
+      if(dup) continue;
+      const sc=totalScore(cand);
+      if(sc>bestScore){ bestScore=sc; nums=cand; }
+    }
+    if(!nums){
+      // fallback
+      const shuffled=shuffle(allNums.filter(n=>!lastDrawSet.has(n)));
+      nums=shuffled.slice(0,6).sort((a,b)=>a-b);
+    }
+
+    // 매칭 통계
+    let pairHits=0,tripleHits=0,quadHits=0;
+    for(const p of PAIRS) if(nums.includes(p[0])&&nums.includes(p[1])) pairHits++;
+    for(const t of TRIPLES) if(nums.includes(t[0])&&nums.includes(t[1])&&nums.includes(t[2])) tripleHits++;
+    for(const q of QUADS) if(nums.includes(q[0])&&nums.includes(q[1])&&nums.includes(q[2])&&nums.includes(q[3])) quadHits++;
+
+    const ser=PROF?serialInfo(nums,PROF):null;
+    result.push({
+      nums,
+      ser,
+      acValue:acValueOf(nums),
+      magicPart:Math.round(magicScore(nums)*10)/10,
+      serialPart:ser?Math.round(ser.score*10)/10:0,
+      score:Math.round(bestScore*10)/10,
+      strategy:strat.name,icon:strat.icon,desc:strat.desc,
+      pairHits,tripleHits,quadHits,
+      magicScoreSum:nums.reduce((a,n)=>a+(SCORE[n]||0),0),
+      lastOverlap:nums.filter(n=>lastDrawSet.has(n)).length
+    });
+  });
+  return result;
+}
+
+
+</script>
+
+<script>
+// === 전역 상태 ===
+let magicRecs=[];
+
+// === 탭 전환 ===
+function showTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById('sec-'+tab).classList.add('active');
+}
+
+// === Hero 렌더 ===
+function renderLatest(){
+  const d=allData[allData.length-1];
+  const latestRound=allData[allData.length-1].round;
+  const isNew=d.round===latestRound;
+  const sum=d.nums.reduce((a,b)=>a+b,0);
+  const odd=d.nums.filter(n=>n%2===1).length;
+  const prize=['약 20억','약 25억','약 18억','약 30억','약 22억'][d.round%5];
+  const winners=[8,12,6,9,11][d.round%5];
+
+  document.getElementById('hero').innerHTML=`
+    <div class="hero-inner">
+      <div class="hero-top">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="hero-tag">LATEST</span>
+          <span class="hero-round">제${d.round}회</span>
+        </div>
+        <span class="hero-sub">총 ${allData.length}회차 데이터</span>
+      </div>
+      <div class="hero-balls">
+        ${d.nums.map(n=>ballHTML(n)).join('')}
+        <span class="bonus-sep">+</span>
+        ${ballHTML(d.bonus)}
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-label">합계 · 홀/짝 ${odd}:${6-odd}</div>
+          <div class="hero-stat-val">${sum}</div>
+        </div>
+        <div class="hero-stat cool">
+          <div class="hero-live"><span class="dot"></span>다음 제${d.round+1}회</div>
+          <div class="hero-stat-val" style="font-family:'Unbounded',sans-serif;font-size:13.5px;font-weight:500">${isNew?'NEW':'대기중'}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// === 추천 탭 ===
+function renderRecommend(){
+  const st=appStats;
+  let html=`
+    <div class="sec-head">
+      <div>
+        <div class="sec-title">추천 조합</div>
+        <div class="sec-sub">5가지 전략 · 최근 패턴 필터 적용</div>
+      </div>
+      <button class="btn-pill" onclick="regenerate()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"/><path d="M21 3v5h-5"/></svg>
+        새로 뽑기
+      </button>
+    </div>
+    <div class="chip-row">
+      <span class="chip">합 100-175</span>
+      <span class="chip">홀짝 2:4-4:2</span>
+      <span class="chip">AC ≥ 7</span>
+      <span class="chip">핫 번호 1+</span>
+    </div>
+  `;
+
+  recs.forEach((r,i)=>{
+    const sum=r.nums.reduce((a,b)=>a+b,0);
+    const odd=r.nums.filter(n=>n%2===1).length;
+    const zones=[0,0,0,0,0];
+    r.nums.forEach(n=>{zones[Math.min(Math.floor((n-1)/10),4)]++;});
+    const zoneTxt=zones.filter(z=>z>0).length+'/5';
+    const labels=['A','B','C','D','E'];
+
+    html+=`
+      <div class="rec-card">
+        <div class="rec-head">
+          <div class="rec-label">
+            <span class="rec-badge">${labels[i]}</span>
+            <span class="rec-name">${r.strategy||'조합 '+labels[i]}</span>
+          </div>
+          <div style="font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;color:var(--purple-light)">${r.score}</div>
+        </div>
+        <div class="rec-balls">${r.nums.map(n=>ballHTML(n)).join('')}</div>
+        <div class="rec-stats">
+          <div class="rec-stat"><div class="rec-stat-label">합</div><div class="rec-stat-val">${sum}</div></div>
+          <div class="rec-stat hot"><div class="rec-stat-label">핫</div><div class="rec-stat-val">${r.hotCount}</div></div>
+          <div class="rec-stat"><div class="rec-stat-label">홀짝</div><div class="rec-stat-val">${odd}:${6-odd}</div></div>
+          <div class="rec-stat ac"><div class="rec-stat-label">AC</div><div class="rec-stat-val">${r.acValue}</div></div>
+          <div class="rec-stat zone">
+            <div class="rec-stat-label">구간 ${zoneTxt}</div>
+            <div class="zone-bar">
+              ${zones.map((z,zi)=>`<div class="zone-seg-${zi}" style="flex:${z||0.1}"></div>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  document.getElementById('sec-recommend').innerHTML=html;
+}
+
+// === 매직 탭 ===
+function regenerate(){
+  recs=generateRecs(appStats);
+  renderRecommend();
+}
+function regenerateMagic(){
+  magicRecs=generateMagicRecs(appStats).sort((a,b)=>b.score-a.score);
+  renderMagic();
+}
+
+function renderMagic(){
+  const top=magicRecs[0];
+  const runners=magicRecs.slice(1);
+  const now=new Date();
+  const timeStr=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  let html=`
+    <div class="sec-head">
+      <div>
+        <div class="sec-title">매직 추천</div>
+        <div class="sec-sub">${appStats.N}회 분석 · 동반출현 + 일련번호 패턴</div>
+      </div>
+      <button class="btn-pill magic" onclick="regenerateMagic()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 20L15 9"/><path d="M13 7l4 4"/><path d="M18 2v4M16 4h4M21 9v2M20 10h2M8 2v2M7 3h2"/></svg>
+        매직 재추첨
+      </button>
+    </div>
+  `;
+
+  if(top){
+    const sum=top.nums.reduce((a,b)=>a+b,0);
+    const odd=top.nums.filter(n=>n%2===1).length;
+    const P=top.ser?top.ser.part:null;
+    const factors=[
+      {name:'페어',w:Math.min(100,top.pairHits*12),v:top.pairHits},
+      {name:'트리플',w:Math.min(100,top.tripleHits*34),v:top.tripleHits},
+      ...(P?[
+        {name:'27S',w:P.s27*100,v:Math.round(P.s27*100)},
+        {name:'3G',w:P.g3*100,v:Math.round(P.g3*100)},
+        {name:'자리',w:P.band*100,v:top.ser.inBand+'/6'},
+      ]:[{name:'쿼드',w:Math.min(100,top.quadHits*40),v:top.quadHits}])
+    ];
+
+    html+=`
+      <div class="magic-card">
+        <div class="magic-inner">
+          <div class="magic-top">
+            <span class="magic-label">${top.icon} ${top.strategy} · 01</span>
+            <span class="magic-time">${timeStr}</span>
+          </div>
+          <div class="magic-score-row">
+            <div class="magic-ring">
+              <div class="magic-ring-inner">
+                <div class="magic-score-label">매직점수</div>
+                <div class="magic-score-val">${top.score}</div>
+              </div>
+            </div>
+            <div class="magic-factors">
+              ${factors.map(f=>`
+                <div class="factor-row">
+                  <span class="factor-name" style="width:36px">${f.name}</span>
+                  <div class="factor-bar"><div class="factor-fill" style="width:${f.w}%"></div></div>
+                  <span class="factor-val">${f.v}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div class="magic-balls">${top.nums.map(n=>ballHTML(n)).join('')}</div>
+          ${top.ser?`<div class="ser-line">${serLine(top)}</div>`:''}
+          <div class="magic-stats">
+            <div class="magic-stat"><div class="magic-stat-label">합</div><div class="magic-stat-val">${sum}</div></div>
+            <div class="magic-stat"><div class="magic-stat-label">홀짝</div><div class="magic-stat-val">${odd}:${6-odd}</div></div>
+            <div class="magic-stat ac"><div class="magic-stat-label">AC</div><div class="magic-stat-val">${top.acValue}</div></div>
+            <div class="magic-stat hot"><div class="magic-stat-label">겹침</div><div class="magic-stat-val">${top.lastOverlap}</div></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  runners.forEach((r,i)=>{
+    html+=`
+      <div class="runner-card">
+        <div class="runner-rank">
+          <div class="runner-rank-label">${r.icon} ${String(i+2).padStart(2,'0')}</div>
+          <div class="runner-rank-score">${r.score}</div>
+        </div>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+          <div class="runner-balls">${r.nums.map(n=>ballHTML(n,'sm')).join('')}</div>
+          ${r.ser?`<div class="ser-line sm">${r.strategy} · 27S ${r.ser.pat} · 3G ${g3Short(r.ser.g3)} · 자리 ${r.ser.inBand}/6</div>`:''}
+        </div>
+      </div>
+    `;
+  });
+
+  html+=`
+    <div class="info-text">매직점수 = 조합 동반출현(페어 + 트리플×3 + 쿼드×8 − 직전회차 겹침×5)<br>
+    + 일련번호 가산점 최대 66점 (27S 일련 12 · 27S 끝수 12 · 3G 12 · 등급총합 12 · 자리범위 18)<br>
+    ${top&&top.ser?`1번 조합: 동반출현 ${top.magicPart} + 일련번호 ${top.serialPart}점`:''}</div>
+    <div class="glass-card">
+      <div class="ms-title">📈 적용 효과 검증 <span>(최근 20회)</span></div>
+      <div class="ms-desc">일련번호 분석을 넣기 전과 후의 매직 추천이 과거 회차에서 실제로 몇 개씩 맞았을지 비교합니다</div>
+      <div id="bt-box"><button class="btn-outline" style="margin-top:12px" onclick="runSerialBacktest(20)">검증하기 (약 10~20초)</button></div>
+    </div>`;
+
+  document.getElementById('sec-magic').innerHTML=html;
+  if(_btCache&&_btCache.key===allData.length+':'+allData[allData.length-1].round) paintBacktest(_btCache);
+}
+
+// === 통계 탭 ===
+function g3Short(k){const [l,m,h]=k.split('-');return `저${l}중${m}고${h}`;}
+function serLine(t){
+  const s=t.ser;
+  return `<span>일련 <b>${s.serial.toLocaleString()}</b></span><span>27S <b>${s.pat}</b></span><span>끝수 <b>${s.epat}</b></span><span>3G <b>${g3Short(s.g3)}</b></span><span>총합 <b>${s.sum}</b></span><span>자리 <b>${s.inBand}/6</b></span>`;
+}
+function basicStatsHTML(){
+  const st=appStats;
+  const freqMax=Math.max(...st.freq.slice(1));
+
+  const sortedFreq=[...st.freq.slice(1).map((c,i)=>({num:i+1,cnt:c}))].sort((a,b)=>b.cnt-a.cnt);
+  const hot6=sortedFreq.slice(0,6);
+  const cold6=sortedFreq.slice(-6).reverse();
+
+  const bars=[];
+  for(let n=1;n<=45;n++){
+    const h=Math.max(8,(st.freq[n]/freqMax)*100);
+    const c=bc(n);
+    bars.push({h:h+'%',col:c.bg,glow:`0 0 8px ${c.glow}`});
+  }
+
+  const oddDist=st.oddEvenDist.map((p,i)=>({label:`${i}:${6-i}`,w:(p*100*2)+'%',pct:(p*100).toFixed(1)+'%'}));
+
+  const zoneCounts=[0,0,0,0,0];
+  const zoneLabels=['1-10','11-20','21-30','31-40','41-45'];
+  for(let n=1;n<=45;n++){
+    zoneCounts[Math.min(Math.floor((n-1)/10),4)]+=st.freq[n];
+  }
+  const zoneTotal=zoneCounts.reduce((a,b)=>a+b,0);
+  const zoneCols=['#FBC400','#3FA9F5','#FF5A5A','#9AA0AA','#8BCB2C'];
+  const zoneShare=zoneCounts.map((c,i)=>({flex:c,col:zoneCols[i],label:zoneLabels[i],pct:(c/zoneTotal*100).toFixed(1)+'%'}));
+
+  return `
+    <div class="sec-head">
+      <div class="sec-title">통계 분석</div>
+      <div style="font-size:11.5px;color:var(--text-mute)">전체 ${st.N}회차</div>
+    </div>
+    <div class="glass-card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-size:14px;font-weight:700;color:var(--text)">번호별 출현 빈도</span>
+        <span style="font-size:11.5px;color:var(--text-mute)">최다 ${freqMax}회</span>
+      </div>
+      <div class="freq-chart">
+        ${bars.map(b=>`<div class="freq-bar" style="height:${b.h};background:${b.col};box-shadow:${b.glow}"></div>`).join('')}
+      </div>
+      <div class="freq-axis"><span>1</span><span>10</span><span>20</span><span>30</span><span>40</span><span>45</span></div>
+    </div>
+    <div class="hot-cold-grid">
+      <div class="hc-card hc-hot">
+        <div class="hc-title">핫 번호</div>
+        <div class="hc-sub">출현 많은 순</div>
+        <div class="hc-items">
+          ${hot6.map(h=>`<div class="hc-item">${ballHTML(h.num,'sm')}<span class="hc-item-cnt">${h.cnt}</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="hc-card hc-cold">
+        <div class="hc-title">콜드 번호</div>
+        <div class="hc-sub">출현 적은 순</div>
+        <div class="hc-items">
+          ${cold6.map(h=>`<div class="hc-item">${ballHTML(h.num,'sm')}<span class="hc-item-cnt">${h.cnt}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="glass-card">
+      <div style="font-size:14px;font-weight:700;color:var(--text)">홀수 개수 분포</div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-top:12px">
+        ${oddDist.map(o=>`
+          <div class="odd-row">
+            <span class="odd-label">${o.label}</span>
+            <div class="odd-bar"><div class="odd-fill" style="width:${o.w}"></div></div>
+            <span class="odd-pct">${o.pct}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="glass-card">
+      <div style="font-size:14px;font-weight:700;color:var(--text)">구간별 출현 비율</div>
+      <div class="zone-share">
+        ${zoneShare.map(z=>`<div style="flex:${z.flex};background:${z.col}"></div>`).join('')}
+      </div>
+      <div class="zone-grid">
+        ${zoneShare.map(z=>`<div class="zone-cell"><div class="zone-cell-label">${z.label}</div><div class="zone-cell-pct">${z.pct}</div></div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// === 번호별 탭 ===
+let selectedNum=1;
+
+// === 통계 탭: 기본 / 매직프릭 분석 전환 ===
+let statsMode='basic';
+let _magicValidCache=null;
+
+function renderStats(){
+  const html=`
+    <div class="seg-toggle">
+      <button class="${statsMode==='basic'?'on':''}" onclick="setStatsMode('basic')">📊 기본 통계</button>
+      <button class="${statsMode==='magic'?'on':''}" onclick="setStatsMode('magic')">✨ 매직프릭 분석</button>
+    </div>
+    <div id="stats-body">${statsMode==='magic'?magicStatsHTML():basicStatsHTML()}</div>
+  `;
+  document.getElementById('sec-stats').innerHTML=html;
+  if(statsMode==='magic') fillMagicValidation(20);
+}
+function setStatsMode(m){statsMode=m;renderStats();}
+
+// 두 번호(또는 여러 번호)가 함께 나온 가장 최근 회차
+function lastRoundWith(nums){
+  for(let i=allData.length-1;i>=0;i--){
+    if(nums.every(n=>allData[i].nums.includes(n))) return allData[i].round;
+  }
+  return null;
+}
+function roundsWith(nums){
+  return allData.filter(d=>nums.every(n=>d.nums.includes(n))).map(d=>d.round);
+}
+
+// 매직 TOP15 실제 적중 검증: 각 회차 직전까지 데이터로 TOP15를 만들고, 그 회차 당첨번호가 몇 개 들어있었는지
+function magicValidKey(){return allData.length+':'+allData[allData.length-1].round;}
+// 한 회차씩 나눠 계산해서 화면이 멈추지 않게
+function fillMagicValidation(count){
+  const key=magicValidKey();
+  if(_magicValidCache&&_magicValidCache.key===key){paintMagicValidation(_magicValidCache.rows);return;}
+  const n=allData.length,rows=[];
+  let i=Math.max(100,n-count);
+  const step=()=>{
+    if(magicValidKey()!==key) return; // 도중에 데이터가 바뀌면 중단
+    const st=buildStats(allData.slice(0,i));
+    const top=new Set(st.topMagicNums);
+    const d=allData[i];
+    rows.push({round:d.round,hits:d.nums.filter(x=>top.has(x)),nums:d.nums});
+    const el=document.getElementById('ms-valid');
+    if(el&&!el.dataset.done) el.innerHTML=`<div class="ms-desc" style="padding:14px 0;text-align:center"><span class="spinner"></span>검증 계산 중... ${rows.length}/${count}</div>`;
+    i++;
+    if(i<n) setTimeout(step,0);
+    else{_magicValidCache={key,rows};paintMagicValidation(rows);}
+  };
+  setTimeout(step,30);
+}
+function paintMagicValidation(rows){
+  const el=document.getElementById('ms-valid');
+  if(!el) return;
+  el.dataset.done='1';
+  const avg=rows.reduce((s,r)=>s+r.hits.length,0)/rows.length;
+  const base=6*15/45;
+  el.innerHTML=`
+    <div class="ms-verdict">
+      <div><div class="ms-big">${avg.toFixed(2)}개</div><div class="ms-desc">매직 TOP15 평균 적중</div></div>
+      <div><div class="ms-big dim">${base.toFixed(2)}개</div><div class="ms-desc">무작위 15개 기대값</div></div>
+    </div>
+    <div class="ms-list">
+      ${rows.slice().reverse().map(r=>`
+        <div class="ms-row">
+          <span class="ms-cnt" style="min-width:52px;text-align:left">${r.round}회</span>
+          <div class="ms-balls">${r.nums.map(x=>`<span class="${r.hits.includes(x)?'':'rb-miss'}">${ballHTML(x,'sm')}</span>`).join('')}</div>
+          <span class="ms-hit h${Math.min(r.hits.length,4)}">${r.hits.length}개</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+// ===== 매직프릭 엑셀 분석법: 일련번호 기반 =====
+// 814만 전체 조합(1-2-3-4-5-6 = 1번 … 40-41-42-43-44-45 = 8,145,060번)에서 당첨조합의 순번
+const _C=(()=>{const c=[];for(let n=0;n<=45;n++){c[n]=[1];for(let k=1;k<=6;k++)c[n][k]=n<k?0:(k===n?1:c[n-1][k-1]+c[n-1][k]);}return c;})();
+function comboRank(nums){
+  const s=[...nums].sort((a,b)=>a-b);let r=0,prev=0;
+  s.forEach((x,i)=>{for(let v=prev+1;v<x;v++) r+=_C[45-v][5-i];prev=x;});
+  return r+1;
+}
+function comboUnrank(r){
+  if(r<1||r>8145060) return null;
+  r-=1;const out=[];let v=1;
+  for(let i=0;i<6;i++){
+    while(true){const c=_C[45-v][5-i];if(r<c){out.push(v);v++;break;}r-=c;v++;}
+  }
+  return out;
+}
+const dgClass=d=>d<=2?1:(d<=5?2:3);          // 저(0~2) · 중(3~5) · 고(6~9)
+const CLS_NAME=['','저','중','고'];
+function patId(a,b,c){return (a-1)*9+(b-1)*3+c;}
+function patName(a,b,c){return CLS_NAME[a]+CLS_NAME[b]+CLS_NAME[c];}
+
+let _serialCache=null;
+function serialStats(){
+  const key=allData.length+':'+allData[allData.length-1].round;
+  if(_serialCache&&_serialCache.key===key) return _serialCache;
+  const rows=allData.map(d=>{
+    const serial=comboRank(d.nums);
+    const s7=String(serial).padStart(7,'0');
+    const dg=s7.split('').map(Number);          // [S,A,B,C,D,E,F]
+    const C=dg.slice(1).map(dgClass);            // A~F 등급
+    const E=d.nums.map(n=>dgClass(n%10));         // 당번: 각 번호 끝수 등급
+    return {round:d.round,nums:d.nums,serial,s7,S:dg[0],C,E};
+  });
+  const tot=rows.length;
+  // 백만단위 분포 (블록 크기가 달라 기대비율과 함께)
+  const blockSize=b=>b===0?999999:(b===8?145061:1000000);
+  const sCnt=new Array(9).fill(0);rows.forEach(r=>sCnt[r.S]++);
+  // 27S 패턴 (일련 A·B·C / 당번 앞 3개 끝수)
+  const mk27=(get)=>{
+    const m={};
+    for(let id=1;id<=27;id++){const a=Math.floor((id-1)/9)+1,b=Math.floor(((id-1)%9)/3)+1,c=(id-1)%3+1;m[id]={id,name:patName(a,b,c),cnt:0,last:null};}
+    rows.forEach(r=>{const g=get(r);const id=patId(g[0],g[1],g[2]);m[id].cnt++;m[id].last=r.round;});
+    const lastRound=rows[rows.length-1].round;
+    return Object.values(m).map(p=>({...p,gap:p.last?lastRound-p.last:null}));
+  };
+  const p27s=mk27(r=>r.C);
+  const p27e=mk27(r=>r.E);
+  // 3G 구성 (6자리 중 저/중/고 개수)
+  const g3={};rows.forEach(r=>{const k=[1,2,3].map(c=>r.C.filter(x=>x===c).length).join('-');g3[k]=(g3[k]||0)+1;});
+  // 재결합 총합 (6~18), 점프 (직전 대비 등급 그대로인 자리 수 0~6)
+  const sum=new Array(19).fill(0),same=new Array(7).fill(0);
+  rows.forEach((r,i)=>{sum[r.C.reduce((a,b)=>a+b,0)]++;if(i>0){same[r.C.filter((c,j)=>c===rows[i-1].C[j]).length]++;}});
+  _serialCache={key,rows,tot,sCnt,blockSize,p27s,p27e,g3,sum,same};
+  return _serialCache;
+}
+
+function clsChips(C){return `<span class="cls-chips">${C.map(c=>`<i class="c${c}">${CLS_NAME[c]}</i>`).join('')}</span>`;}
+
+function magicSerialHTML(){
+  const S=serialStats();
+  const rows=S.rows,last=rows[rows.length-1],prev=rows[rows.length-2];
+  const fmt=n=>n.toLocaleString();
+  const pctTxt=(n,t)=>(n/t*100).toFixed(1)+'%';
+
+  // 백만단위
+  const sBars=S.sCnt.map((c,b)=>{
+    const obs=c/S.tot*100,exp=S.blockSize(b)/8145060*100;
+    return `<div class="odd-row"><span class="odd-label">${b}백만</span><div class="odd-bar" style="position:relative"><div class="odd-fill" style="width:${obs*5}%"></div><span class="exp-mark" style="left:${exp*5}%"></span></div><span class="odd-pct">${obs.toFixed(1)}%</span></div>`;
+  }).join('');
+
+  // 27S 리스트
+  const list27=(arr,curId,title)=>{
+    const top=[...arr].sort((a,b)=>b.cnt-a.cnt).slice(0,6);
+    const cold=[...arr].sort((a,b)=>(b.gap??1e9)-(a.gap??1e9)).slice(0,3);
+    const row=p=>`<div class="ms-row"><span class="pat-name ${p.id===curId?'cur':''}">${p.name}</span><div class="factor-bar"><div class="factor-fill" style="width:${p.cnt/top[0].cnt*100}%"></div></div><span class="ms-cnt">${p.cnt}회</span><span class="ms-last">${p.gap===0?'이번 회차':p.gap+'회 전'}</span></div>`;
+    return `<div class="ms-sub">${title} · 많이 나온 패턴</div><div class="ms-list" style="margin-top:4px">${top.map(row).join('')}</div>
+      <div class="ms-sub">오래 안 나온 패턴</div><div class="ms-list" style="margin-top:4px">${cold.map(row).join('')}</div>`;
+  };
+  const curS=patId(last.C[0],last.C[1],last.C[2]);
+  const curE=patId(last.E[0],last.E[1],last.E[2]);
+
+  // 3G
+  const g3=Object.entries(S.g3).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const lastG3=[1,2,3].map(c=>last.C.filter(x=>x===c).length).join('-');
+  const g3Label=k=>{const [l,m,h]=k.split('-');return `저${l}·중${m}·고${h}`;};
+
+  // 총합 미니차트
+  const sumMax=Math.max(...S.sum.slice(6));
+  const lastSum=last.C.reduce((a,b)=>a+b,0);
+  const sumChart=[...Array(13)].map((_,i)=>{const v=i+6,c=S.sum[v];return `<div class="mini-col ${v===lastSum?'cur':''}"><div class="mini-bar" style="height:${Math.max(3,c/sumMax*100)}%"></div><span>${v}</span></div>`;}).join('');
+  const lastSame=last.C.filter((c,j)=>c===prev.C[j]).length;
+  const sameTot=S.same.reduce((a,b)=>a+b,0);
+
+  // 평행우주
+  const low=last.serial%1000000;
+  const universes=[...Array(9)].map((_,b)=>{const idx=b*1000000+low;return {b,idx,nums:comboUnrank(idx)};});
+
+  // 자리별 (당첨번호 재정열)
+  const pos=[0,1,2,3,4,5].map(p=>{
+    const vals=allData.map(d=>d.nums[p]).sort((a,b)=>a-b);
+    const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+    const q=f=>vals[Math.floor(f*(vals.length-1))];
+    const ec=[0,0,0,0];rows.forEach(r=>ec[r.E[p]]++);
+    return {p,avg,lo:q(.1),hi:q(.9),cur:last.nums[p],curE:last.E[p],ec};
+  });
+
+  return `
+    <div class="ms-section">📗 매직프릭 엑셀 분석법 <span>일련번호 기반 · 원본 엑셀과 대조 검증</span></div>
+
+    <div class="glass-card">
+      <div class="ms-title">🔢 일련번호</div>
+      <div class="ms-desc">로또 전체 조합 8,145,060개를 1-2-3-4-5-6(1번)부터 순서대로 세었을 때 당첨조합이 몇 번째인지. 7자리를 <b>S·A·B·C·D·E·F</b>로 나누고, 각 자리를 <b class="t1">저(0~2)</b>·<b class="t2">중(3~5)</b>·<b class="t3">고(6~9)</b> 등급으로 분석합니다.</div>
+      <div class="ms-list">
+        ${rows.slice(-8).reverse().map(r=>`
+          <div class="serial-row">
+            <span class="ms-cnt" style="min-width:48px;text-align:left;color:var(--text)">${r.round}회</span>
+            <span class="serial-no"><b>${r.s7[0]}</b>${r.s7.slice(1)}</span>
+            ${clsChips(r.C)}
+          </div>`).join('')}
+      </div>
+      <div class="ms-sub" style="margin-top:14px">백만단위(S) 분포 <span class="exp-legend">│ 표시 = 조합 수 비율(기대값)</span></div>
+      <div style="display:flex;flex-direction:column;gap:5px">${sBars}</div>
+    </div>
+
+    <div class="glass-card">
+      <div class="ms-title">🎲 27S 패턴</div>
+      <div class="ms-desc">일련번호 A·B·C 세 자리 등급 조합 27가지(저저저~고고고). 당번은 당첨번호 앞 3개의 끝수로 같은 분석을 한 것. 이번 ${last.round}회: 일련 <b>${patName(...last.C.slice(0,3))}</b> · 당번 <b>${patName(...last.E.slice(0,3))}</b></div>
+      ${list27(S.p27s,curS,'일련 27S')}
+      ${list27(S.p27e,curE,'당번(끝수) 27S')}
+    </div>
+
+    <div class="glass-card">
+      <div class="ms-title">🧩 3G 구성 · 🐸 개구리(점프)</div>
+      <div class="ms-desc">일련번호 A~F 여섯 자리의 저·중·고 구성, 등급 총합(재결합·궁지 누적합), 직전 회차와 등급이 그대로인 자리 수</div>
+      <div class="ms-sub">3G 구성 TOP 6 · 이번 ${last.round}회 ${g3Label(lastG3)}</div>
+      <div class="ms-list" style="margin-top:4px">
+        ${g3.map(([k,c])=>`<div class="ms-row"><span class="pat-name wide ${k===lastG3?'cur':''}">${g3Label(k)}</span><div class="factor-bar"><div class="factor-fill" style="width:${c/g3[0][1]*100}%"></div></div><span class="ms-cnt">${pctTxt(c,S.tot)}</span></div>`).join('')}
+      </div>
+      <div class="ms-sub">등급 총합 분포 (6~18) · 이번 ${lastSum}</div>
+      <div class="mini-chart">${sumChart}</div>
+      <div class="ms-sub">직전 대비 등급 유지 자리 수 · 이번 ${lastSame}자리</div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        ${[0,1,2,3,4].map(i=>{const v=i===4?S.same.slice(4).reduce((a,b)=>a+b,0):S.same[i];return `<div class="odd-row"><span class="odd-label">${i===4?'4+':i}자리</span><div class="odd-bar"><div class="odd-fill" style="width:${v/sameTot*250}%;background:linear-gradient(90deg,rgba(34,211,238,.85),rgba(139,203,44,.85))"></div></div><span class="odd-pct">${pctTxt(v,sameTot)}</span></div>`;}).join('')}
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <div class="ms-title">🌌 평행우주</div>
+      <div class="ms-desc">${last.round}회 일련번호 ${fmt(last.serial)}의 뒤 6자리(${String(low).padStart(6,'0')})는 그대로 두고, 백만 자리만 0~8로 바꾼 9개의 평행 조합</div>
+      <div class="ms-list">
+        ${universes.map(u=>`
+          <div class="ms-row ${u.b===last.S?'uni-cur':''}">
+            <span class="ms-cnt" style="min-width:26px;text-align:left;color:var(--purple-soft)">[${u.b}]</span>
+            ${u.nums?`<div class="ms-balls">${u.nums.map(n=>ballHTML(n,'sm')).join('')}</div>`:`<span class="ms-desc" style="margin:0">조합 없음 (8,145,060 초과)</span>`}
+            ${u.b===last.S?'<span class="ms-last" style="color:var(--amber-light);font-weight:700">실제 당첨</span>':''}
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <div class="ms-title">📍 자리별 분석 <span>(당첨번호 재정열)</span></div>
+      <div class="ms-desc">작은 번호부터 1~6번째 자리별 범위와 끝수 등급 분포. 범위는 역대 80%가 들어간 구간</div>
+      <div class="ms-list">
+        ${pos.map(x=>`
+          <div class="pos-row">
+            <span class="pos-label">${x.p+1}번째</span>
+            <div class="pos-range"><div class="pos-band" style="left:${(x.lo-1)/44*100}%;width:${(x.hi-x.lo)/44*100}%"></div><span class="pos-cur" style="left:${(x.cur-1)/44*100}%"></span></div>
+            <span class="pos-txt">${x.lo}~${x.hi}<br><b>이번 ${x.cur}</b></span>
+            <span class="pos-ec">${[1,2,3].map(c=>`<i class="c${c} ${c===x.curE?'cur':''}">${CLS_NAME[c]}${Math.round(x.ec[c]/S.tot*100)}</i>`).join('')}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="ms-section">🔗 조합 동반출현 분석 <span>매직 추천 엔진이 쓰는 방식</span></div>
+  `;
+}
+
+// ===== 매직 추천에 일련번호 분석 적용 =====
+// 역대 분포 프로필 (가산점 계산용)
+function buildSerialProfile(data){
+  const s27={},e27={},g3={},sum={};
+  const pos=[[],[],[],[],[],[]];
+  data.forEach(d=>{
+    const C=String(comboRank(d.nums)).padStart(7,'0').slice(1).split('').map(x=>dgClass(+x));
+    const s=[...d.nums].sort((a,b)=>a-b);
+    const E=s.map(x=>dgClass(x%10));
+    const k1=patId(C[0],C[1],C[2]); s27[k1]=(s27[k1]||0)+1;
+    const k2=patId(E[0],E[1],E[2]); e27[k2]=(e27[k2]||0)+1;
+    const k3=[1,2,3].map(c=>C.filter(x=>x===c).length).join('-'); g3[k3]=(g3[k3]||0)+1;
+    const k4=C.reduce((a,b)=>a+b,0); sum[k4]=(sum[k4]||0)+1;
+    s.forEach((v,i)=>pos[i].push(v));
+  });
+  const max=o=>Math.max(1,...Object.values(o));
+  const bands=pos.map(a=>{a.sort((x,y)=>x-y);return [a[Math.floor(.1*(a.length-1))],a[Math.floor(.9*(a.length-1))]];});
+  return {s27,e27,g3,sum,bands,m:{s27:max(s27),e27:max(e27),g3:max(g3),sum:max(sum)}};
+}
+let _profCache=null;
+function currentSerialProfile(){
+  const key=allData.length+':'+allData[allData.length-1].round;
+  if(!_profCache||_profCache.key!==key) _profCache={key,prof:buildSerialProfile(allData)};
+  return _profCache.prof;
+}
+// 조합 하나의 일련번호 분석 + 가산점 (최대 66점)
+const SERIAL_W={s27:12,e27:12,g3:12,sum:12,band:18};
+function serialInfo(nums,prof){
+  const s=[...nums].sort((a,b)=>a-b);
+  const serial=comboRank(s);
+  const C=String(serial).padStart(7,'0').slice(1).split('').map(x=>dgClass(+x));
+  const E=s.map(x=>dgClass(x%10));
+  const k1=patId(C[0],C[1],C[2]),k2=patId(E[0],E[1],E[2]);
+  const k3=[1,2,3].map(c=>C.filter(x=>x===c).length).join('-');
+  const k4=C.reduce((a,b)=>a+b,0);
+  const inBand=s.filter((v,i)=>v>=prof.bands[i][0]&&v<=prof.bands[i][1]).length;
+  const part={
+    s27:(prof.s27[k1]||0)/prof.m.s27,
+    e27:(prof.e27[k2]||0)/prof.m.e27,
+    g3:(prof.g3[k3]||0)/prof.m.g3,
+    sum:(prof.sum[k4]||0)/prof.m.sum,
+    band:inBand/6
+  };
+  const score=Object.keys(SERIAL_W).reduce((a,k)=>a+SERIAL_W[k]*part[k],0);
+  return {serial,C,E,pat:patName(C[0],C[1],C[2]),epat:patName(E[0],E[1],E[2]),g3:k3,sum:k4,inBand,part,score};
+}
+function acValueOf(nums){
+  const d=new Set();
+  for(let i=0;i<nums.length;i++)for(let j=i+1;j<nums.length;j++)d.add(Math.abs(nums[i]-nums[j]));
+  return d.size-5;
+}
+// 평행우주 후보: 최근 회차 일련번호의 뒤 6자리 + 백만자리 0~8
+function parallelPool(data,recentN){
+  const past=new Set(data.map(d=>[...d.nums].sort((a,b)=>a-b).join(',')));
+  const pool=[],seen=new Set();
+  data.slice(-recentN).forEach(d=>{
+    const low=comboRank(d.nums)%1000000;
+    for(let b=0;b<9;b++){
+      const c=comboUnrank(b*1000000+low);
+      if(!c) continue;
+      const k=c.join(',');
+      if(past.has(k)||seen.has(k)) continue;
+      seen.add(k);pool.push(c);
+    }
+  });
+  return pool;
+}
+
+// ===== 적용 효과 검증 (최근 N회 백테스트) =====
+let _btCache=null,_btBusy=false;
+function runSerialBacktest(count){
+  if(_btBusy) return;
+  const key=allData.length+':'+allData[allData.length-1].round;
+  const box=document.getElementById('bt-box');
+  if(_btCache&&_btCache.key===key){paintBacktest(_btCache);return;}
+  _btBusy=true;
+  const n=allData.length,start=n-count;
+  const acc={old:{m:0,g:0,w:0},neu:{m:0,g:0,w:0}};
+  const rows=[];
+  let i=start;
+  const step=()=>{
+    if(allData.length+':'+allData[allData.length-1].round!==key){_btBusy=false;return;}
+    const past=allData.slice(0,i),actual=allData[i];
+    const st=buildStats(past);
+    const prof=buildSerialProfile(past);
+    const evalRecs=(recs,a)=>{
+      const ms=recs.map(r=>r.nums.filter(x=>actual.nums.includes(x)).length);
+      a.m+=ms.reduce((x,y)=>x+y,0);a.g+=ms.length;a.w+=ms.filter(x=>x>=3).length;
+      return ms.reduce((x,y)=>x+y,0)/ms.length;
+    };
+    const bo=evalRecs(generateMagicRecs(st,{serial:false,data:past}),acc.old);
+    const bn=evalRecs(generateMagicRecs(st,{profile:prof,data:past}),acc.neu);
+    rows.push({round:actual.round,bo,bn});
+    const el=document.getElementById('bt-box');
+    if(el) el.innerHTML=`<div class="ms-desc" style="padding:12px 0;text-align:center"><span class="spinner"></span>검증 중... ${rows.length}/${count}</div>`;
+    i++;
+    if(i<n) setTimeout(step,0);
+    else{_btBusy=false;_btCache={key,acc,rows,count};paintBacktest(_btCache);}
+  };
+  if(box) box.innerHTML=`<div class="ms-desc" style="padding:12px 0;text-align:center"><span class="spinner"></span>검증 준비 중...</div>`;
+  setTimeout(step,30);
+}
+function paintBacktest(r){
+  const el=document.getElementById('bt-box');if(!el) return;
+  const o=r.acc.old,nw=r.acc.neu;
+  const avg=a=>(a.m/a.g).toFixed(2);
+  const w3=a=>(a.w/a.g*100).toFixed(1)+'%';
+  el.innerHTML=`
+    <div class="bt-grid">
+      <div><div class="ms-desc">기존 방식</div><div class="ms-big dim">${avg(o)}개</div><div class="ms-desc">3개+ ${w3(o)}<br>${o.g}게임</div></div>
+      <div><div class="ms-desc">일련번호 적용</div><div class="ms-big">${avg(nw)}개</div><div class="ms-desc">3개+ ${w3(nw)}<br>${nw.g}게임</div></div>
+      <div><div class="ms-desc">무작위 기대값</div><div class="ms-big dim">0.80개</div><div class="ms-desc">3개+ 약 1.9%<br>이론값</div></div>
+    </div>
+    <div class="ms-sub">회차별 게임당 평균 일치</div>
+    <div class="ms-list" style="margin-top:4px">
+      ${r.rows.slice().reverse().map(x=>`<div class="ms-row"><span class="ms-cnt" style="min-width:52px;text-align:left;color:var(--text)">${x.round}회</span><span class="ms-desc" style="margin:0">기존 <b>${x.bo.toFixed(1)}</b> → 적용 <b style="color:var(--cyan-light)">${x.bn.toFixed(1)}</b></span></div>`).join('')}
+    </div>
+    <div class="info-text" style="padding:10px 0 0">각 회차 직전까지의 데이터만으로 두 방식의 추천을 만들어 실제 당첨번호와 비교했어요(게임당 평균 일치 개수). 추천에 무작위 요소가 있어 다시 검증하면 숫자가 조금씩 달라집니다. <a href="javascript:void(0)" onclick="_btCache=null;runSerialBacktest(${r.count})">다시 검증</a></div>`;
+}
+function magicStatsHTML(){
+  const st=appStats;
+  const last=allData[allData.length-1];
+  const prev=allData[allData.length-2];
+
+  // 1) 매직 가중점수 TOP 15
+  const scored=[...Array(45)].map((_,i)=>({n:i+1,s:st.magicScore[i+1]})).sort((a,b)=>b.s-a.s);
+  const maxS=scored[0].s||1;
+  const top15=scored.slice(0,15);
+
+  // 2) 페어/트리플/쿼드 TOP
+  const pairs=st.magicPairs.slice(0,10);
+  const triples=st.magicTriples.slice(0,10);
+  const quads=st.magicQuads.slice(0,10);
+
+  // 3) 이월수·이웃수 (직전 회차 기반)
+  const carry=new Array(7).fill(0),neigh=new Array(7).fill(0);
+  for(let i=1;i<allData.length;i++){
+    const p=allData[i-1].nums,c=allData[i].nums;
+    carry[c.filter(x=>p.includes(x)).length]++;
+    const nb=new Set();p.forEach(x=>{if(x>1)nb.add(x-1);if(x<45)nb.add(x+1);});
+    p.forEach(x=>nb.delete(x));
+    neigh[Math.min(6,c.filter(x=>nb.has(x)).length)]++;
+  }
+  const tot=allData.length-1;
+  const nbNow=new Set();last.nums.forEach(x=>{if(x>1)nbNow.add(x-1);if(x<45)nbNow.add(x+1);});
+  last.nums.forEach(x=>nbNow.delete(x));
+  const nbList=[...nbNow].sort((a,b)=>a-b);
+  const lastCarry=last.nums.filter(x=>prev.nums.includes(x));
+
+  // 4) 최근 20회 매직 TOP15 적중 검증
+
+  const distRow=(arr,i,label,col)=>{
+    const v=label.endsWith('+')?arr.slice(i).reduce((a,b)=>a+b,0):arr[i];
+    const pct=v/tot*100;
+    return `<div class="odd-row"><span class="odd-label">${label}</span><div class="odd-bar"><div class="odd-fill" style="width:${Math.min(100,pct*1.6)}%;background:${col}"></div></div><span class="odd-pct">${pct.toFixed(1)}%</span></div>`;
+  };
+
+  return `
+    <div class="sec-head">
+      <div>
+        <div class="sec-title">매직프릭 분석</div>
+        <div class="sec-sub">원본 엑셀 분석법 + 조합 동반출현 · 전체 ${st.N}회 실시간</div>
+      </div>
+    </div>
+    ${magicSerialHTML()}
+
+    <div class="glass-card">
+      <div class="ms-title">🏆 매직 가중점수 TOP 15</div>
+      <div class="ms-desc">함께 자주 나온 페어 +1 · 트리플 ×2 · 쿼드 ×4 를 번호별로 합산한 점수</div>
+      <div class="ms-rank">
+        ${top15.map((x,i)=>`
+          <div class="ms-rank-row">
+            <span class="ms-no">${i+1}</span>
+            ${ballHTML(x.n,'sm')}
+            <div class="factor-bar"><div class="factor-fill" style="width:${x.s/maxS*100}%"></div></div>
+            <span class="ms-val">${x.s}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <div class="ms-title">🔗 TOP 페어 <span>(2개 동반 출현)</span></div>
+      <div class="ms-desc">전체 ${st.N}회 중 두 번호가 같은 회차에 함께 나온 횟수</div>
+      <div class="ms-list">
+        ${pairs.map((p,i)=>`
+          <div class="ms-row">
+            <span class="ms-no">${i+1}</span>
+            <div class="ms-balls">${ballHTML(p[0],'sm')}${ballHTML(p[1],'sm')}</div>
+            <span class="ms-cnt">${p[2]}회</span>
+            <span class="ms-last">최근 ${lastRoundWith([p[0],p[1]])}회</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <div class="ms-title">🔱 TOP 트리플 <span>(3개 동반 출현)</span></div>
+      <div class="ms-desc">세 번호가 한 회차에 함께 나온 횟수 (4회 이상 조합 ${st.magicTriples.length}개 중 상위)</div>
+      <div class="ms-list">
+        ${triples.map((t,i)=>`
+          <div class="ms-row">
+            <span class="ms-no">${i+1}</span>
+            <div class="ms-balls">${ballHTML(t[0],'sm')}${ballHTML(t[1],'sm')}${ballHTML(t[2],'sm')}</div>
+            <span class="ms-cnt">${t[3]}회</span>
+            <span class="ms-last">최근 ${lastRoundWith([t[0],t[1],t[2]])}회</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <div class="ms-title">💎 TOP 쿼드 <span>(4개 동반 출현)</span></div>
+      <div class="ms-desc">네 번호가 한 회차에 3번 이상 함께 나온 희귀 조합 ${st.magicQuads.length}개</div>
+      <div class="ms-list">
+        ${quads.map((q,i)=>`
+          <div class="ms-row quad">
+            <span class="ms-no">${i+1}</span>
+            <div class="ms-balls">${ballHTML(q[0],'sm')}${ballHTML(q[1],'sm')}${ballHTML(q[2],'sm')}${ballHTML(q[3],'sm')}</div>
+            <span class="ms-cnt">${q[4]}회</span>
+            <span class="ms-last wide">${roundsWith([q[0],q[1],q[2],q[3]]).join(', ')}회</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <div class="ms-title">🔁 이월수 · 👥 이웃수</div>
+      <div class="ms-desc">직전 회차 번호가 다시 나오는 이월수, 직전 번호의 ±1이 나오는 이웃수의 역대 분포</div>
+      <div class="ms-sub">이월수 개수별 비율</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${[0,1,2,3].map(i=>distRow(carry,i,i===3?'3개+':i+'개','linear-gradient(90deg,rgba(124,92,255,.85),rgba(34,211,238,.85))')).join('')}
+      </div>
+      <div class="ms-sub" style="margin-top:12px">이웃수 개수별 비율</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${[0,1,2,3].map(i=>distRow(neigh,i,i===3?'3개+':i+'개','linear-gradient(90deg,rgba(244,114,182,.85),rgba(251,191,36,.85))')).join('')}
+      </div>
+      <div class="ms-now">
+        <div class="ms-sub" style="margin:0 0 6px">다음 회차(${last.round+1}회) 이월 후보 · ${last.round}회 번호</div>
+        <div class="ms-balls wrap">${last.nums.map(n=>ballHTML(n,'sm')).join('')}</div>
+        <div class="ms-sub" style="margin:10px 0 6px">이웃 후보 (±1) · ${nbList.length}개</div>
+        <div class="ms-balls wrap">${nbList.map(n=>ballHTML(n,'sm')).join('')}</div>
+        <div class="ms-desc" style="margin-top:8px">${last.round}회는 ${prev.round}회에서 ${lastCarry.length}개 이월${lastCarry.length?` (${lastCarry.join(', ')})`:''}</div>
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <div class="ms-title">🎯 매직 TOP 15 적중 검증 <span>(최근 20회)</span></div>
+      <div class="ms-desc">각 회차 직전까지의 데이터로 TOP 15를 만들었을 때, 실제 당첨번호 6개 중 몇 개가 들어있었는지</div>
+      <div id="ms-valid"><div class="ms-desc" style="padding:14px 0;text-align:center"><span class="spinner"></span>검증 계산 중...</div></div>
+      <div class="info-text" style="padding:10px 0 0">로또는 매 회차 독립적인 무작위 추첨이라, 과거 패턴이 다음 당첨을 보장하지 않아요. 이 검증은 매직 방식이 실제로 얼마나 맞았는지 그대로 보여주는 참고 자료입니다.</div>
+    </div>
+  `;
+}
+
+function renderNumbers(){
+  const st=appStats;
+  renderNumDetail(selectedNum);
+  const html=`
+    <div class="sec-head">
+      <div class="sec-title">번호별 분석</div>
+      <div style="font-size:11.5px;color:var(--text-mute)">탭하여 선택</div>
+    </div>
+    <div id="num-detail-wrap"></div>
+    <div class="num-grid">
+      ${[...Array(45)].map((_,i)=>{
+        const n=i+1;
+        return `<div class="num-cell ${n===selectedNum?'selected':''}" onclick="selectNum(${n})">${ballHTML(n,'sm')}<span class="num-cell-cnt">${st.freq[n]}</span></div>`;
+      }).join('')}
+    </div>
+  `;
+  document.getElementById('sec-numbers').innerHTML=html;
+  renderNumDetail(selectedNum);
+}
+function selectNum(n){
+  selectedNum=n;
+  renderNumbers();
+}
+function renderNumDetail(n){
+  const el=document.getElementById('num-detail-wrap');
+  if(!el) return;
+  const st=appStats;
+  const cnt=st.freq[n];
+  const totalRounds=st.N;
+  const rate=(cnt/totalRounds*100).toFixed(1)+'%';
+
+  // 마지막 출현 & 미출현
+  let lastIdx=-1;
+  for(let i=allData.length-1;i>=0;i--){
+    if(allData[i].nums.includes(n)){lastIdx=i;break;}
+  }
+  const gap=allData.length-1-lastIdx;
+  const lastRound=lastIdx>=0?allData[lastIdx].round:'-';
+
+  // 보너스 횟수
+  let bonusCnt=0;
+  allData.forEach(d=>{if(d.bonus===n)bonusCnt++;});
+
+  // 최근 30회 strip
+  const recent30=allData.slice(-30);
+  const strip=recent30.map(d=>{
+    if(d.nums.includes(n))return {bg:bc(n).bg,glow:`0 0 10px ${bc(n).glow}`};
+    if(d.bonus===n)return {bg:'rgba(255,255,255,.3)',glow:'none'};
+    return {bg:'rgba(255,255,255,.06)',glow:'none'};
+  });
+
+  // 함께 나온 번호
+  const coMap=st.coAppear[n]||[];
+  const pairs=[];
+  for(let i=1;i<=45;i++){
+    if(i===n)continue;
+    const a=Math.min(n,i),b=Math.max(n,i);
+    pairs.push({num:i,count:st.coAppear[a][b]});
+  }
+  pairs.sort((a,b)=>b.count-a.count);
+  const top5=pairs.slice(0,5);
+
+  el.innerHTML=`
+    <div class="glass-card">
+      <div class="num-detail">
+        <div class="num-detail-top">
+          ${ballHTML(n,'lg')}
+          <div class="num-detail-stats">
+            <div><div class="nd-stat-label">총 출현</div><div class="nd-stat-val">${cnt}회</div></div>
+            <div><div class="nd-stat-label">출현율</div><div class="nd-stat-val">${rate}</div></div>
+            <div><div class="nd-stat-label">마지막 출현</div><div class="nd-stat-val">${lastRound}회</div></div>
+            <div><div class="nd-stat-label">미출현</div><div class="nd-stat-val cyan">${gap}회</div></div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-mute)">
+            <span>최근 30회 출현</span><span>보너스 ${bonusCnt}회</span>
+          </div>
+          <div class="recent-strip">
+            ${strip.map(c=>`<div class="strip-cell" style="background:${c.bg};box-shadow:${c.glow}"></div>`).join('')}
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-dim);margin-top:4px"><span>최신</span><span>30회 전</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:11px;color:var(--text-mute);flex:none">함께 자주 나온 번호</span>
+          <div style="display:flex;gap:5px">${top5.map(p=>ballHTML(p.num,'sm')).join('')}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// === 이력 탭 ===
+// === 이력 탭: 전체 회차 + 검색 ===
+const HIST_PAGE=50;
+let histState={order:'desc',shown:HIST_PAGE,query:''};
+let histObserver=null;
+
+function renderHistory(){
+  const lastRound=allData[allData.length-1].round;
+  const BASE_LAST=RAW_DATA[RAW_DATA.length-1][0];
+  const userSaved=allData.filter(d=>d.round>BASE_LAST);
+  const firstRound=allData[0].round;
+
+  let html=`
+    <div class="sec-head">
+      <div>
+        <div class="sec-title">새 회차 입력</div>
+        <div class="sec-sub">입력 즉시 저장 · 재접속해도 유지</div>
+      </div>
+    </div>
+    <div class="input-card">
+      <div class="input-sub">
+        <a href="https://www.dhlottery.co.kr/lt645/result" target="_blank">동행복권 결과 확인 →</a>
+      </div>
+      <div class="input-group">
+        <div class="input-label">회차</div>
+        <input id="m-round" type="number" class="input-field" value="${lastRound+1}" min="1" inputmode="numeric">
+      </div>
+      <div class="input-group">
+        <div class="input-label">당첨번호 6개</div>
+        <div class="input-6-grid">
+          ${[1,2,3,4,5,6].map(i=>`<input id="m-n${i}" type="number" class="input-field input-small" min="1" max="45" placeholder="${i}" inputmode="numeric">`).join('')}
+        </div>
+      </div>
+      <div class="input-group">
+        <div class="input-label">보너스</div>
+        <input id="m-bonus" type="number" class="input-field input-small" min="1" max="45" placeholder="보너스" inputmode="numeric">
+      </div>
+      <button onclick="applyManual()" class="btn-primary">💾 저장 & 통계 반영</button>
+      <div id="manual-result"></div>
+    </div>
+    ${userSaved.length>0?`
+    <div style="border-radius:16px;padding:14px 16px;background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(124,92,255,.08));border:1px solid rgba(34,211,238,.25);display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div>
+        <div style="font-size:11px;color:var(--cyan-light);font-weight:800;letter-spacing:.8px;text-transform:uppercase">직접 입력한 회차</div>
+        <div style="font-size:13px;color:var(--text);font-weight:600;margin-top:4px">${userSaved.length}개 저장됨 · ${userSaved.map(d=>d.round+'회').join(', ')}</div>
+      </div>
+      <button onclick="clearUserData()" style="background:rgba(244,114,182,.15);color:var(--pink-light);border:1px solid rgba(244,114,182,.3);padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">초기화</button>
+    </div>
+    `:''}
+
+    <div class="sec-head" style="margin-top:4px">
+      <div>
+        <div class="sec-title" style="font-size:17px">당첨 이력</div>
+        <div class="sec-sub">${firstRound}회 ~ ${lastRound}회 · 전체 ${allData.length}회차</div>
+      </div>
+      <div class="order-toggle">
+        <button class="${histState.order==='desc'?'on':''}" onclick="setHistOrder('desc')">최신순</button>
+        <button class="${histState.order==='asc'?'on':''}" onclick="setHistOrder('asc')">1회부터</button>
+      </div>
+    </div>
+
+    <div class="hist-search">
+      <input id="hist-q" type="number" inputmode="numeric" min="1" placeholder="회차 번호 검색 (예: 1000)" value="${histState.query}"
+        onkeydown="if(event.key==='Enter'){searchRound();this.blur();}">
+      <button onclick="searchRound()">검색</button>
+    </div>
+    <div class="hist-jumps">
+      ${[1,100,300,500,700,900,1000,1100,1200].filter(n=>n<=lastRound).map(n=>`<button onclick="jumpRound(${n})">${n}회</button>`).join('')}
+    </div>
+
+    <div id="hist-search-result"></div>
+    <div id="hist-list" class="hist-list"></div>
+    <div id="hist-more"></div>
+  `;
+
+  document.getElementById('sec-history').innerHTML=html;
+  if(histState.query) searchRound(true);
+  renderHistList();
+}
+
+function histCardHTML(d,highlight){
+  const latestRnd=allData[allData.length-1].round;
+  const sum=d.nums.reduce((a,b)=>a+b,0);
+  const odd=d.nums.filter(n=>n%2===1).length;
+  return `
+    <div class="hist-card ${highlight?'hl':''}" id="hc-${d.round}">
+      <div class="hist-top">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <span class="hist-round">${d.round}회</span>
+          ${d.round===latestRnd?'<span style="font-size:9px;background:linear-gradient(90deg,var(--pink),var(--purple-light));color:#fff;padding:2px 6px;border-radius:4px;font-weight:800">NEW</span>':''}
+          <span class="hist-date">${drawDateOf(d.round)}</span>
+        </div>
+        <span class="hist-meta">합 ${sum} · 홀${odd}:짝${6-odd}</span>
+      </div>
+      <div class="hist-balls-row">
+        ${d.nums.map(n=>ballHTML(n,'sm')).join('')}
+        <span class="bonus-sep">+</span>
+        ${ballHTML(d.bonus,'sm')}
+      </div>
+    </div>`;
+}
+
+function histSorted(){
+  return histState.order==='desc'?allData.slice().reverse():allData.slice();
+}
+
+function renderHistList(){
+  const list=document.getElementById('hist-list');
+  const more=document.getElementById('hist-more');
+  if(!list) return;
+  const data=histSorted();
+  list.innerHTML=data.slice(0,histState.shown).map(d=>histCardHTML(d,false)).join('');
+  updateHistMore(data.length);
+}
+
+function updateHistMore(total){
+  const more=document.getElementById('hist-more');
+  if(!more) return;
+  if(histState.shown>=total){
+    more.innerHTML=`<div class="hist-end">전체 ${total}회차를 모두 표시했어요</div>`;
+    if(histObserver) histObserver.disconnect();
+    return;
+  }
+  more.innerHTML=`<button class="add-slot-btn" onclick="loadMoreHist()">더 보기 (${histState.shown} / ${total})</button>`;
+  // 스크롤이 바닥 근처에 오면 자동으로 다음 50개
+  if('IntersectionObserver' in window){
+    if(histObserver) histObserver.disconnect();
+    histObserver=new IntersectionObserver(entries=>{
+      if(entries.some(e=>e.isIntersecting)&&document.getElementById('sec-history').classList.contains('active')) loadMoreHist();
+    },{rootMargin:'400px'});
+    histObserver.observe(more);
+  }
+}
+
+function loadMoreHist(){
+  const list=document.getElementById('hist-list');
+  if(!list) return;
+  const data=histSorted();
+  if(histState.shown>=data.length) return;
+  const next=data.slice(histState.shown,histState.shown+HIST_PAGE);
+  list.insertAdjacentHTML('beforeend',next.map(d=>histCardHTML(d,false)).join(''));
+  histState.shown+=next.length;
+  updateHistMore(data.length);
+}
+
+function setHistOrder(o){
+  histState.order=o;
+  histState.shown=HIST_PAGE;
+  renderHistory();
+}
+
+function searchRound(silent){
+  const box=document.getElementById('hist-search-result');
+  const input=document.getElementById('hist-q');
+  if(!box||!input) return;
+  const q=parseInt(input.value);
+  histState.query=isNaN(q)?'':String(q);
+  if(isNaN(q)){box.innerHTML='';return;}
+  const d=allData.find(x=>x.round===q);
+  const lastRound=allData[allData.length-1].round;
+  if(!d){
+    box.innerHTML=`<div class="hist-found miss">${q<1?'1회 이상으로 입력해주세요':q>lastRound?`${q}회는 아직 데이터가 없어요 (최신 ${lastRound}회 · ${q}회 추첨일 ${drawDateOf(q)})`:`${q}회 데이터가 없어요`}</div>`;
+    return;
+  }
+  const prev=allData.find(x=>x.round===q-1),next=allData.find(x=>x.round===q+1);
+  box.innerHTML=`
+    <div class="hist-found">
+      <div class="hist-found-head">
+        <span>🔍 검색 결과</span>
+        <button onclick="clearRoundSearch()">✕ 닫기</button>
+      </div>
+      ${histCardHTML(d,true)}
+      <div class="hist-found-nav">
+        ${prev?`<button onclick="jumpRound(${q-1})">‹ ${q-1}회</button>`:'<span></span>'}
+        ${next?`<button onclick="jumpRound(${q+1})">${q+1}회 ›</button>`:'<span></span>'}
+      </div>
+    </div>`;
+  if(!silent) box.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function jumpRound(n){
+  const input=document.getElementById('hist-q');
+  if(input) input.value=n;
+  searchRound();
+}
+
+function clearRoundSearch(){
+  histState.query='';
+  const input=document.getElementById('hist-q');
+  if(input) input.value='';
+  const box=document.getElementById('hist-search-result');
+  if(box) box.innerHTML='';
+}
+
+// === 수동 입력 처리 ===
+function applyManual(){
+  const round=parseInt(document.getElementById('m-round').value);
+  const nums=[1,2,3,4,5,6].map(i=>parseInt(document.getElementById('m-n'+i).value));
+  const bonus=parseInt(document.getElementById('m-bonus').value);
+  const resultEl=document.getElementById('manual-result');
+
+  if(!round||nums.some(isNaN)||isNaN(bonus)){
+    resultEl.innerHTML='<div class="manual-msg err">⚠️ 모든 칸을 채워주세요.</div>';
+    return;
+  }
+  if(nums.some(n=>n<1||n>45)||bonus<1||bonus>45){
+    resultEl.innerHTML='<div class="manual-msg err">⚠️ 번호는 1~45 사이여야 합니다.</div>';
+    return;
+  }
+  if(new Set(nums).size!==6){
+    resultEl.innerHTML='<div class="manual-msg err">⚠️ 6개 번호는 모두 달라야 합니다.</div>';
+    return;
+  }
+  if(allData.find(d=>d.round===round)){
+    resultEl.innerHTML=`<div class="manual-msg err">⚠️ ${round}회는 이미 등록된 데이터입니다.</div>`;
+    return;
+  }
+
+  const sorted=nums.sort((a,b)=>a-b);
+  allData.push({round,nums:sorted,bonus});
+  allData.sort((a,b)=>a.round-b.round);
+
+  // === localStorage에 영구 저장 ===
+  saveUserData();
+
+  appStats=buildStats(allData);
+  recs=generateRecs(appStats);
+  magicRecs=generateMagicRecs(appStats).sort((a,b)=>b.score-a.score);
+
+  renderLatest();
+  renderRecommend();
+  renderMagic();
+  renderCheck();refreshAllTickets();
+  renderStats();
+  renderNumbers();
+  renderHistory();
+
+  resultEl.innerHTML=`<div class="manual-msg ok">✅ ${round}회 저장 완료! 번호 ${sorted.join(', ')} + 보너스 ${bonus}<br><span style="font-size:11px;font-weight:500;opacity:0.8">다음 접속 시에도 유지됩니다</span></div>`;
+}
+
+// === 사용자 추가 데이터 영구 저장 ===
+function saveUserData(){
+  try{
+    // RAW_DATA 마지막 회차(1235)보다 큰 회차만 저장
+    const BASE_LAST=RAW_DATA[RAW_DATA.length-1][0];
+    const userAdded=allData.filter(d=>d.round>BASE_LAST);
+    localStorage.setItem('lotto-user-data',JSON.stringify(userAdded));
+    return true;
+  }catch(e){
+    console.error('저장 실패:',e);
+    return false;
+  }
+}
+
+function loadUserData(){
+  try{
+    const raw=localStorage.getItem('lotto-user-data');
+    if(!raw) return [];
+    const parsed=JSON.parse(raw);
+    if(!Array.isArray(parsed)) return [];
+    // 데이터 유효성 검사
+    return parsed.filter(d=>
+      d&&typeof d.round==='number'&&
+      Array.isArray(d.nums)&&d.nums.length===6&&
+      typeof d.bonus==='number'
+    );
+  }catch(e){
+    console.error('로드 실패:',e);
+    return [];
+  }
+}
+
+function clearUserData(){
+  if(!confirm('수동 입력한 모든 회차를 삭제하시겠습니까?\n(기본 1~1235회 데이터는 유지됩니다)')) return;
+  try{
+    localStorage.removeItem('lotto-user-data');
+    // allData를 원본 RAW_DATA로 리셋
+    allData=RAW_DATA.map(r=>({round:r[0],nums:r.slice(1,7),bonus:r[7]}));
+    appStats=buildStats(allData);
+    recs=generateRecs(appStats);
+    magicRecs=generateMagicRecs(appStats).sort((a,b)=>b.score-a.score);
+    renderLatest();
+    renderRecommend();
+    renderMagic();
+    renderCheck();refreshAllTickets();
+    renderStats();
+    renderNumbers();
+    renderHistory();
+    alert('초기화 완료!');
+  }catch(e){
+    alert('초기화 실패: '+e.message);
+  }
+}
+
+// === 회차 ↔ 추첨일 계산 (1회: 2002-12-07 토요일, 매주 토요일 20:35 KST 추첨) ===
+const FIRST_DRAW_UTC=Date.UTC(2002,11,7);
+const WEEK_MS=7*86400000;
+function drawDateOf(round){
+  const d=new Date(FIRST_DRAW_UTC+(round-1)*WEEK_MS);
+  return `${d.getUTCFullYear()}.${String(d.getUTCMonth()+1).padStart(2,'0')}.${String(d.getUTCDate()).padStart(2,'0')}`;
+}
+function roundOfDrawDate(y,m,d){
+  const t=Date.UTC(y,m-1,d);
+  const diff=t-FIRST_DRAW_UTC;
+  if(diff<0||diff%WEEK_MS!==0) return null; // 토요일 추첨일만 인정
+  return diff/WEEK_MS+1;
+}
+// 지금(한국시간) 기준으로 추첨이 끝난 마지막 회차
+function drawnRoundNow(){
+  const kstNow=Date.now()+9*3600000;
+  const firstDrawEnd=FIRST_DRAW_UTC+(20*60+45)*60000; // 첫 추첨일 20:45 KST
+  return Math.floor((kstNow-firstDrawEnd)/WEEK_MS)+1;
+}
+function roundSourceLabel(src){
+  return {qr:'용지 QR코드에서 확인',date:'용지 추첨일에서 확인',print:'용지 인쇄 회차에서 확인',manual:'직접 선택한 회차'}[src]||'';
+}
+
+// === 당첨확인 탭 상태 ===
+let checkState={round:null,roundSource:null,tickets:[],photo:null};
+let scanImage=null;          // 원본 해상도 이미지 (메모리, 인식용)
+let scanBusy=false;
+let scanStatus={state:'idle',msg:''};
+let checkResultShown=false;
+
+function emptyTicket(){return {nums:['','','','','','']};}
+
+function loadCheckState(){
+  try{
+    const raw=localStorage.getItem('lotto-check-state');
+    if(raw){
+      const p=JSON.parse(raw);
+      if(p&&Array.isArray(p.tickets)) checkState=Object.assign({round:null,roundSource:null,tickets:[],photo:null},p);
+    }
+  }catch(e){}
+  if(checkState.tickets.length===0) checkState.tickets=[emptyTicket()];
+}
+
+function saveCheckState(){
+  try{localStorage.setItem('lotto-check-state',JSON.stringify(checkState));}
+  catch(e){
+    // 용량 초과 시 사진 빼고 저장
+    try{localStorage.setItem('lotto-check-state',JSON.stringify(Object.assign({},checkState,{photo:null})));}catch(_){}
+  }
+}
+
+// === 등수 판정 ===
+function determineRank(myNums,winNums,bonus){
+  const valid=myNums.filter(n=>n>=1&&n<=45);
+  if(valid.length<6||new Set(valid).size<6) return {rank:null,matches:0,bonusMatch:false};
+  const matches=valid.filter(n=>winNums.includes(n)).length;
+  const bonusMatch=valid.includes(bonus);
+  let rank=0;
+  if(matches===6) rank=1;
+  else if(matches===5&&bonusMatch) rank=2;
+  else if(matches===5) rank=3;
+  else if(matches===4) rank=4;
+  else if(matches===3) rank=5;
+  return {rank,matches,bonusMatch};
+}
+function rankLabel(rank){
+  return ['낙첨','🏆 1등 당첨!','🥈 2등 당첨!','🥉 3등 당첨!','💰 4등 당첨','🎉 5등 당첨'][rank]||'낙첨';
+}
+function prizeText(rank){
+  if(rank===4) return '50,000원';
+  if(rank===5) return '5,000원';
+  if(rank>=1&&rank<=3) return '회차별 변동';
+  return '-';
+}
+function ticketNums(t){return t.nums.map(n=>typeof n==='number'?n:(parseInt(n)||0));}
+
+function getCheckRound(){
+  const latest=allData[allData.length-1];
+  const round=checkState.round||latest.round;
+  return {round,data:allData.find(d=>d.round===round)||null};
+}
+
+// === 렌더 ===
+function renderCheck(){
+  const {round,data}=getCheckRound();
+  const recent=allData.slice().reverse();
+  let opts='';
+  if(!data) opts+=`<option value="${round}" selected>${round}회 (추첨 결과 없음)</option>`;
+  if(data&&!recent.find(d=>d.round===round)) opts+=`<option value="${round}" selected>${round}회</option>`;
+  opts+=recent.map(d=>`<option value="${d.round}" ${d.round===round?'selected':''}>${d.round}회 (${d.nums.join(',')} + ${d.bonus})</option>`).join('');
+
+  const st=scanStatus;
+  const statusHTML=st.state==='idle'?'':
+    `<div id="scan-status" class="scan-status ${st.state}">${st.state==='scanning'?'<span class="spinner"></span>':''}${st.msg}</div>`;
+
+  let html=`
+    <div class="sec-head">
+      <div>
+        <div class="sec-title">당첨 확인</div>
+        <div class="sec-sub">용지 사진을 올리면 번호를 자동으로 읽어요</div>
+      </div>
+    </div>
+
+    <div class="input-card" style="background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border-color:var(--border)">
+      <div class="input-title">📸 로또 용지 사진</div>
+      <div class="input-sub">하단 <b style="color:var(--cyan-light)">QR코드</b>가 선명하게 나오게 찍으면 가장 정확해요</div>
+      <input id="photo-cam" type="file" accept="image/*" capture="environment" onchange="handlePhotoUpload(event)" style="display:none">
+      <input id="photo-gal" type="file" accept="image/*" onchange="handlePhotoUpload(event)" style="display:none">
+      ${checkState.photo?`
+        <div class="photo-preview">
+          <img src="${checkState.photo}" alt="로또 용지">
+          <button class="photo-remove" onclick="removePhoto()">✕</button>
+        </div>
+        <button id="scan-btn" class="btn-primary scan-btn" onclick="scanPhoto()" ${scanBusy?'disabled':''}>
+          ${scanBusy?'인식 중...':'🔍 번호 읽고 당첨 확인'}
+        </button>
+        ${statusHTML}
+        <div class="photo-btns" style="margin-top:10px">
+          <label for="photo-cam" class="photo-upload small">📷 다시 촬영</label>
+          <label for="photo-gal" class="photo-upload small">🖼 다른 사진</label>
+        </div>
+      `:`
+        <div class="photo-btns">
+          <label for="photo-cam" class="photo-upload">📷<br>카메라 촬영</label>
+          <label for="photo-gal" class="photo-upload">🖼<br>갤러리 선택</label>
+        </div>
+      `}
+    </div>
+
+    <div id="check-result"></div>
+
+    <div class="check-hero">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan-light)">회차 · 추첨일 ${drawDateOf(round)}</span>
+        ${checkState.roundSource?`<span class="src-badge ${checkState.roundSource==='manual'?'manual':''}">${checkState.roundSource==='manual'?'✎':'✓'} ${roundSourceLabel(checkState.roundSource)}</span>`:''}
+      </div>
+      <select class="round-select" onchange="setCheckRound(this.value)">${opts}</select>
+      ${data?`
+        <div class="winning-balls-mini">
+          <span class="label">${data.round}회</span>
+          ${data.nums.map(n=>ballHTML(n,'sm')).join('')}
+          <span class="bonus-sep">+</span>
+          ${ballHTML(data.bonus,'sm')}
+        </div>
+      `:`
+        <div class="pending-box">${round<=drawnRoundNow()
+          ?`⚠️ ${round}회 추첨은 끝났지만 앱에 당첨번호가 아직 없어요.<br><b>이력 탭</b>에 ${round}회 당첨번호를 입력하면 바로 비교됩니다.`
+          :`⏳ ${round}회는 ${drawDateOf(round)} 추첨 예정이에요.<br>추첨 후 <b>이력 탭</b>에 당첨번호를 입력하면 바로 비교됩니다.`}</div>
+      `}
+    </div>
+
+    <div class="sec-head" style="margin-top:4px">
+      <div class="sec-title" style="font-size:17px">내 번호</div>
+      <div style="font-size:11.5px;color:var(--text-mute)">${checkState.tickets.length}조 · 직접 수정 가능</div>
+    </div>
+  `;
+
+  checkState.tickets.forEach((t,idx)=>{html+=ticketSlotHTML(t,idx,data);});
+
+  html+=`
+    <div class="photo-btns">
+      ${checkState.tickets.length<5?`<button class="add-slot-btn" onclick="addTicket()">+ 조 추가</button>`:'<span></span>'}
+      <button class="add-slot-btn" onclick="resetTickets()">↺ 번호 비우기</button>
+    </div>
+    <button class="btn-primary" onclick="showCheckResult()">✅ 당첨 확인</button>
+    <div style="padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--border);font-size:11px;color:var(--text-mute);line-height:1.7">
+      <b style="color:var(--cyan-light)">💡 당첨 기준</b><br>
+      1등 6개 일치 · 2등 5개+보너스 · 3등 5개 · 4등 4개(5만원) · 5등 3개(5천원)
+    </div>
+  `;
+
+  document.getElementById('sec-check').innerHTML=html;
+  if(checkResultShown) renderCheckResult();
+}
+
+function ticketSlotHTML(t,idx,data){
+  const letter=String.fromCharCode(65+idx);
+  return `
+    <div id="slot-${idx}" class="ticket-slot">
+      <div class="ticket-head">
+        <div class="ticket-label">
+          <span class="ticket-letter">${letter}</span>
+          <span style="font-size:13px;font-weight:600;color:var(--text)">${letter}게임</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span id="res-${idx}" class="ticket-result"></span>
+          ${checkState.tickets.length>1?`<button onclick="removeTicket(${idx})" style="background:none;border:0;color:var(--text-dim);font-size:16px;cursor:pointer;padding:2px 6px">✕</button>`:''}
+        </div>
+      </div>
+      <div class="ticket-numbers">
+        ${[0,1,2,3,4,5].map(i=>`<input id="t-${idx}-${i}" type="number" min="1" max="45" inputmode="numeric" class="ticket-num-input" value="${t.nums[i]||''}" placeholder="${i+1}" oninput="updateTicket(${idx},${i},this)">`).join('')}
+      </div>
+      <div id="detail-${idx}" class="match-detail"></div>
+    </div>
+  `;
+}
+
+// 입력칸 하이라이트/결과만 제자리 갱신 (포커스 유지)
+function refreshTicket(idx){
+  const {data}=getCheckRound();
+  const t=checkState.tickets[idx]; if(!t) return;
+  const nums=ticketNums(t);
+  const slot=document.getElementById('slot-'+idx);
+  const res=document.getElementById('res-'+idx);
+  const det=document.getElementById('detail-'+idx);
+  for(let i=0;i<6;i++){
+    const el=document.getElementById(`t-${idx}-${i}`); if(!el) continue;
+    const n=nums[i];
+    el.classList.remove('match','bonus-match','dup');
+    if(n>=1&&n<=45){
+      if(nums.filter(x=>x===n).length>1) el.classList.add('dup');
+      else if(data&&data.nums.includes(n)) el.classList.add('match');
+      else if(data&&n===data.bonus) el.classList.add('bonus-match');
+    }
+  }
+  const filled=nums.filter(n=>n>=1&&n<=45).length;
+  if(!res) return;
+  if(filled<6){res.className='ticket-result rank-0';res.textContent='입력 중';det.innerHTML='';slot.classList.remove('winner');return;}
+  if(new Set(nums).size<6){res.className='ticket-result rank-0';res.textContent='중복 번호';det.innerHTML='';slot.classList.remove('winner');return;}
+  if(!data){res.className='ticket-result rank-0';res.textContent='추첨 전';det.innerHTML='';slot.classList.remove('winner');return;}
+  const r=determineRank(nums,data.nums,data.bonus);
+  res.className='ticket-result rank-'+r.rank;
+  res.textContent=rankLabel(r.rank);
+  slot.classList.toggle('winner',r.rank>0);
+  det.innerHTML=`<span>일치 <b>${r.matches}개</b></span>${r.bonusMatch?'<span>보너스 <b style="color:var(--amber-light)">✓</b></span>':''}`;
+}
+function refreshAllTickets(){checkState.tickets.forEach((_,i)=>refreshTicket(i));}
+
+function updateTicket(idx,pos,el){
+  let v=el.value.replace(/\D/g,'').slice(0,2);
+  if(v!==el.value) el.value=v;
+  const n=parseInt(v);
+  checkState.tickets[idx].nums[pos]=isNaN(n)?'':n;
+  saveCheckState();
+  refreshTicket(idx);
+  if(checkResultShown) renderCheckResult();
+  // 두 자리 입력되면 다음 칸으로
+  if(v.length===2){
+    const next=document.getElementById(`t-${idx}-${pos+1}`)||document.getElementById(`t-${idx+1}-0`);
+    if(next) next.focus();
+  }
+}
+
+function setCheckRound(r){checkState.round=parseInt(r);checkState.roundSource='manual';saveCheckState();renderCheck();refreshAllTickets();}
+
+function addTicket(){checkState.tickets.push(emptyTicket());saveCheckState();renderCheck();refreshAllTickets();}
+function removeTicket(i){checkState.tickets.splice(i,1);if(!checkState.tickets.length)checkState.tickets=[emptyTicket()];saveCheckState();renderCheck();refreshAllTickets();}
+function resetTickets(){checkState.tickets=[emptyTicket()];checkResultShown=false;saveCheckState();renderCheck();refreshAllTickets();}
+
+// === 결과 패널 ===
+function showCheckResult(){
+  checkResultShown=true;
+  renderCheckResult();
+  const el=document.getElementById('check-result');
+  if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function renderCheckResult(){
+  const el=document.getElementById('check-result'); if(!el) return;
+  const {round,data}=getCheckRound();
+  const src=checkState.roundSource;
+  const games=checkState.tickets.map(ticketNums).filter(n=>n.filter(x=>x>=1&&x<=45).length===6&&new Set(n).size===6);
+  const head=`<div class="result-round">제 ${round}회 <span>· ${drawDateOf(round)} 추첨</span></div>
+    ${src&&src!=='manual'?`<div class="result-src">✓ ${roundSourceLabel(src)}</div>`:''}
+    ${!src?`<div class="result-src warn">⚠ 용지에서 회차를 읽지 못해 ${round}회 기준으로 비교했어요. 회차가 다르면 아래에서 바꿔주세요.</div>`:''}`;
+  if(!games.length){
+    el.innerHTML=`<div class="result-panel">${head}<div class="result-title" style="color:var(--pink-light);margin-top:10px">번호 6개를 모두 입력해주세요</div></div>`;return;
+  }
+  if(!data){
+    const done=round<=drawnRoundNow();
+    el.innerHTML=`<div class="result-panel">${head}
+      <div class="result-title" style="margin-top:10px">${done?'⚠️ 당첨번호 미입력':'⏳ 추첨 전'}</div>
+      <div class="result-sub">${done
+        ?`${round}회 추첨은 끝났지만 앱에 당첨번호가 없어요. <b>이력 탭</b>에 입력하면 ${games.length}게임 결과가 바로 나옵니다.`
+        :`${drawDateOf(round)} 추첨 후 <b>이력 탭</b>에 당첨번호를 입력하면 ${games.length}게임 결과가 나옵니다. 번호는 저장해둘게요.`}</div>
+    </div>`;return;
+  }
+  const results=games.map(n=>({n,...determineRank(n,data.nums,data.bonus)}));
+  const winners=results.filter(r=>r.rank>0);
+  const best=winners.length?Math.min(...winners.map(r=>r.rank)):0;
+  const fixed=winners.reduce((s,r)=>s+(r.rank===4?50000:r.rank===5?5000:0),0);
+  const hasVar=winners.some(r=>r.rank<=3);
+  el.innerHTML=`
+    <div class="result-panel ${best?'win':'lose'}">
+      ${head}
+      <div class="result-verdict">${best?rankLabel(best):'낙첨'}</div>
+      <div class="result-sub">${games.length}게임 중 <b>${winners.length}게임 당첨</b>${best?'':' · 3개 이상 맞은 게임이 없어요'}</div>
+      ${winners.length?`<div class="result-prize">${fixed?fixed.toLocaleString()+'원':''}${fixed&&hasVar?' + ':''}${hasVar?'1~3등 당첨금(회차별 변동)':''}</div>`:''}
+      <div class="result-win">
+        <span class="label">${round}회 당첨번호</span>
+        <div class="result-balls">${data.nums.map(n=>ballHTML(n,'sm')).join('')}<span class="bonus-sep">+</span>${ballHTML(data.bonus,'sm')}</div>
+      </div>
+      <div class="result-list">
+        ${results.map((r,i)=>`
+          <div class="result-row">
+            <span class="ticket-letter" style="width:22px;height:22px;font-size:10px">${String.fromCharCode(65+i)}</span>
+            <div class="result-balls">${r.n.map(x=>`<span class="${data.nums.includes(x)?'':(x===data.bonus?'rb-bonus':'rb-miss')}">${ballHTML(x,'sm')}</span>`).join('')}</div>
+            <div class="result-rank">
+              <span class="ticket-result rank-${r.rank}">${r.rank?r.rank+'등':'낙첨'}</span>
+              <span class="cnt">${r.matches}개${r.bonusMatch?'+B':''}</span>
+            </div>
+          </div>`).join('')}
+      </div>
+      ${best&&best<=3?`<div class="result-sub" style="margin-top:10px">1~3등 당첨금은 <a href="https://www.dhlottery.co.kr/lt645/result" target="_blank">동행복권</a>에서 확인하세요</div>`:''}
+    </div>`;
+}
+
+// === 사진 업로드 ===
+function handlePhotoUpload(event){
+  const file=event.target.files&&event.target.files[0];
+  event.target.value='';
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      scanImage=img; // 원본은 인식용으로 메모리에 보관
+      const c=drawScaled(img,1200);
+      checkState.photo=c.toDataURL('image/jpeg',0.8);
+      scanStatus={state:'idle',msg:''};
+      saveCheckState();
+      renderCheck();refreshAllTickets();
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function removePhoto(){checkState.photo=null;scanImage=null;scanStatus={state:'idle',msg:''};saveCheckState();renderCheck();refreshAllTickets();}
+
+function setScan(state,msg){
+  scanStatus={state,msg};
+  const btn=document.getElementById('scan-btn');
+  if(btn){btn.disabled=scanBusy;btn.textContent=scanBusy?'인식 중...':'🔍 번호 읽고 당첨 확인';}
+  let el=document.getElementById('scan-status');
+  if(!el&&btn){el=document.createElement('div');el.id='scan-status';btn.insertAdjacentElement('afterend',el);}
+  if(el){el.className='scan-status '+state;el.innerHTML=(state==='scanning'?'<span class="spinner"></span>':'')+msg;}
+}
+
+// === 이미지 유틸 ===
+function drawScaled(img,max){
+  const w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+  const s=Math.min(1,max/Math.max(w,h));
+  const c=document.createElement('canvas');
+  c.width=Math.round(w*s);c.height=Math.round(h*s);
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+  return c;
+}
+function loadImg(src){
+  return new Promise(res=>{if(!src)return res(null);const i=new Image();i.onload=()=>res(i);i.onerror=()=>res(null);i.src=src;});
+}
+const _scripts={};
+function loadScript(src){
+  if(!_scripts[src]){
+    _scripts[src]=new Promise((res,rej)=>{
+      const s=document.createElement('script');s.src=src;s.async=true;
+      s.onload=()=>res();s.onerror=()=>{delete _scripts[src];rej(new Error('스크립트 로드 실패'));};
+      document.head.appendChild(s);
+    });
+  }
+  return _scripts[src];
+}
+
+// === 1순위: QR코드 인식 ===
+// 동행복권 QR 형식: ...?v=RRRR + [게임구분문자 + 12자리(6개 번호)] × 최대5 + 일련번호
+function parseLottoQR(text){
+  if(!text) return null;
+  const m=String(text).match(/[?&]v=([0-9a-zA-Z]+)/);
+  if(!m) return null;
+  const v=m[1];
+  const round=parseInt(v.slice(0,4),10);
+  if(!(round>0)) return null;
+  const games=[];
+  const re=/[a-zA-Z](\d{12})/g;
+  let g;
+  while((g=re.exec(v.slice(4)))&&games.length<5){
+    const nums=g[1].match(/\d{2}/g).map(Number);
+    if(nums.every(n=>n>=1&&n<=45)&&new Set(nums).size===6) games.push(nums.sort((a,b)=>a-b));
+  }
+  return games.length?{round,games}:null;
+}
+
+async function readQR(img){
+  // 안드로이드 크롬 내장 인식기
+  if('BarcodeDetector' in window){
+    try{
+      const det=new BarcodeDetector({formats:['qr_code']});
+      for(const max of [1600,1000]){
+        const codes=await det.detect(drawScaled(img,max));
+        const hit=codes.find(c=>/v=/.test(c.rawValue));
+        if(hit) return hit.rawValue;
+      }
+    }catch(e){}
+  }
+  // 범용 인식기 (jsQR)
+  await loadScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js');
+  if(typeof jsQR!=='function') return null;
+  const tried=new Set();
+  for(const max of [1200,1800,800,2400]){
+    const c=drawScaled(img,max);
+    if(tried.has(c.width)) continue;
+    tried.add(c.width);
+    const d=c.getContext('2d').getImageData(0,0,c.width,c.height);
+    const r=jsQR(d.data,c.width,c.height,{inversionAttempts:'attemptBoth'});
+    if(r&&r.data&&/v=/.test(r.data)) return r.data;
+    await new Promise(r=>setTimeout(r,0)); // UI 멈춤 방지
+  }
+  return null;
+}
+
+// === 2순위: 숫자 문자인식 (OCR) ===
+function parseOCRText(text){
+  const lastRound=allData[allData.length-1].round;
+  const maxRound=Math.max(lastRound,drawnRoundNow())+2;
+  const games=[],seen=new Set();
+  let printRound=null,dateRound=null;
+  String(text).split(/\n/).forEach(line=>{
+    const toks=line.match(/\d+/g)||[];
+    // (a) 날짜 → 토요일이면 추첨일 → 회차 (지급기한 등 미래 날짜는 범위로 제외)
+    const dates=[];
+    toks.forEach((t,i)=>{
+      if(t.length===8) dates.push([+t.slice(0,4),+t.slice(4,6),+t.slice(6,8)]);
+      if(t.length===4&&toks[i+1]&&toks[i+2]&&toks[i+1].length<=2&&toks[i+2].length<=2) dates.push([+t,+toks[i+1],+toks[i+2]]);
+    });
+    dates.forEach(([y,m,d])=>{
+      if(y<2002||m<1||m>12||d<1||d>31) return;
+      const r=roundOfDrawDate(y,m,d);
+      if(r&&r<=maxRound&&(!dateRound||r>dateRound)) dateRound=r;
+    });
+    // (b) 인쇄된 회차 숫자
+    toks.forEach(t=>{
+      if(t.length===4&&!printRound){const n=+t;if(n>=lastRound-100&&n<=maxRound) printRound=n;}
+    });
+    // (c) 게임 번호: 1~45 두 자리 숫자 6개 오름차순
+    const pairs=[];
+    toks.forEach(t=>{
+      if(t.length===2) pairs.push(+t);
+      else if(t.length>=6&&t.length%2===0&&t.length!==8) t.match(/\d{2}/g).forEach(p=>pairs.push(+p));
+    });
+    for(let i=0;i+6<=pairs.length;i++){
+      const s=pairs.slice(i,i+6);
+      if(s.every(n=>n>=1&&n<=45)&&s.every((n,k)=>k===0||n>s[k-1])){
+        const key=s.join(',');
+        if(!seen.has(key)){seen.add(key);games.push(s);}
+        break;
+      }
+    }
+  });
+  const round=dateRound||printRound;
+  return {round,roundSource:dateRound?'date':(printRound?'print':null),games:games.slice(0,5)};
+}
+
+function preprocessForOCR(img){
+  const w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+  const s=Math.min(2,1800/Math.max(w,h));
+  const c=document.createElement('canvas');
+  c.width=Math.round(w*s);c.height=Math.round(h*s);
+  const ctx=c.getContext('2d');
+  ctx.drawImage(img,0,0,c.width,c.height);
+  const d=ctx.getImageData(0,0,c.width,c.height),p=d.data;
+  for(let i=0;i<p.length;i+=4){
+    let g=0.299*p[i]+0.587*p[i+1]+0.114*p[i+2];
+    g=Math.max(0,Math.min(255,(g-128)*1.6+128));
+    p[i]=p[i+1]=p[i+2]=g;
+  }
+  ctx.putImageData(d,0,0);
+  return c;
+}
+
+async function readOCR(img){
+  await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+  const worker=await Tesseract.createWorker('eng');
+  try{
+    await worker.setParameters({tessedit_char_whitelist:'0123456789 ',tessedit_pageseg_mode:'6'});
+    const {data}=await worker.recognize(preprocessForOCR(img));
+    return parseOCRText(data.text||'');
+  }finally{
+    await worker.terminate();
+  }
+}
+
+// === 확인 버튼: 인식 → 자동 기입 → 결과 ===
+async function scanPhoto(){
+  if(scanBusy) return;
+  const img=scanImage||await loadImg(checkState.photo);
+  if(!img){setScan('error','사진을 다시 선택해주세요.');return;}
+  scanBusy=true;
+  try{
+    setScan('scanning','QR코드 찾는 중...');
+    let qr=null;
+    try{qr=await readQR(img);}catch(e){}
+    const parsed=parseLottoQR(qr);
+    if(parsed){applyScan(parsed.round,parsed.games,'QR코드','qr');return;}
+
+    setScan('scanning','숫자 읽는 중... (처음 한 번은 10~20초 걸려요)');
+    let ocr=null;
+    try{ocr=await readOCR(img);}catch(e){
+      setScan('error','인터넷 연결이 필요해요. 연결 후 다시 시도하거나 번호를 직접 입력해주세요.');return;
+    }
+    if(ocr&&ocr.games.length){applyScan(ocr.round,ocr.games,'숫자 인식',ocr.roundSource);return;}
+    setScan('error','번호를 읽지 못했어요. 용지를 평평하게 펴고 QR코드가 잘 보이게 다시 찍거나, 아래에 직접 입력해주세요.');
+  }finally{
+    scanBusy=false;
+    const btn=document.getElementById('scan-btn');
+    if(btn){btn.disabled=false;btn.textContent='🔍 번호 읽고 당첨 확인';}
+  }
+}
+
+function applyScan(round,games,method,src){
+  checkState.tickets=games.map(n=>({nums:[...n]}));
+  if(round){checkState.round=round;checkState.roundSource=src||null;}
+  else{checkState.round=null;checkState.roundSource=null;} // 못 읽으면 최신 회차 기준 + 경고
+  checkResultShown=true;
+  const tip=method==='숫자 인식'?' · 사진과 번호가 맞는지 확인하세요':'';
+  scanStatus={state:round?'done':'error',msg:round
+    ?`✓ ${method}로 ${games.length}게임 인식 · 제${round}회`+tip
+    :`${games.length}게임 번호는 읽었지만 회차를 못 읽었어요. 아래 회차를 확인해주세요`+tip};
+  saveCheckState();
+  renderCheck();refreshAllTickets();
+  setTimeout(()=>{const el=document.getElementById('check-result');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},150);
+}
+
+// === Service Worker 등록 (안드로이드 PWA 설치 활성화) ===
+// data: URL로 최소 SW 등록 - file:// 환경에서는 무시됨 (오류 없음)
+if('serviceWorker' in navigator && location.protocol!=='file:'){
+  const swCode=`
+    self.addEventListener('install',e=>self.skipWaiting());
+    self.addEventListener('activate',e=>self.clients.claim());
+    self.addEventListener('fetch',e=>{});
+  `;
+  const blob=new Blob([swCode],{type:'application/javascript'});
+  const swUrl=URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(()=>{});
+}
+
+// beforeinstallprompt 이벤트 (안드로이드 Chrome의 설치 프롬프트 캡처)
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  // 설치 버튼을 install-banner에 활성화
+  const banner=document.getElementById('install-banner');
+  if(banner){
+    banner.innerHTML=`
+      📱 <b>탭해서 앱 설치하기</b><br>
+      <span style="font-size:11px;opacity:.9">홈 화면에 앱으로 추가됩니다 (바로가기 아님)</span>
+    `;
+    banner.classList.add('show');
+    banner.onclick=async()=>{
+      if(!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const{outcome}=await deferredPrompt.userChoice;
+      if(outcome==='accepted'){
+        banner.classList.remove('show');
+        localStorage.setItem('install-banner-dismissed','1');
+      }
+      deferredPrompt=null;
+    };
+  }
+});
+
+// === 초기화 ===
+function init(){
+  // === 저장된 사용자 추가 회차 복원 ===
+  const saved=loadUserData();
+  if(saved.length>0){
+    saved.forEach(d=>{
+      if(!allData.find(x=>x.round===d.round)){
+        allData.push(d);
+      }
+    });
+    allData.sort((a,b)=>a.round-b.round);
+  }
+
+  loadCheckState();
+
+  appStats=buildStats(allData);
+  recs=generateRecs(appStats);
+  magicRecs=generateMagicRecs(appStats).sort((a,b)=>b.score-a.score);
+  renderLatest();
+  renderRecommend();
+  renderMagic();
+  renderCheck();refreshAllTickets();
+  renderStats();
+  renderNumbers();
+  renderHistory();
+
+  // 저장된 회차 알림 (처음 로드 시 표시)
+  if(saved.length>0){
+    setTimeout(()=>{
+      const bar=document.getElementById('restore-notice');
+      if(bar){
+        bar.textContent=`💾 저장된 ${saved.length}개 회차 복원됨 (${saved.map(d=>d.round).join(', ')}회)`;
+        bar.classList.add('show');
+        setTimeout(()=>bar.classList.remove('show'),4000);
+      }
+    },300);
+  }
+
+  // PWA 설치 안내
+  const isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
+  const dismissed=localStorage.getItem('install-banner-dismissed');
+  if(!isStandalone&&!dismissed){
+    setTimeout(()=>{
+      const banner=document.getElementById('install-banner');
+      if(banner){
+        banner.classList.add('show');
+        banner.onclick=()=>{banner.classList.remove('show');localStorage.setItem('install-banner-dismissed','1');};
+      }
+    },800);
+  }
+}
+init();
+</script>
+</body>
+</html>
