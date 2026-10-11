@@ -591,6 +591,25 @@ a{color:var(--purple-light)}
 .bt-grid>div{padding:10px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
 .bt-grid .ms-big{font-size:17px;margin:2px 0}
 
+
+.uni-seq{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.uni-cell{display:flex;flex-direction:column;align-items:center;padding:5px 0;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
+.uni-cell b{font-family:'Unbounded',sans-serif;font-size:13px;color:var(--text)}
+.uni-cell span{font-size:9px;color:var(--text-dim)}
+.uni-cell.cur{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.4)}
+.uni-cell.cur b{color:var(--amber-light)}
+.gap-table{display:flex;flex-direction:column;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.gap-head,.gap-row{display:grid;grid-template-columns:40px 1fr 1fr 1fr 1.1fr;align-items:center;padding:7px 10px;font-size:11.5px;font-variant-numeric:tabular-nums}
+.gap-head.lag,.gap-row.lag{grid-template-columns:1.4fr 1fr 1fr 1fr 1fr}
+.gap-head{background:rgba(255,255,255,.06);color:var(--text-mute);font-weight:700;font-size:10.5px}
+.gap-row{color:var(--text);border-top:1px solid var(--border)}
+.gap-row span:not(:first-child),.gap-head span:not(:first-child){text-align:right}
+.gap-row i{font-style:normal;font-size:9.5px;color:var(--text-dim)}
+.gap-row.cur{background:rgba(251,191,36,.08)}
+.gap-row.cur span:first-child{color:var(--amber-light);font-weight:700}
+.gap-row .long{color:var(--pink-light);font-weight:700}
+.gap-row.dim{color:var(--text-mute);background:rgba(255,255,255,.03)}
+
 /* === 이력: 검색/정렬/전체목록 === */
 .order-toggle{display:flex;padding:3px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--border)}
 .order-toggle button{border:0;background:none;color:var(--text-mute);font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:9px;cursor:pointer;font-family:inherit}
@@ -1385,7 +1404,6 @@ function generateMagicRecs(st,opts){
   if(useSerial){
     const pool=parallelPool(DATA,10);
     if(pool.length){
-      strategies.push({name:'평행우주형',icon:'🌌',desc:'최근 10회 평행우주 조합 중 최고점',key:'parallel',all:pool});
       const ranked=pool.map(c=>({c,o:c.filter(n=>TOPSET.has(n)).length})).sort((a,b)=>b.o-a.o);
       const cut=ranked.length?ranked[Math.min(ranked.length-1,14)].o:0;
       const best=ranked.filter(x=>x.o>=Math.max(cut,ranked[0].o-1)).map(x=>x.c);
@@ -1655,7 +1673,7 @@ function renderMagic(){
   });
 
   html+=`
-    <div class="info-text"><b style="color:var(--text)">전략 ${magicRecs.length}종</b> · 쿼드 · 트리플 · 페어 · TOP집중 · 하이브리드 · TOP15×페어 · TOP15×트리플 · 평행우주 · TOP15×평행우주<br>
+    <div class="info-text"><b style="color:var(--text)">전략 ${magicRecs.length}종</b> · 쿼드 · 트리플 · 페어 · TOP집중 · 하이브리드 · TOP15×페어 · TOP15×트리플 · TOP15×평행우주<br>
     TOP15×페어/트리플은 6개 번호를 모두 매직 TOP15 안에서 고르고, 그 안에서 자주 함께 나온 쌍·3개 조합을 묶습니다.</div>
     <div class="info-text">매직점수 = 조합 동반출현(페어 + 트리플×3 + 쿼드×8 − 직전회차 겹침×5)<br>
     + 일련번호 가산점 최대 66점 (27S 일련 12 · 27S 끝수 12 · 3G 12 · 등급총합 12 · 자리범위 18)<br>
@@ -1990,6 +2008,8 @@ function magicSerialHTML(){
       </div>
     </div>
 
+    ${parallelGapHTML()}
+
     <div class="glass-card">
       <div class="ms-title">📍 자리별 분석 <span>(당첨번호 재정열)</span></div>
       <div class="ms-desc">작은 번호부터 1~6번째 자리별 범위와 끝수 등급 분포. 범위는 역대 80%가 들어간 구간</div>
@@ -2127,6 +2147,88 @@ function paintBacktest(r){
     </div>
     <div class="info-text" style="padding:10px 0 0">각 회차 직전까지의 데이터만으로 두 방식의 추천을 만들어 실제 당첨번호와 비교했어요(게임당 평균 일치 개수). 추천에 무작위 요소가 있어 다시 검증하면 숫자가 조금씩 달라집니다. <a href="javascript:void(0)" onclick="_btCache=null;runSerialBacktest(${r.count})">다시 검증</a></div>`;
 }
+
+// ===== 평행우주 간격 분석 =====
+let _parGapCache=null;
+function parallelGapStats(){
+  const key=allData.length+':'+allData[allData.length-1].round;
+  if(_parGapCache&&_parGapCache.key===key) return _parGapCache;
+  const rows=allData.map(d=>{const s=comboRank(d.nums);return {round:d.round,nums:d.nums,serial:s,S:Math.floor(s/1e6),low:s%1e6};});
+  const n=rows.length;
+  // 우주별 등장 간격
+  const uni=[];
+  for(let b=0;b<9;b++){
+    const idx=[];rows.forEach((r,i)=>{if(r.S===b)idx.push(i);});
+    const gaps=idx.slice(1).map((v,i)=>v-idx[i]);
+    uni.push({b,cnt:idx.length,avg:gaps.length?gaps.reduce((a,c)=>a+c,0)/gaps.length:null,max:gaps.length?Math.max(...gaps):null,
+      since:idx.length?n-1-idx[idx.length-1]:null,theory:b===8?8145060/145061:8145060/1e6});
+  }
+  // 각 회차의 평행우주 조합 (자기 자신 제외 최대 8개)
+  const P=rows.map(r=>{const o=[];for(let b=0;b<9;b++){if(b===r.S)continue;const c=comboUnrank(b*1e6+r.low);if(c)o.push(c);}return o;});
+  const best=(i,j)=>{const a=new Set(rows[i].nums);let m=0;for(const c of P[j])m=Math.max(m,c.filter(x=>a.has(x)).length);return m;};
+  const lags=[1,2,3,5,10].map(k=>{
+    const cnt=[0,0,0,0,0,0,0];let tot=0;
+    for(let i=k;i<n;i++){cnt[best(i,i-k)]++;tot++;}
+    return {k,tot,p3:(cnt[3]+cnt[4]+cnt[5]+cnt[6])/tot,p4:(cnt[4]+cnt[5]+cnt[6])/tot,c5:cnt[5]+cnt[6],c6:cnt[6]};
+  });
+  // 4개 이상 맞은 사례 (1~10회 전)
+  const hits=[];
+  for(let i=1;i<n;i++){
+    for(let k=1;k<=10&&k<=i;k++){
+      const m=best(i,i-k);
+      if(m>=4) hits.push({round:rows[i].round,from:rows[i-k].round,k,m});
+    }
+  }
+  // 정확히 같은 조합이 된 경우 (뒤 6자리가 같은 회차)
+  const byLow={};rows.forEach(r=>(byLow[r.low]=byLow[r.low]||[]).push(r.round));
+  const exact=Object.values(byLow).filter(a=>a.length>1);
+  _parGapCache={key,rows,uni,lags,hits,exact,n};
+  return _parGapCache;
+}
+// 비교 기준: 아무 조합 8개를 골랐을 때 최고 일치 확률 (이론값)
+const RAND8_P3=1-Math.pow(1-194130/8145060,8);
+const RAND8_P4=1-Math.pow(1-11350/8145060,8);
+
+function parallelGapHTML(){
+  const G=parallelGapStats();
+  const last=G.rows[G.n-1];
+  const pct=v=>(v*100).toFixed(v<0.1?2:1)+'%';
+  const recentS=G.rows.slice(-20);
+  const hits5=G.hits.filter(h=>h.m>=5);
+  const recent4=G.hits.filter(h=>h.round>last.round-60);
+  return `
+    <div class="glass-card">
+      <div class="ms-title">⏱ 평행우주 간격 분석</div>
+      <div class="ms-desc">실제 당첨조합이 몇 번 우주(일련번호 백만 자리)에서 나왔는지, 같은 우주가 다시 나오기까지의 간격</div>
+      <div class="ms-sub">최근 20회 당첨 우주</div>
+      <div class="uni-seq">${recentS.map((r,i)=>`<div class="uni-cell ${i===recentS.length-1?'cur':''}"><b>${r.S}</b><span>${r.round%1000}</span></div>`).join('')}</div>
+      <div class="ms-sub">우주별 간격</div>
+      <div class="gap-table">
+        <div class="gap-head"><span>우주</span><span>출현</span><span>평균</span><span>최대</span><span>지난 회차</span></div>
+        ${G.uni.map(u=>`<div class="gap-row ${u.b===last.S?'cur':''}">
+          <span>[${u.b}]</span><span>${u.cnt}회</span>
+          <span>${u.avg==null?'-':u.avg.toFixed(1)}<i>/${u.theory.toFixed(1)}</i></span>
+          <span>${u.max==null?'-':u.max}</span>
+          <span class="${u.since!=null&&u.avg&&u.since>u.avg*2?'long':''}">${u.since==null?'-':u.since===0?'이번':u.since+'회'}</span>
+        </div>`).join('')}
+      </div>
+      <div class="ms-desc" style="margin-top:6px">평균 칸의 작은 숫자는 조합 수로 계산한 이론 간격 · 분홍색은 평균의 2배 넘게 안 나온 우주</div>
+
+      <div class="ms-sub" style="margin-top:16px">지난 회차의 평행우주가 나중에 맞은 기록</div>
+      <div class="ms-desc" style="margin-top:0">N회 전 회차의 평행우주 조합 8개 중 가장 많이 맞은 개수 기준</div>
+      <div class="gap-table" style="margin-top:8px">
+        <div class="gap-head lag"><span>몇 회 전</span><span>3개+</span><span>4개+</span><span>5개+</span><span>1등</span></div>
+        ${G.lags.map(l=>`<div class="gap-row lag"><span>${l.k}회 전</span><span>${pct(l.p3)}</span><span>${pct(l.p4)}</span><span>${l.c5}건</span><span>${l.c6}건</span></div>`).join('')}
+        <div class="gap-row lag dim"><span>아무 조합 8개</span><span>${pct(RAND8_P3)}</span><span>${pct(RAND8_P4)}</span><span>-</span><span>-</span></div>
+      </div>
+      <div class="ms-desc" style="margin-top:8px">
+        5개 일치: ${hits5.length?hits5.map(h=>`<b>${h.round}회</b> ← ${h.from}회(${h.k}회 전)`).join(', '):'없음'}<br>
+        최근 60회 4개+ 일치: ${recent4.length?recent4.map(h=>`<b>${h.round}회</b> ← ${h.k}회 전`).join(', '):'없음'}<br>
+        평행우주 조합이 그대로 1등이 된 경우: <b>${G.exact.length?G.exact.map(a=>a.join('↔')+'회').join(', '):'없음'}</b>
+      </div>
+    </div>`;
+}
+
 function magicStatsHTML(){
   const st=appStats;
   const last=allData[allData.length-1];
