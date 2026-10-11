@@ -655,6 +655,13 @@ a{color:var(--purple-light)}
 .ana-tips{margin:8px 0 0 18px;padding:0;display:flex;flex-direction:column;gap:7px;font-size:12px;line-height:1.6;color:var(--text-mute)}
 .ana-tips b{color:var(--text)}
 
+
+.paste-box{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
+.paste-box summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--purple-soft);list-style:none}
+.paste-box summary::-webkit-details-marker{display:none}
+.paste-text{width:100%;padding:10px 12px;border:1px solid var(--border-2);border-radius:12px;background:rgba(255,255,255,.05);color:var(--text);font-size:13.5px;font-family:inherit;line-height:1.6;outline:none;resize:vertical}
+.paste-text:focus{border-color:var(--purple)}
+
 /* === 이력: 검색/정렬/전체목록 === */
 .order-toggle{display:flex;padding:3px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--border)}
 .order-toggle button{border:0;background:none;color:var(--text-mute);font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:9px;cursor:pointer;font-family:inherit}
@@ -3266,7 +3273,7 @@ function renderCheck(){
 
     <div class="input-card" style="background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border-color:var(--border)">
       <div class="input-title">📸 로또 용지 사진</div>
-      <div class="input-sub">하단 <b style="color:var(--cyan-light)">QR코드</b>가 선명하게 나오게 찍으면 가장 정확해요</div>
+      <div class="input-sub">종이 용지는 하단 <b style="color:var(--cyan-light)">QR코드</b>가 선명하게, 동행복권 <b style="color:var(--cyan-light)">구매내역 캡처</b>는 번호 표가 잘 보이게 올려주세요</div>
       <input id="photo-cam" type="file" accept="image/*" capture="environment" onchange="handlePhotoUpload(event)" style="display:none">
       <input id="photo-gal" type="file" accept="image/*" onchange="handlePhotoUpload(event)" style="display:none">
       ${checkState.photo?`
@@ -3288,6 +3295,13 @@ function renderCheck(){
           <label for="photo-gal" class="photo-upload">🖼<br>갤러리 선택</label>
         </div>
       `}
+      <details class="paste-box">
+        <summary>📋 번호를 글자로 붙여넣기</summary>
+        <div class="input-sub" style="margin:8px 0">동행복권 구매내역이나 메모의 번호를 복사해 붙여넣으세요. 한 줄에 한 게임씩 읽어요.</div>
+        <textarea id="paste-text" class="paste-text" rows="5" placeholder="예)&#10;A 낙첨 3 8 24 27 35 40&#10;B 낙첨 3 8 12 20 27 35"></textarea>
+        <button class="btn-outline" style="margin-top:8px;height:42px" onclick="applyPaste()">번호 읽고 당첨 확인</button>
+        <div id="paste-msg"></div>
+      </details>
     </div>
 
     <div id="check-result"></div>
@@ -3596,13 +3610,15 @@ function parseOCRText(text){
     toks.forEach(t=>{
       if(t.length===4&&!printRound){const n=+t;if(n>=lastRound-100&&n<=maxRound) printRound=n;}
     });
-    // (c) 게임 번호: 1~45 두 자리 숫자 6개 오름차순
+    // (c) 게임 번호: 1~45 숫자 6개 오름차순 (용지 '03' 형식, 홈페이지 '3' 형식 모두)
     const pairs=[];
     toks.forEach(t=>{
-      if(t.length===2) pairs.push(+t);
+      if(t.length<=2) pairs.push(+t);
       else if(t.length>=6&&t.length%2===0&&t.length!==8) t.match(/\d{2}/g).forEach(p=>pairs.push(+p));
+      else pairs.push(-1); // 회차·날짜 등은 끊어주기
     });
-    for(let i=0;i+6<=pairs.length;i++){
+    // 줄 앞쪽의 A~E·'낙첨' 글자가 숫자로 잘못 읽혀도 되도록, 가장 오른쪽 조합을 사용
+    for(let i=pairs.length-6;i>=0;i--){
       const s=pairs.slice(i,i+6);
       if(s.every(n=>n>=1&&n<=45)&&s.every((n,k)=>k===0||n>s[k-1])){
         const key=s.join(',');
@@ -3671,6 +3687,17 @@ async function scanPhoto(){
   }
 }
 
+function applyPaste(){
+  const ta=document.getElementById('paste-text');
+  const msg=document.getElementById('paste-msg');
+  const text=(ta&&ta.value)||'';
+  const r=parseOCRText(text.replace(/[^0-9\n]+/g,' '));
+  if(!r.games.length){
+    if(msg) msg.innerHTML='<div class="scan-status error">번호 6개짜리 줄을 찾지 못했어요. 한 줄에 번호 6개씩 있는지 확인해주세요.</div>';
+    return;
+  }
+  applyScan(r.round,r.games,'붙여넣기',r.roundSource);
+}
 function applyScan(round,games,method,src){
   checkState.tickets=games.map(n=>({nums:[...n]}));
   if(round){checkState.round=round;checkState.roundSource=src||null;}
