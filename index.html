@@ -585,7 +585,8 @@ a{color:var(--purple-light)}
 
 .ser-line{display:flex;flex-wrap:wrap;gap:5px 10px;font-size:11px;color:var(--text-mute);padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
 .ser-line b{color:var(--text);font-weight:700}
-.ser-line.sm{display:block;padding:0;border:0;background:none;font-size:10.5px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ser-line.sm{display:block;padding:0;border:0;background:none;font-size:10.5px;color:var(--text-dim);line-height:1.45}
+.ser-line.sm .strat-name{color:var(--pink-light);font-weight:700}
 .bt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
 .bt-grid>div{padding:10px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid var(--border)}
 .bt-grid .ms-big{font-size:17px;margin:2px 0}
@@ -1328,9 +1329,68 @@ function generateMagicRecs(st,opts){
   ];
 
   function totalScore(nums){return magicScore(nums)+(PROF?serialInfo(nums,PROF).score:0);}
+
+  // === 매직 TOP15 × 페어 / 트리플 결합 ===
+  const TOPSET=new Set(TOP_NUMS);
+  let T=TOP_NUMS.filter(n=>!lastDrawSet.has(n));
+  if(T.length<9) T=[...TOP_NUMS];
+  // TOP15 번호끼리 함께 나온 횟수 (전체 회차)
+  const tPairs=[];
+  for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++){
+    const a=Math.min(T[i],T[j]),b=Math.max(T[i],T[j]);
+    tPairs.push([a,b,(st.coAppear&&st.coAppear[a])?st.coAppear[a][b]:0]);
+  }
+  tPairs.sort((x,y)=>y[2]-x[2]);
+  const tTriMap={};
+  const TS=new Set(T);
+  DATA.forEach(d=>{
+    const m=d.nums.filter(n=>TS.has(n)).sort((a,b)=>a-b);
+    for(let i=0;i<m.length;i++)for(let j=i+1;j<m.length;j++)for(let k=j+1;k<m.length;k++){
+      const key=m[i]+','+m[j]+','+m[k];tTriMap[key]=(tTriMap[key]||0)+1;
+    }
+  });
+  const tTriples=Object.entries(tTriMap).map(([k,c])=>[...k.split(',').map(Number),c]).sort((x,y)=>y[3]-x[3]);
+  const fillFromT=picked=>{
+    const out=[...picked];
+    for(const n of shuffle(T)){if(out.length>=6)break;if(!out.includes(n))out.push(n);}
+    return out;
+  };
+  if(T.length>=6&&tPairs.length){
+    strategies.push({
+      name:'TOP15×페어형',icon:'🔗',desc:'매직 TOP15 안에서 자주 함께 나온 쌍 3개 결합',key:'top15pair',
+      gen:()=>{
+        const pool=shuffle(tPairs.slice(0,25));
+        const s=new Set();
+        for(const p of pool){if(s.size>=6)break;if(!s.has(p[0])&&!s.has(p[1])){s.add(p[0]);s.add(p[1]);}}
+        return fillFromT([...s]);
+      }
+    });
+  }
+  if(T.length>=6&&tTriples.length>=2){
+    strategies.push({
+      name:'TOP15×트리플형',icon:'🔱',desc:'매직 TOP15 안에서 자주 함께 나온 3개 조합 2개 결합',key:'top15tri',
+      gen:()=>{
+        const pool=tTriples.slice(0,30);
+        const t1=pool[Math.floor(Math.random()*pool.length)];
+        const used=new Set(t1.slice(0,3));
+        const rest=pool.filter(t=>!used.has(t[0])&&!used.has(t[1])&&!used.has(t[2]));
+        if(!rest.length) return fillFromT(t1.slice(0,3));
+        const t2=rest[Math.floor(Math.random()*Math.min(rest.length,15))];
+        return [...t1.slice(0,3),...t2.slice(0,3)];
+      }
+    });
+  }
+
+  // === 평행우주형 + TOP15×평행우주형 ===
   if(useSerial){
     const pool=parallelPool(DATA,10);
-    if(pool.length) strategies.push({name:'평행우주형',icon:'🌌',desc:'최근 10회 평행우주 조합 중 최고점',key:'parallel',all:pool});
+    if(pool.length){
+      strategies.push({name:'평행우주형',icon:'🌌',desc:'최근 10회 평행우주 조합 중 최고점',key:'parallel',all:pool});
+      const ranked=pool.map(c=>({c,o:c.filter(n=>TOPSET.has(n)).length})).sort((a,b)=>b.o-a.o);
+      const cut=ranked.length?ranked[Math.min(ranked.length-1,14)].o:0;
+      const best=ranked.filter(x=>x.o>=Math.max(cut,ranked[0].o-1)).map(x=>x.c);
+      if(best.length) strategies.push({name:'TOP15×평행우주형',icon:'🪐',desc:'평행우주 조합 중 매직 TOP15 번호가 가장 많이 든 조합',key:'top15parallel',all:best});
+    }
   }
 
   const result=[];
@@ -1377,7 +1437,8 @@ function generateMagicRecs(st,opts){
       magicPart:Math.round(magicScore(nums)*10)/10,
       serialPart:ser?Math.round(ser.score*10)/10:0,
       score:Math.round(bestScore*10)/10,
-      strategy:strat.name,icon:strat.icon,desc:strat.desc,
+      strategy:strat.name,icon:strat.icon,desc:strat.desc,key:strat.key,
+      top15Hits:nums.filter(n=>TOP_NUMS.includes(n)).length,
       pairHits,tripleHits,quadHits,
       magicScoreSum:nums.reduce((a,n)=>a+(SCORE[n]||0),0),
       lastOverlap:nums.filter(n=>lastDrawSet.has(n)).length
@@ -1587,13 +1648,15 @@ function renderMagic(){
         </div>
         <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
           <div class="runner-balls">${r.nums.map(n=>ballHTML(n,'sm')).join('')}</div>
-          ${r.ser?`<div class="ser-line sm">${r.strategy} · 27S ${r.ser.pat} · 3G ${g3Short(r.ser.g3)} · 자리 ${r.ser.inBand}/6</div>`:''}
+          <div class="ser-line sm"><b class="strat-name">${r.strategy}</b> · TOP15 ${r.top15Hits}/6${r.ser?` · 27S ${r.ser.pat} · 3G ${g3Short(r.ser.g3)}`:''}</div>
         </div>
       </div>
     `;
   });
 
   html+=`
+    <div class="info-text"><b style="color:var(--text)">전략 ${magicRecs.length}종</b> · 쿼드 · 트리플 · 페어 · TOP집중 · 하이브리드 · TOP15×페어 · TOP15×트리플 · 평행우주 · TOP15×평행우주<br>
+    TOP15×페어/트리플은 6개 번호를 모두 매직 TOP15 안에서 고르고, 그 안에서 자주 함께 나온 쌍·3개 조합을 묶습니다.</div>
     <div class="info-text">매직점수 = 조합 동반출현(페어 + 트리플×3 + 쿼드×8 − 직전회차 겹침×5)<br>
     + 일련번호 가산점 최대 66점 (27S 일련 12 · 27S 끝수 12 · 3G 12 · 등급총합 12 · 자리범위 18)<br>
     ${top&&top.ser?`1번 조합: 동반출현 ${top.magicPart} + 일련번호 ${top.serialPart}점`:''}</div>
@@ -1611,7 +1674,7 @@ function renderMagic(){
 function g3Short(k){const [l,m,h]=k.split('-');return `저${l}중${m}고${h}`;}
 function serLine(t){
   const s=t.ser;
-  return `<span>일련 <b>${s.serial.toLocaleString()}</b></span><span>27S <b>${s.pat}</b></span><span>끝수 <b>${s.epat}</b></span><span>3G <b>${g3Short(s.g3)}</b></span><span>총합 <b>${s.sum}</b></span><span>자리 <b>${s.inBand}/6</b></span>`;
+  return `<span>TOP15 <b>${t.top15Hits}/6</b></span><span>일련 <b>${s.serial.toLocaleString()}</b></span><span>27S <b>${s.pat}</b></span><span>끝수 <b>${s.epat}</b></span><span>3G <b>${g3Short(s.g3)}</b></span><span>총합 <b>${s.sum}</b></span><span>자리 <b>${s.inBand}/6</b></span>`;
 }
 function basicStatsHTML(){
   const st=appStats;

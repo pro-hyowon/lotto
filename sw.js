@@ -1,5 +1,5 @@
 // LOTTO LAB 서비스워커: 앱 설치 + 오프라인 실행
-const CACHE='lotto-lab-v1';
+const CACHE='lotto-lab-v2';
 const CORE=['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
 
 self.addEventListener('install',e=>{
