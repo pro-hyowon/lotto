@@ -610,6 +610,51 @@ a{color:var(--purple-light)}
 .gap-row .long{color:var(--pink-light);font-weight:700}
 .gap-row.dim{color:var(--text-mute);background:rgba(255,255,255,.03)}
 
+
+/* === 내 번호 정밀 분석 === */
+.ana-btn{height:48px;border-color:rgba(124,92,255,.45);background:linear-gradient(135deg,rgba(124,92,255,.15),rgba(34,211,238,.08));font-weight:700}
+.ana-panel{display:flex;flex-direction:column;gap:10px}
+.ana-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.ana-tabs button{flex:none;border:1px solid var(--border-2);background:rgba(255,255,255,.05);color:var(--text-mute);font-family:'Unbounded',sans-serif;font-size:12px;font-weight:700;padding:6px 12px;border-radius:10px;cursor:pointer}
+.ana-tabs button small{font-family:'Pretendard',sans-serif;font-weight:500;font-size:10.5px;margin-left:3px}
+.ana-tabs button.on{background:linear-gradient(135deg,rgba(124,92,255,.55),rgba(244,114,182,.4));color:#fff;border-color:transparent}
+.ana-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ana-score{text-align:right}
+.ana-score .ms-big{font-size:28px}
+.ana-score small{font-size:13px}
+.ana-verdict{font-size:17px;font-weight:800;color:var(--text)}
+.ana-box{padding:12px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
+.ana-box.risk{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.3)}
+.ana-box.strategy{background:linear-gradient(160deg,rgba(124,92,255,.12),rgba(34,211,238,.06));border-color:rgba(124,92,255,.3)}
+.ana-note{font-size:12px;line-height:1.65;color:var(--text-mute);margin-top:6px}
+.ana-note b{color:var(--text)}
+.ana-balls{display:flex;align-items:center;gap:3px;margin-top:8px}
+.ana-balls .ball{width:27px;height:27px;font-size:10.5px;animation:none}
+.ana-balls .lbl{width:44px;font-size:10.5px;color:var(--text-mute);font-weight:700}
+.fix-new .ball{outline:2px solid var(--cyan);outline-offset:1px}
+.ana-list{display:flex;flex-direction:column;gap:6px}
+.ana-row{padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid var(--border);border-left-width:3px}
+.ana-row.ok{border-left-color:rgba(34,211,238,.6)}
+.ana-row.warn{border-left-color:var(--amber);background:rgba(251,191,36,.05)}
+.ana-row.bad{border-left-color:var(--pink);background:rgba(244,114,182,.06)}
+.ana-row-top{display:flex;justify-content:space-between;align-items:center}
+.ana-name{font-size:12.5px;font-weight:700;color:var(--text)}
+.ana-badge{font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:999px}
+.ana-badge.ok{color:var(--cyan-light);background:rgba(34,211,238,.12)}
+.ana-badge.warn{color:var(--amber-light);background:rgba(251,191,36,.15)}
+.ana-badge.bad{color:var(--pink-light);background:rgba(244,114,182,.15)}
+.ana-vals{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-mute);margin-top:4px}
+.ana-vals b{color:var(--text);font-family:'Unbounded',sans-serif;font-size:12px}
+.ana-row .ana-note{font-size:11px;margin-top:3px}
+.ana-row.ok .ana-note{display:none}
+.cmp-table{display:flex;flex-direction:column;margin-top:10px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+.cmp-head,.cmp-row{display:grid;grid-template-columns:1.2fr 1fr 1fr;padding:6px 10px;font-size:11.5px}
+.cmp-head{background:rgba(255,255,255,.06);color:var(--text-mute);font-weight:700}
+.cmp-row{border-top:1px solid var(--border);color:var(--text)}
+.cmp-row span:not(:first-child),.cmp-head span:not(:first-child){text-align:right}
+.ana-tips{margin:8px 0 0 18px;padding:0;display:flex;flex-direction:column;gap:7px;font-size:12px;line-height:1.6;color:var(--text-mute)}
+.ana-tips b{color:var(--text)}
+
 /* === 이력: 검색/정렬/전체목록 === */
 .order-toggle{display:flex;padding:3px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--border)}
 .order-toggle button{border:0;background:none;color:var(--text-mute);font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:9px;cursor:pointer;font-family:inherit}
@@ -2879,6 +2924,326 @@ function getCheckRound(){
 }
 
 // === 렌더 ===
+// ===================== 내 번호 정밀 분석 =====================
+let myAnaShown=false,myAnaSel=0,_anaBase=null,_anaTimer=null;
+
+// 매직점수(동반출현 부분) - 추천 엔진과 같은 계산
+function anaMagicPart(nums,st){
+  let s=0;
+  for(const p of st.magicPairs) if(nums.includes(p[0])&&nums.includes(p[1])) s+=p[2];
+  for(const t of st.magicTriples) if(nums.includes(t[0])&&nums.includes(t[1])&&nums.includes(t[2])) s+=t[3]*3;
+  for(const q of st.magicQuads) if(nums.includes(q[0])&&nums.includes(q[1])&&nums.includes(q[2])&&nums.includes(q[3])) s+=q[4]*8;
+  for(const n of nums) s+=(st.magicScore[n]||0)*0.05;
+  return s;
+}
+
+// 조합 하나의 특징값
+function anaFeatures(nums,ctx){
+  const s=[...nums].sort((a,b)=>a-b);
+  const zones=[0,0,0,0,0];s.forEach(n=>zones[Math.min(4,Math.floor((n-1)/10))]++);
+  let consec=0;for(let i=1;i<6;i++) if(s[i]===s[i-1]+1) consec++;
+  const ends={};s.forEach(n=>ends[n%10]=(ends[n%10]||0)+1);
+  const last=ctx.last||[];
+  const nb=new Set();last.forEach(x=>{if(x>1)nb.add(x-1);if(x<45)nb.add(x+1);});last.forEach(x=>nb.delete(x));
+  const si=serialInfo(s,ctx.prof);
+  const st=ctx.st;
+  let pairHits=0,triHits=0;
+  for(const p of st.magicPairs) if(s.includes(p[0])&&s.includes(p[1])) pairHits++;
+  for(const t of st.magicTriples) if(s.includes(t[0])&&s.includes(t[1])&&s.includes(t[2])) triHits++;
+  return {
+    nums:s,
+    sum:s.reduce((a,b)=>a+b,0),
+    odd:s.filter(n=>n%2).length,
+    low:s.filter(n=>n<=22).length,
+    ac:acValueOf(s),
+    zonesUsed:zones.filter(z=>z).length,
+    maxZone:Math.max(...zones),
+    consec,
+    maxEnd:Math.max(...Object.values(ends)),
+    carry:s.filter(n=>last.includes(n)).length,
+    neigh:s.filter(n=>nb.has(n)).length,
+    hot:s.filter(n=>ctx.hot.has(n)).length,
+    cold:s.filter(n=>ctx.cold.has(n)).length,
+    top15:s.filter(n=>ctx.top15.has(n)).length,
+    pairHits,triHits,
+    magic:anaMagicPart(s,st),
+    k27:patId(si.C[0],si.C[1],si.C[2]),pat:si.pat,
+    g3:si.g3,gsum:si.sum,inBand:si.inBand,
+    serial:si.serial,S:Math.floor(si.serial/1e6)
+  };
+}
+
+// TOP15(45개 중 15개)에 6개 중 k개가 들어갈 이론 확률
+function hyperTop15(k){
+  const C=(n,r)=>{if(r<0||r>n)return 0;let x=1;for(let i=0;i<r;i++)x=x*(n-i)/(i+1);return x;};
+  return C(15,k)*C(30,6-k)/C(45,6);
+}
+
+// 기준 데이터: 확인하는 회차 '직전까지'의 통계 (그 회차를 살 때 볼 수 있던 통계)
+function anaBaseFor(R){
+  const key=R+':'+allData.length+':'+allData[allData.length-1].round;
+  if(_anaBase&&_anaBase.key===key) return _anaBase;
+  const data=allData.filter(d=>d.round<R);
+  const st=buildStats(data);
+  const prof=buildSerialProfile(data);
+  const fr=[...Array(45)].map((_,i)=>({n:i+1,c:st.freq[i+1]})).sort((a,b)=>b.c-a.c);
+  const hot=new Set(fr.slice(0,10).map(x=>x.n)),cold=new Set(fr.slice(-10).map(x=>x.n));
+  const top15=new Set(st.topMagicNums);
+  const ctxBase={st,prof,hot,cold,top15};
+  const feats=[];
+  for(let i=1;i<data.length;i++) feats.push(anaFeatures(data[i].nums,{...ctxBase,last:data[i-1].nums}));
+  const N=feats.length;
+  const dist=key2=>{const m={};feats.forEach(f=>{const v=f[key2];m[v]=(m[v]||0)+1;});return m;};
+  const sorted=key2=>feats.map(f=>f[key2]).sort((a,b)=>a-b);
+  const D={};
+  ['odd','low','ac','zonesUsed','maxZone','consec','maxEnd','carry','neigh','hot','cold','pairHits','triHits','k27','g3','gsum','inBand'].forEach(k=>D[k]=dist(k));
+  const sumS=sorted('sum'),magS=sorted('magic');
+  // 각 항목: 역대 당첨조합 각각의 '자기 값 비율'을 정렬 → 내 값이 얼마나 드문지 백분위로 판정
+  const RS={};
+  Object.keys(D).forEach(k=>{RS[k]=feats.map(f=>(D[k][f[k]]||0)/N).sort((a,b)=>a-b);});
+  const q=(arr,p)=>arr[Math.floor(p*(arr.length-1))];
+  const pct=(arr,v)=>{let lo=0,hi=arr.length;while(lo<hi){const m=(lo+hi)>>1;if(arr[m]<v)lo=m+1;else hi=m;}return lo/arr.length;};
+  const lastDraw=data[data.length-1];
+  // 우주별 마지막 등장
+  const uniLast={};data.forEach((d,i)=>{uniLast[Math.floor(comboRank(d.nums)/1e6)]=i;});
+  const pastSet=new Set(data.map(d=>[...d.nums].sort((a,b)=>a-b).join(',')));
+  const base={key,R,data,st,prof,ctx:{...ctxBase,last:lastDraw.nums},lastDraw,feats,N,D,RS,sumS,magS,q,pct,uniLast,pastSet};
+  base.histFit=feats.map(f=>anaChecks(f,base).fit).sort((a,b)=>a-b);
+  _anaBase=base;
+  return base;
+}
+
+const ANA_OK=2,ANA_WARN=1,ANA_BAD=0;
+function shareOf(D,v,N){return (D[v]||0)/N;}
+function modeOf(D){let best=null,bc=-1;for(const k in D) if(D[k]>bc){bc=D[k];best=k;}return best;}
+function topValues(D,N,minShare){return Object.entries(D).filter(([k,c])=>c/N>=minShare).map(([k])=>+k).sort((a,b)=>a-b);}
+function rangeTxt(vals){if(!vals.length)return '-';const lo=vals[0],hi=vals[vals.length-1];return lo===hi?String(lo):lo+'~'+hi;}
+
+// 항목별 판정
+function anaChecks(f,B){
+  const N=B.N,D=B.D,out=[];
+  const share=(k,v)=>shareOf(D[k],v,N);
+  // 희귀 백분위: 역대 당첨조합 중 '내 모양보다 더 드문 모양'이었던 비율
+  const rare=(k,v)=>{const s=share(k,v)+1e-12;const a=B.RS[k];let lo=0,hi=a.length;while(lo<hi){const m=(lo+hi)>>1;if(a[m]<=s)lo=m+1;else hi=m;}return lo/a.length;};
+  const grade=r=>r<0.05?ANA_BAD:(r<0.15?ANA_WARN:ANA_OK);
+  const pctS=B.pct(B.sumS,f.sum);
+  // ---- 기본 통계 ----
+  out.push({grp:'basic',id:'sum',name:'합계',mine:f.sum,typical:`${B.q(B.sumS,.1)}~${B.q(B.sumS,.9)}`,
+    st:grade(Math.min(pctS,1-pctS)*2),
+    note:pctS<.1?`역대 당첨조합 ${Math.round(pctS*100)}%만 이보다 합이 작아요. 작은 번호에 몰려 있어요.`:pctS>.9?`역대 당첨조합 ${Math.round((1-pctS)*100)}%만 이보다 합이 커요. 큰 번호에 몰려 있어요.`:'역대 당첨조합의 가운데 80% 범위 안이에요.'});
+  const add=(id,name,k,v,fmt,typ,good,bad)=>{
+    const sh=share(k,v);const s=grade(rare(k,v));
+    out.push({grp:id.startsWith('m_')?'magic':'basic',id,name,mine:fmt(v),typical:typ,st:s,share:sh,
+      note:s===ANA_OK?good:`역대 당첨조합 중 ${(sh*100).toFixed(1)}%만 이런 모양이에요. ${bad}`});
+  };
+  add('odd','홀:짝','odd',f.odd,v=>`${v}:${6-v}`,'2:4 ~ 4:2','홀짝 균형이 흔한 모양이에요.',f.odd>=4?'홀수가 너무 많아요.':'짝수가 너무 많아요.');
+  add('low','저:고 (1~22 / 23~45)','low',f.low,v=>`${v}:${6-v}`,'2:4 ~ 4:2','작은 번호와 큰 번호가 고르게 섞였어요.',f.low>=4?'1~22 작은 번호에 쏠렸어요.':'23~45 큰 번호에 쏠렸어요.');
+  add('ac','AC값 (번호 간격 다양성)','ac',f.ac,v=>v,'7 이상','번호 간격이 다양해요.','번호 간격이 단조로워요 (등차·연번 패턴이 많음).');
+  add('zonesUsed','사용 구간 수 (1-10/…/41-45)','zonesUsed',f.zonesUsed,v=>`${v}/5`,'3~5구간','여러 번호대에 고르게 퍼졌어요.','한두 번호대에 번호가 몰렸어요.');
+  add('maxZone','한 구간 최대 개수','maxZone',f.maxZone,v=>`${v}개`,'1~2개','한 번호대에 몰리지 않았어요.','한 번호대(10단위)에 너무 많이 몰렸어요.');
+  add('consec','연속번호 쌍','consec',f.consec,v=>`${v}쌍`,'0~1쌍','연속번호가 적당해요.','연속번호가 너무 많아요.');
+  add('maxEnd','같은 끝수 최대','maxEnd',f.maxEnd,v=>`${v}개`,'1~2개','끝자리가 고르게 섞였어요.','끝자리가 같은 번호가 많아요.');
+  add('carry','직전 회차 번호(이월수)','carry',f.carry,v=>`${v}개`,'0~1개','직전 회차와 겹침이 적당해요.',f.carry>=2?'직전 회차 번호를 너무 많이 다시 골랐어요.':'');
+  add('hot','핫 번호 (출현 상위 10개)','hot',f.hot,v=>`${v}개`,'0~2개','핫 번호 비중이 흔한 수준이에요.',f.hot>=3?'많이 나온 번호에만 몰렸어요.':'');
+  add('cold','콜드 번호 (출현 하위 10개)','cold',f.cold,v=>`${v}개`,'0~2개','콜드 번호 비중이 흔한 수준이에요.',f.cold>=3?'적게 나온 번호에 몰렸어요.':'');
+  // ---- 매직 통계 ----
+  const pt=hyperTop15(f.top15);
+  out.push({grp:'magic',id:'m_top15',name:'매직 TOP15 포함',mine:`${f.top15}/6`,typical:'1~3개',
+    st:grade([0,1,2,3,4,5,6].reduce((a,k)=>a+(hyperTop15(k)<=pt+1e-12?hyperTop15(k):0),0)),share:pt,
+    note:(f.top15>=1&&f.top15<=3)?'TOP15 안팎이 자연스럽게 섞였어요.':`아무 번호나 고르면 ${(pt*100).toFixed(1)}%만 나오는 비율이에요. ${f.top15>=4?'TOP15에 너무 몰렸어요.':'TOP15 번호가 거의 없어요.'}`});
+  add('m_pair','매직 TOP 페어 포함','pairHits',f.pairHits,v=>`${v}쌍`,rangeTxt(topValues(D.pairHits,N,.1)),'자주 함께 나온 쌍 포함 수가 흔한 수준이에요.',f.pairHits===0?'자주 함께 나온 쌍이 하나도 없어요.':'자주 나온 쌍을 지나치게 많이 넣었어요.');
+  add('m_tri','매직 TOP 트리플 포함','triHits',f.triHits,v=>`${v}개`,rangeTxt(topValues(D.triHits,N,.1)),'3개 조합 포함 수가 흔한 수준이에요.','3개 조합을 지나치게 많이 넣었어요.');
+  const pm=B.pct(B.magS,f.magic);
+  out.push({grp:'magic',id:'m_score',name:'매직점수 (동반출현)',mine:Math.round(f.magic),typical:`${Math.round(B.q(B.magS,.1))}~${Math.round(B.q(B.magS,.9))}`,
+    st:grade(pm),
+    note:`역대 당첨조합 중 ${Math.round(pm*100)}%가 이보다 점수가 낮았어요.${pm<.1?' 자주 함께 나온 번호 조합과 거리가 멀어요.':''}`});
+  add('m_27s','27S 패턴 (일련 A·B·C)','k27',f.k27,()=>f.pat,'자주 나온 패턴','역대에 흔히 나온 일련번호 패턴이에요.','일련번호 패턴이 역대에 드물게 나온 모양이에요.');
+  const g3n=k=>{const [l,m,h]=k.split('-');return `저${l}중${m}고${h}`;};
+  out.push((()=>{const sh=shareOf(D.g3,f.g3,N);const s=grade(rare('g3',f.g3));
+    return {grp:'magic',id:'m_3g',name:'3G 구성',mine:g3n(f.g3),typical:g3n(modeOf(D.g3)),st:s,share:sh,note:s===ANA_OK?'일련번호 등급 구성이 흔한 모양이에요.':`역대 ${(sh*100).toFixed(1)}%만 이 구성이에요.`};})());
+  add('m_gsum','일련 등급 총합','gsum',f.gsum,v=>v,rangeTxt(topValues(D.gsum,N,.08)),'등급 총합이 흔한 범위예요.','등급 총합이 한쪽으로 치우쳤어요.');
+  add('m_band','자리별 80% 범위','inBand',f.inBand,v=>`${v}/6`,'4~6','번호가 각 자리의 흔한 범위에 있어요.','몇몇 자리 번호가 역대 범위를 벗어났어요.');
+  // 점수
+  const fit=Math.max(0,100-12*out.filter(c=>c.st===ANA_BAD).length-4*out.filter(c=>c.st===ANA_WARN).length);
+  return {checks:out,fit};
+}
+
+// 당첨금 나눔 위험 (당첨 확률과는 무관, 1등 시 나눠 가질 사람 수)
+function anaSplitRisk(nums,B){
+  const s=[...nums].sort((a,b)=>a-b),r=[];
+  if(s.every(n=>n<=31)) r.push('6개 모두 31 이하예요. 생일·기념일로 고르는 사람이 많은 번호대라, 1등이 되면 여러 명과 나눌 가능성이 커요.');
+  let run=1,maxRun=1;for(let i=1;i<6;i++){run=s[i]===s[i-1]+1?run+1:1;maxRun=Math.max(maxRun,run);}
+  if(maxRun>=3) r.push(`${maxRun}개 연속번호가 있어요. 많은 사람이 고르는 패턴이에요.`);
+  const d=s[1]-s[0];if(s.every((n,i)=>i===0||n-s[i-1]===d)) r.push('모든 번호 간격이 같아요(등차). 자주 쓰이는 패턴이에요.');
+  for(const m of [3,4,5,6,7]) if(s.every(n=>n%m===0)){r.push(`모두 ${m}의 배수예요. 자주 쓰이는 패턴이에요.`);break;}
+  if(B.pastSet.has(s.join(','))) r.push('과거 1등 번호와 똑같은 조합이에요. 따라 사는 사람이 많아요.');
+  return r;
+}
+
+// 보정안: 1~2개만 바꿔서 역대 모양에 가깝게
+function anaFix(nums,B){
+  const base=anaChecks(anaFeatures(nums,B.ctx),B);
+  if(base.checks.every(c=>c.st===ANA_OK)) return null;
+  const s=[...nums].sort((a,b)=>a-b);
+  const cand=[];for(let n=1;n<=45;n++) if(!s.includes(n)) cand.push(n);
+  let best=null;
+  const consider=(arr,changed)=>{
+    const sorted=[...arr].sort((a,b)=>a-b);
+    if(B.pastSet.has(sorted.join(','))) return;
+    const f=anaFeatures(sorted,B.ctx);const c=anaChecks(f,B);
+    const risk=anaSplitRisk(sorted,B).length;
+    const score=c.fit*1000-risk*500+f.magic/10;
+    if(!best||score>best.score) best={nums:sorted,fit:c.fit,score,changed,magic:f.magic,bad:c.checks.filter(x=>x.st!==ANA_OK).length};
+  };
+  for(let i=0;i<6;i++) for(const n of cand){const a=[...s];a[i]=n;consider(a,[[s[i],n]]);}
+  if(!best||best.bad>0){
+    const one=best;
+    for(let i=0;i<6;i++)for(let j=i+1;j<6;j++)for(let x=0;x<cand.length;x++)for(let y=x+1;y<cand.length;y++){
+      const a=[...s];a[i]=cand[x];a[j]=cand[y];consider(a,[[s[i],cand[x]],[s[j],cand[y]]]);
+    }
+    if(one&&best.fit<=one.fit) best=one;
+  }
+  if(!best||best.fit<=base.fit) return null;
+  return {...best,from:base.fit};
+}
+
+function showMyAnalysis(){
+  myAnaShown=true;
+  renderMyAnalysis();
+  const el=document.getElementById('my-analysis');
+  if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function scheduleMyAnalysis(){
+  if(!myAnaShown) return;
+  clearTimeout(_anaTimer);
+  _anaTimer=setTimeout(renderMyAnalysis,500);
+}
+function selectMyAna(i){myAnaSel=i;renderMyAnalysis();}
+function applyFix(i,nums){
+  checkState.tickets[i].nums=[...nums];
+  saveCheckState();
+  renderCheck();refreshAllTickets();
+}
+
+const ST_LABEL=['문제','주의','양호'],ST_CLS=['bad','warn','ok'];
+
+function renderMyAnalysis(){
+  const el=document.getElementById('my-analysis');if(!el) return;
+  const {round,data:win}=getCheckRound();
+  const games=checkState.tickets.map((t,i)=>({i,nums:ticketNums(t)})).filter(g=>g.nums.filter(x=>x>=1&&x<=45).length===6&&new Set(g.nums).size===6);
+  if(!games.length){el.innerHTML=`<div class="result-panel"><div class="result-title" style="font-size:16px;color:var(--pink-light)">분석할 번호 6개를 먼저 입력해주세요</div></div>`;return;}
+  if(allData.filter(d=>d.round<round).length<50){el.innerHTML=`<div class="result-panel"><div class="result-sub">이 회차는 비교할 과거 데이터가 부족해요.</div></div>`;return;}
+  el.innerHTML=`<div class="result-panel"><div class="ms-desc" style="text-align:center;padding:10px 0"><span class="spinner"></span>분석 중...</div></div>`;
+  setTimeout(()=>{
+    const B=anaBaseFor(round);
+    if(myAnaSel>=games.length) myAnaSel=0;
+    const all=games.map(g=>{const f=anaFeatures(g.nums,B.ctx);const c=anaChecks(f,B);return {...g,f,...c,risk:anaSplitRisk(g.nums,B)};});
+    const g=all[myAnaSel];
+    const fitPct=B.pct(B.histFit,g.fit+0.0001);
+    const letter=i=>String.fromCharCode(65+i);
+    const bads=g.checks.filter(c=>c.st===ANA_BAD),warns=g.checks.filter(c=>c.st===ANA_WARN);
+    const verdict=fitPct>=.5?'역대 당첨조합과 매우 비슷한 모양':fitPct>=.2?'역대 당첨조합과 비슷한 모양':fitPct>=.05?'일부 항목이 벗어난 모양':'역대 당첨조합과 많이 다른 모양';
+    const row=c=>`<div class="ana-row ${ST_CLS[c.st]}">
+        <div class="ana-row-top"><span class="ana-name">${c.name}</span><span class="ana-badge ${ST_CLS[c.st]}">${ST_LABEL[c.st]}</span></div>
+        <div class="ana-vals"><span>내 번호 <b>${c.mine}</b></span><span>흔한 범위 ${c.typical}</span></div>
+        <div class="ana-note">${c.note}</div>
+      </div>`;
+    // 당첨번호와 비교 (추첨이 끝난 회차)
+    let winHTML='';
+    if(win){
+      const wf=anaFeatures(win.nums,B.ctx);const wc=anaChecks(wf,B);
+      const hit=g.nums.filter(n=>win.nums.includes(n));
+      const near=g.nums.filter(n=>!win.nums.includes(n)&&(win.nums.includes(n-1)||win.nums.includes(n+1)));
+      const rk=determineRank(g.nums,win.nums,win.bonus);
+      const cmp=[['합계',g.f.sum,wf.sum],['홀:짝',`${g.f.odd}:${6-g.f.odd}`,`${wf.odd}:${6-wf.odd}`],['저:고',`${g.f.low}:${6-g.f.low}`,`${wf.low}:${6-wf.low}`],['AC',g.f.ac,wf.ac],['사용 구간',g.f.zonesUsed,wf.zonesUsed],['이월수',g.f.carry,wf.carry],['TOP15',g.f.top15,wf.top15],['매직점수',Math.round(g.f.magic),Math.round(wf.magic)],['27S',g.f.pat,wf.pat]];
+      winHTML=`
+      <div class="ana-box">
+        <div class="ms-title">🎯 ${round}회 당첨번호와 비교 <span>${rk.rank?rk.rank+'등':'낙첨'} · ${rk.matches}개 일치</span></div>
+        <div class="ana-balls"><span class="lbl">당첨</span>${win.nums.map(n=>ballHTML(n,'sm')).join('')}<span class="bonus-sep">+</span>${ballHTML(win.bonus,'sm')}</div>
+        <div class="ana-balls"><span class="lbl">내 번호</span>${g.nums.map(n=>`<span class="${win.nums.includes(n)?'':'rb-miss'}">${ballHTML(n,'sm')}</span>`).join('')}</div>
+        <div class="cmp-table">
+          <div class="cmp-head"><span>항목</span><span>내 번호</span><span>당첨번호</span></div>
+          ${cmp.map(r=>`<div class="cmp-row"><span>${r[0]}</span><span>${r[1]}</span><span>${r[2]}</span></div>`).join('')}
+        </div>
+        <div class="ana-note" style="margin-top:8px">
+          ${near.length?`아깝게 1 차이로 빗나간 번호: <b>${near.join(', ')}</b><br>`:''}
+          이번 당첨번호도 역대 기준으로 <b>문제 ${wc.checks.filter(c=>c.st===ANA_BAD).length}개 · 주의 ${wc.checks.filter(c=>c.st===ANA_WARN).length}개</b> 항목이 있었어요 (모양 점수 ${wc.fit}점).
+          ${wc.fit<70?' 당첨번호도 흔한 모양에서 벗어나는 경우가 많다는 뜻이에요.':''}
+        </div>
+      </div>`;
+    }
+    // 보정안
+    const fix=anaFix(g.nums,B);
+    const fixHTML=fix?`
+      <div class="ana-box">
+        <div class="ms-title">🛠 보정안 <span>${fix.changed.length}개만 교체 · 모양 점수 ${fix.from} → ${fix.fit}점</span></div>
+        <div class="ana-note">${fix.changed.map(([a,b])=>`<b>${a}</b> → <b style="color:var(--cyan-light)">${b}</b>`).join(', ')} 로 바꾸면 벗어난 항목이 줄어들어요.</div>
+        <div class="ana-balls">${fix.nums.map(n=>`<span class="${g.nums.includes(n)?'':'fix-new'}">${ballHTML(n,'sm')}</span>`).join('')}</div>
+        <button class="btn-outline" style="margin-top:10px;height:40px" onclick='applyFix(${g.i},${JSON.stringify(fix.nums)})'>${letter(g.i)}게임을 보정안으로 바꾸기</button>
+      </div>`:'';
+
+    // 전체 전략 (모든 게임)
+    const cnt={};all.forEach(x=>x.checks.forEach(c=>{if(c.st!==ANA_OK){(cnt[c.id]=cnt[c.id]||{name:c.name,n:0,dir:[]}).n++;cnt[c.id].dir.push(c.mine);}}));
+    const repeated=Object.values(cnt).filter(x=>x.n>=Math.max(2,Math.ceil(all.length/2))).sort((a,b)=>b.n-a.n);
+    const numCnt={};all.forEach(x=>x.nums.forEach(n=>numCnt[n]=(numCnt[n]||0)+1));
+    const overused=Object.entries(numCnt).filter(([n,c])=>c>=3).map(([n,c])=>`${n}번(${c}게임)`);
+    const distinct=Object.keys(numCnt).length;
+    const avgTop=(all.reduce((a,x)=>a+x.f.top15,0)/all.length).toFixed(1);
+    const riskGames=all.filter(x=>x.risk.length).map(x=>letter(x.i));
+    const avgFit=Math.round(all.reduce((a,x)=>a+x.fit,0)/all.length);
+    const lo=B.q(B.sumS,.1),hi=B.q(B.sumS,.9);
+    const tips=[];
+    tips.push(`<b>합계 ${lo}~${hi}</b>, 홀짝·저고 <b>2:4~4:2</b>, 번호대(10단위) <b>3구간 이상</b>, 연속번호 <b>최대 1쌍</b>, 직전 회차 번호 <b>0~1개</b>로 맞추면 역대 당첨조합 대부분과 같은 모양이 돼요.`);
+    tips.push(`매직 TOP15는 게임당 <b>1~3개</b>가 가장 흔한 비율이에요. 지금 평균은 <b>${avgTop}개</b>예요.${avgTop>3.5?' TOP15만 쓰는 게임을 줄이고 TOP15 제외형을 1게임 섞어보세요.':avgTop<1?' TOP15×페어·트리플형을 1게임 섞어보세요.':''}`);
+    if(all.length>=3) tips.push(`게임끼리 겹치는 번호가 많으면 한꺼번에 맞거나 한꺼번에 틀려요. 지금 ${all.length}게임에 서로 다른 번호 <b>${distinct}개</b>를 썼어요${overused.length?` (${overused.join(', ')} 반복)`:''}. 게임마다 다른 번호를 쓰면 5등(3개 일치)이 나올 기회가 고르게 퍼져요.`);
+    tips.push(`5게임 구성 예: 매직 탭의 <b>TOP15×페어 1</b> · <b>TOP15×트리플 1</b> · <b>매직 하이브리드 1</b> · <b>TOP15 제외형 1</b> · <b>직접 고른 번호를 보정안으로 1</b>.`);
+    tips.push(`32~45 번호를 <b>1개 이상</b> 넣고 연번·등차 패턴을 피하면, 당첨 확률은 같아도 1등 당첨금을 나눌 사람이 줄어들어요.`);
+    tips.push(`어떤 방법도 1등 확률(814만분의 1)을 바꾸지는 못해요. 정해둔 금액 안에서만 즐기세요.`);
+
+    el.innerHTML=`
+    <div class="result-panel ana-panel">
+      <div class="result-round">🔬 내 번호 정밀 분석 <span>· ${round}회 기준 · 1~${round-1}회 통계</span></div>
+      ${all.length>1?`<div class="ana-tabs">${all.map((x,k)=>`<button class="${k===myAnaSel?'on':''}" onclick="selectMyAna(${k})">${letter(x.i)} <small>${x.fit}점</small></button>`).join('')}</div>`:''}
+      <div class="ana-head">
+        <div class="ana-balls" style="margin:0">${g.nums.map(n=>ballHTML(n,'sm')).join('')}</div>
+        <div class="ana-score"><div class="ms-big">${g.fit}<small>점</small></div><div class="ms-desc">모양 점수</div></div>
+      </div>
+      <div class="ana-verdict">${verdict}</div>
+      <div class="ms-desc">역대 당첨조합의 ${Math.round(fitPct*100)}%가 이 점수 이하였어요 · 문제 <b style="color:var(--pink-light)">${bads.length}</b> · 주의 <b style="color:var(--amber-light)">${warns.length}</b> · 양호 ${g.checks.length-bads.length-warns.length}</div>
+
+      <div class="ana-box">
+        <div class="ms-title">📝 해설</div>
+        <div class="ana-note">
+          ${bads.length+warns.length===0?'모든 항목이 역대 당첨조합의 흔한 범위 안에 있어요. 모양으로는 손볼 곳이 없는 조합이에요.':
+          `가장 크게 벗어난 부분은 <b>${[...bads,...warns].slice(0,3).map(c=>c.name.split(' (')[0]).join(', ')}</b>이에요. ${[...bads,...warns][0].note}`}
+          ${g.f.top15>=5?' 매직 TOP15 번호로만 거의 채워져 있어서, 매직 통계에 지나치게 의존한 조합이에요.':''}
+          ${g.f.top15===0?' 매직 TOP15 번호가 하나도 없어서 매직 통계와는 반대 방향의 조합이에요.':''}
+          <br>평행우주 기준으로는 <b>[${g.f.S}]번 우주</b> 조합이고, 이 우주는 ${B.uniLast[g.f.S]!=null?`${B.data.length-1-B.uniLast[g.f.S]}회 전에 마지막으로 나왔어요`:'아직 나온 적이 없어요'}.
+        </div>
+      </div>
+
+      ${g.risk.length?`<div class="ana-box risk"><div class="ms-title">⚠️ 당첨금 나눔 위험 <span>확률과 무관</span></div><div class="ana-note">${g.risk.join('<br>')}</div></div>`:''}
+
+      ${winHTML}
+
+      <div class="ms-sub">📊 기본 통계</div>
+      <div class="ana-list">${g.checks.filter(c=>c.grp==='basic').map(row).join('')}</div>
+      <div class="ms-sub">✨ 매직 통계</div>
+      <div class="ana-list">${g.checks.filter(c=>c.grp==='magic').map(row).join('')}</div>
+
+      ${fixHTML}
+
+      <div class="ana-box strategy">
+        <div class="ms-title">🧭 다음 회차 전략 <span>${all.length}게임 종합 · 평균 ${avgFit}점</span></div>
+        ${repeated.length?`<div class="ana-note" style="margin-bottom:8px">반복된 약점: ${repeated.map(r=>`<b>${r.name.split(' (')[0]}</b> ${r.n}게임 (${r.dir.join(', ')})`).join(' · ')}</div>`:''}
+        ${riskGames.length?`<div class="ana-note" style="margin-bottom:8px">당첨금 나눔 위험: <b>${riskGames.join(', ')}게임</b></div>`:''}
+        <ol class="ana-tips">${tips.map(t=>`<li>${t}</li>`).join('')}</ol>
+      </div>
+      <div class="info-text" style="padding:8px 0 0">모양 점수는 "역대 당첨조합과 얼마나 비슷한 모양인가"를 나타내요. 모든 조합의 당첨 확률은 똑같이 814만분의 1이라, 점수가 높다고 더 잘 맞는 건 아니에요. 극단적인 모양을 피하고 번호를 고르는 기준으로 활용하세요.</div>
+    </div>`;
+  },30);
+}
+
 function renderCheck(){
   const {round,data}=getCheckRound();
   const recent=allData.slice().reverse();
@@ -2961,6 +3326,8 @@ function renderCheck(){
       <button class="add-slot-btn" onclick="resetTickets()">↺ 번호 비우기</button>
     </div>
     <button class="btn-primary" onclick="showCheckResult()">✅ 당첨 확인</button>
+    <button class="btn-outline ana-btn" onclick="showMyAnalysis()">🔬 내 번호 정밀 분석 · 다음 회차 전략</button>
+    <div id="my-analysis"></div>
     <div style="padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid var(--border);font-size:11px;color:var(--text-mute);line-height:1.7">
       <b style="color:var(--cyan-light)">💡 당첨 기준</b><br>
       1등 6개 일치 · 2등 5개+보너스 · 3등 5개 · 4등 4개(5만원) · 5등 3개(5천원)
@@ -2969,6 +3336,7 @@ function renderCheck(){
 
   document.getElementById('sec-check').innerHTML=html;
   if(checkResultShown) renderCheckResult();
+  if(myAnaShown) renderMyAnalysis();
 }
 
 function ticketSlotHTML(t,idx,data){
@@ -3032,6 +3400,7 @@ function updateTicket(idx,pos,el){
   saveCheckState();
   refreshTicket(idx);
   if(checkResultShown) renderCheckResult();
+  scheduleMyAnalysis();
   // 두 자리 입력되면 다음 칸으로
   if(v.length===2){
     const next=document.getElementById(`t-${idx}-${pos+1}`)||document.getElementById(`t-${idx+1}-0`);
