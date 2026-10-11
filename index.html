@@ -1400,6 +1400,55 @@ function generateMagicRecs(st,opts){
     });
   }
 
+  // === TOP15에 없는 번호만 (나머지 30개) ===
+  let X=[];for(let n=1;n<=45;n++) if(!TOPSET.has(n)&&!lastDrawSet.has(n)) X.push(n);
+  if(X.length<9){X=[];for(let n=1;n<=45;n++) if(!TOPSET.has(n)) X.push(n);}
+  const XS=new Set(X);
+  const xPairs=[];
+  for(let i=0;i<X.length;i++)for(let j=i+1;j<X.length;j++){
+    const a=Math.min(X[i],X[j]),b=Math.max(X[i],X[j]);
+    xPairs.push([a,b,(st.coAppear&&st.coAppear[a])?st.coAppear[a][b]:0]);
+  }
+  xPairs.sort((x,y)=>y[2]-x[2]);
+  const xTriMap={};
+  DATA.forEach(d=>{
+    const m=d.nums.filter(n=>XS.has(n)).sort((a,b)=>a-b);
+    for(let i=0;i<m.length;i++)for(let j=i+1;j<m.length;j++)for(let k=j+1;k<m.length;k++){
+      const key=m[i]+','+m[j]+','+m[k];xTriMap[key]=(xTriMap[key]||0)+1;
+    }
+  });
+  const xTriples=Object.entries(xTriMap).map(([k,c])=>[...k.split(',').map(Number),c]).sort((x,y)=>y[3]-x[3]);
+  const fillFromX=picked=>{
+    const out=[...picked];
+    for(const n of shuffle(X)){if(out.length>=6)break;if(!out.includes(n))out.push(n);}
+    return out;
+  };
+  if(X.length>=6&&xPairs.length){
+    strategies.push({
+      name:'TOP15 제외×페어형',icon:'🔄',desc:'매직 TOP15에 없는 30개 번호 중 자주 함께 나온 쌍 3개 결합',key:'outpair',
+      gen:()=>{
+        const pool=shuffle(xPairs.slice(0,30));
+        const s=new Set();
+        for(const p of pool){if(s.size>=6)break;if(!s.has(p[0])&&!s.has(p[1])){s.add(p[0]);s.add(p[1]);}}
+        return fillFromX([...s]);
+      }
+    });
+  }
+  if(X.length>=6&&xTriples.length>=2){
+    strategies.push({
+      name:'TOP15 제외×트리플형',icon:'🔃',desc:'매직 TOP15에 없는 번호 중 자주 함께 나온 3개 조합 2개 결합',key:'outtri',
+      gen:()=>{
+        const pool=xTriples.slice(0,30);
+        const t1=pool[Math.floor(Math.random()*pool.length)];
+        const used=new Set(t1.slice(0,3));
+        const rest=pool.filter(t=>!used.has(t[0])&&!used.has(t[1])&&!used.has(t[2]));
+        if(!rest.length) return fillFromX(t1.slice(0,3));
+        const t2=rest[Math.floor(Math.random()*Math.min(rest.length,15))];
+        return [...t1.slice(0,3),...t2.slice(0,3)];
+      }
+    });
+  }
+
   // === 평행우주형 + TOP15×평행우주형 ===
   if(useSerial){
     const pool=parallelPool(DATA,10);
@@ -1673,8 +1722,8 @@ function renderMagic(){
   });
 
   html+=`
-    <div class="info-text"><b style="color:var(--text)">전략 ${magicRecs.length}종</b> · 쿼드 · 트리플 · 페어 · TOP집중 · 하이브리드 · TOP15×페어 · TOP15×트리플 · TOP15×평행우주<br>
-    TOP15×페어/트리플은 6개 번호를 모두 매직 TOP15 안에서 고르고, 그 안에서 자주 함께 나온 쌍·3개 조합을 묶습니다.</div>
+    <div class="info-text"><b style="color:var(--text)">전략 ${magicRecs.length}종</b> · 쿼드 · 트리플 · 페어 · TOP집중 · 하이브리드 · TOP15×페어 · TOP15×트리플 · TOP15×평행우주 · TOP15 제외×페어 · TOP15 제외×트리플<br>
+    TOP15×페어/트리플은 6개 번호를 모두 매직 TOP15 안에서, TOP15 제외형은 6개 모두 TOP15에 없는 30개 번호에서 고르고, 그 안에서 자주 함께 나온 쌍·3개 조합을 묶습니다.</div>
     <div class="info-text">매직점수 = 조합 동반출현(페어 + 트리플×3 + 쿼드×8 − 직전회차 겹침×5)<br>
     + 일련번호 가산점 최대 66점 (27S 일련 12 · 27S 끝수 12 · 3G 12 · 등급총합 12 · 자리범위 18)<br>
     ${top&&top.ser?`1번 조합: 동반출현 ${top.magicPart} + 일련번호 ${top.serialPart}점`:''}</div>
