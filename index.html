@@ -662,6 +662,14 @@ a{color:var(--purple-light)}
 .paste-text{width:100%;padding:10px 12px;border:1px solid var(--border-2);border-radius:12px;background:rgba(255,255,255,.05);color:var(--text);font-size:13.5px;font-family:inherit;line-height:1.6;outline:none;resize:vertical}
 .paste-text:focus{border-color:var(--purple)}
 
+
+.hist-actions{display:flex;justify-content:space-between;align-items:center;margin-top:2px}
+.hist-actions button{border:1px solid var(--border-2);background:rgba(255,255,255,.05);color:var(--text-mute);font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:8px;cursor:pointer;font-family:inherit;margin-left:4px}
+.hist-actions button.del{color:var(--pink-light);border-color:rgba(244,114,182,.35)}
+.hist-tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;color:var(--cyan-light);background:rgba(34,211,238,.12)}
+.hist-tag.edited{color:var(--amber-light);background:rgba(251,191,36,.12)}
+.input-card.editing{border-color:rgba(251,191,36,.55);background:linear-gradient(160deg,rgba(251,191,36,.12),rgba(124,92,255,.06))}
+
 /* === 이력: 검색/정렬/전체목록 === */
 .order-toggle{display:flex;padding:3px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--border)}
 .order-toggle button{border:0;background:none;color:var(--text-mute);font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:9px;cursor:pointer;font-family:inherit}
@@ -2563,17 +2571,17 @@ let histObserver=null;
 function renderHistory(){
   const lastRound=allData[allData.length-1].round;
   const BASE_LAST=RAW_DATA[RAW_DATA.length-1][0];
-  const userSaved=allData.filter(d=>d.round>BASE_LAST);
+  const userSaved=allData.filter(d=>isUserRound(d)||isEditedRound(d));
   const firstRound=allData[0].round;
 
   let html=`
     <div class="sec-head">
       <div>
-        <div class="sec-title">새 회차 입력</div>
-        <div class="sec-sub">입력 즉시 저장 · 재접속해도 유지</div>
+        <div class="sec-title">${editRound?editRound+'회 수정':'새 회차 입력'}</div>
+        <div class="sec-sub">${editRound?'번호를 고친 뒤 저장을 누르세요':'입력 즉시 저장 · 잘못 넣었으면 아래 이력에서 ✎ 수정'}</div>
       </div>
     </div>
-    <div class="input-card">
+    <div class="input-card ${editRound?'editing':''}">
       <div class="input-sub">
         <a href="https://www.dhlottery.co.kr/lt645/result" target="_blank">동행복권 결과 확인 →</a>
       </div>
@@ -2591,16 +2599,17 @@ function renderHistory(){
         <div class="input-label">보너스</div>
         <input id="m-bonus" type="number" class="input-field input-small" min="1" max="45" placeholder="보너스" inputmode="numeric">
       </div>
-      <button onclick="applyManual()" class="btn-primary">💾 저장 & 통계 반영</button>
+      <button onclick="applyManual()" class="btn-primary">${editRound?'💾 수정 저장':'💾 저장 & 통계 반영'}</button>
+      ${editRound?'<button onclick="cancelEditRound()" class="btn-outline" style="margin-top:8px;height:42px">수정 취소</button>':''}
       <div id="manual-result"></div>
     </div>
     ${userSaved.length>0?`
     <div style="border-radius:16px;padding:14px 16px;background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(124,92,255,.08));border:1px solid rgba(34,211,238,.25);display:flex;justify-content:space-between;align-items:center;gap:10px">
       <div>
-        <div style="font-size:11px;color:var(--cyan-light);font-weight:800;letter-spacing:.8px;text-transform:uppercase">직접 입력한 회차</div>
-        <div style="font-size:13px;color:var(--text);font-weight:600;margin-top:4px">${userSaved.length}개 저장됨 · ${userSaved.map(d=>d.round+'회').join(', ')}</div>
+        <div style="font-size:11px;color:var(--cyan-light);font-weight:800;letter-spacing:.8px;text-transform:uppercase">직접 입력·수정한 회차</div>
+        <div style="font-size:13px;color:var(--text);font-weight:600;margin-top:4px">${userSaved.length}개 · ${userSaved.map(d=>`<a href="javascript:void(0)" onclick="startEditRound(${d.round})" style="color:var(--cyan-light)">${d.round}회${isEditedRound(d)?'(수정)':''}</a>`).join(', ')}</div>
       </div>
-      <button onclick="clearUserData()" style="background:rgba(244,114,182,.15);color:var(--pink-light);border:1px solid rgba(244,114,182,.3);padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">초기화</button>
+      <button onclick="clearUserData()" style="background:rgba(244,114,182,.15);color:var(--pink-light);border:1px solid rgba(244,114,182,.3);padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">모두 되돌리기</button>
     </div>
     `:''}
 
@@ -2652,6 +2661,14 @@ function histCardHTML(d,highlight){
         ${d.nums.map(n=>ballHTML(n,'sm')).join('')}
         <span class="bonus-sep">+</span>
         ${ballHTML(d.bonus,'sm')}
+      </div>
+      <div class="hist-actions">
+        ${isUserRound(d)?'<span class="hist-tag">직접 입력</span>':isEditedRound(d)?'<span class="hist-tag edited">수정됨</span>':'<span></span>'}
+        <div>
+          <button onclick="startEditRound(${d.round})">✎ 수정</button>
+          ${isUserRound(d)?`<button class="del" onclick="deleteRound(${d.round})">삭제</button>`:''}
+          ${isEditedRound(d)?`<button onclick="restoreRound(${d.round})">원래대로</button>`:''}
+        </div>
       </div>
     </div>`;
 }
@@ -2767,22 +2784,34 @@ function applyManual(){
     resultEl.innerHTML='<div class="manual-msg err">⚠️ 6개 번호는 모두 달라야 합니다.</div>';
     return;
   }
-  if(allData.find(d=>d.round===round)){
-    resultEl.innerHTML=`<div class="manual-msg err">⚠️ ${round}회는 이미 등록된 데이터입니다.</div>`;
+  if(nums.includes(bonus)){
+    resultEl.innerHTML='<div class="manual-msg err">⚠️ 보너스 번호는 당첨번호 6개와 달라야 합니다.</div>';
     return;
   }
-
   const sorted=nums.sort((a,b)=>a-b);
-  allData.push({round,nums:sorted,bonus});
-  allData.sort((a,b)=>a.round-b.round);
-
-  // === localStorage에 영구 저장 ===
+  const exist=allData.find(d=>d.round===round);
+  if(exist){
+    const same=exist.nums.join(',')===sorted.join(',')&&exist.bonus===bonus;
+    if(same){resultEl.innerHTML=`<div class="manual-msg err">⚠️ ${round}회에 이미 같은 번호가 저장되어 있어요.</div>`;return;}
+    if(editRound!==round&&!confirm(`${round}회는 이미 저장되어 있어요.\n\n기존: ${exist.nums.join(', ')} + ${exist.bonus}\n변경: ${sorted.join(', ')} + ${bonus}\n\n새 번호로 고칠까요?`)) return;
+    exist.nums=sorted;exist.bonus=bonus;
+  }else{
+    allData.push({round,nums:sorted,bonus});
+    allData.sort((a,b)=>a.round-b.round);
+  }
+  editRound=null;
   saveUserData();
+  rebuildAll();
+  const el=document.getElementById('manual-result');
+  if(el) el.innerHTML=`<div class="manual-msg ok">✅ ${round}회 ${exist?'수정':'저장'} 완료! 번호 ${sorted.join(', ')} + 보너스 ${bonus}<br><span style="font-size:11px;font-weight:500;opacity:0.8">다음 접속 시에도 유지됩니다</span></div>`;
+}
 
+// === 전체 다시 계산·그리기 ===
+function rebuildAll(){
   appStats=buildStats(allData);
   recs=generateRecs(appStats);
   magicRecs=generateMagicRecs(appStats).sort((a,b)=>b.score-a.score);
-
+  if(typeof _anaBase!=='undefined') _anaBase=null;
   renderLatest();
   renderRecommend();
   renderMagic();
@@ -2790,16 +2819,52 @@ function applyManual(){
   renderStats();
   renderNumbers();
   renderHistory();
+}
 
-  resultEl.innerHTML=`<div class="manual-msg ok">✅ ${round}회 저장 완료! 번호 ${sorted.join(', ')} + 보너스 ${bonus}<br><span style="font-size:11px;font-weight:500;opacity:0.8">다음 접속 시에도 유지됩니다</span></div>`;
+// === 회차 수정·삭제 ===
+let editRound=null;
+const RAW_MAP=(()=>{const m={};RAW_DATA.forEach(r=>{m[r[0]]={nums:r.slice(1,7),bonus:r[7]};});return m;})();
+function isUserRound(d){return !RAW_MAP[d.round];}
+function isEditedRound(d){const o=RAW_MAP[d.round];return !!o&&(o.nums.join(',')!==[...d.nums].sort((a,b)=>a-b).join(',')||o.bonus!==d.bonus);}
+
+function startEditRound(round){
+  const d=allData.find(x=>x.round===round);if(!d) return;
+  editRound=round;
+  histState.query='';
+  renderHistory();
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v;};
+  set('m-round',d.round);
+  d.nums.forEach((n,i)=>set('m-n'+(i+1),n));
+  set('m-bonus',d.bonus);
+  const card=document.querySelector('#sec-history .input-card');
+  if(card) card.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function cancelEditRound(){
+  editRound=null;
+  renderHistory();
+}
+function deleteRound(round){
+  const d=allData.find(x=>x.round===round);if(!d) return;
+  if(!isUserRound(d)) return;
+  if(!confirm(`${round}회 (${d.nums.join(', ')} + ${d.bonus})를 삭제할까요?`)) return;
+  allData=allData.filter(x=>x.round!==round);
+  if(editRound===round) editRound=null;
+  saveUserData();
+  rebuildAll();
+}
+function restoreRound(round){
+  const o=RAW_MAP[round];const d=allData.find(x=>x.round===round);if(!o||!d) return;
+  if(!confirm(`${round}회를 원래 데이터(${o.nums.join(', ')} + ${o.bonus})로 되돌릴까요?`)) return;
+  d.nums=[...o.nums];d.bonus=o.bonus;
+  saveUserData();
+  rebuildAll();
 }
 
 // === 사용자 추가 데이터 영구 저장 ===
 function saveUserData(){
   try{
     // RAW_DATA 마지막 회차(1235)보다 큰 회차만 저장
-    const BASE_LAST=RAW_DATA[RAW_DATA.length-1][0];
-    const userAdded=allData.filter(d=>d.round>BASE_LAST);
+    const userAdded=allData.filter(d=>isUserRound(d)||isEditedRound(d));
     localStorage.setItem('lotto-user-data',JSON.stringify(userAdded));
     return true;
   }catch(e){
@@ -2827,7 +2892,8 @@ function loadUserData(){
 }
 
 function clearUserData(){
-  if(!confirm('수동 입력한 모든 회차를 삭제하시겠습니까?\n(기본 1~1235회 데이터는 유지됩니다)')) return;
+  if(!confirm(`직접 입력·수정한 회차를 모두 되돌릴까요?\n(앱에 들어 있는 1~${RAW_DATA[RAW_DATA.length-1][0]}회 기본 데이터로 돌아갑니다)`)) return;
+  editRound=null;
   try{
     localStorage.removeItem('lotto-user-data');
     // allData를 원본 RAW_DATA로 리셋
@@ -3750,9 +3816,9 @@ function init(){
   const saved=loadUserData();
   if(saved.length>0){
     saved.forEach(d=>{
-      if(!allData.find(x=>x.round===d.round)){
-        allData.push(d);
-      }
+      const ex=allData.find(x=>x.round===d.round);
+      if(ex){ex.nums=[...d.nums].sort((a,b)=>a-b);ex.bonus=d.bonus;}
+      else allData.push({round:d.round,nums:[...d.nums].sort((a,b)=>a-b),bonus:d.bonus});
     });
     allData.sort((a,b)=>a.round-b.round);
   }
